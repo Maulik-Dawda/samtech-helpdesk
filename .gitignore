@@ -1,0 +1,69 @@
+# =========================
+# Composer
+# =========================
+/vendor/
+
+# =========================
+# Environment Files
+# =========================
+.env
+.env.local
+.env.production
+
+# =========================
+# Uploads & Attachments
+# =========================
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Ticket Attachments
+/public/uploads/tickets/*
+!/public/uploads/tickets/.gitkeep
+
+# Reply Attachments
+/public/uploads/replies/*
+!/public/uploads/replies/.gitkeep
+
+# =========================
+# Logs
+# =========================
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+*.log
+
+# =========================
+# IDE Files
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.temp
+
+# =========================
+# Backup Files
+# =========================
+*.bak
+*.sql
+*.zip
+
+# =========================
+# Cache
+# =========================
+/cache/*
+!/cache/.gitkeep
+
+# =========================
+# PHPUnit
+# =========================
+.phpunit.result.cache
