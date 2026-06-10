@@ -1,16 +1,16 @@
 <?php
 
-require_once "../app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
 
-require_once "../app/Models/Ticket.php";
-require_once "../app/Models/User.php";
-require_once "../app/Models/Organization.php";
+require_once ROOT_PATH . "/app/Models/Ticket.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/Organization.php";
 
-require_once "../app/Helpers/PermissionHelper.php";
+require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
 
-require_once "../app/Models/TicketReply.php";
-require_once "../app/Models/TicketStatusHistory.php";
-require_once "../app/Models/Attachment.php";
+require_once ROOT_PATH . "/app/Models/TicketReply.php";
+require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
+require_once ROOT_PATH . "/app/Models/Attachment.php";
 
 class ReportController extends Controller
 {

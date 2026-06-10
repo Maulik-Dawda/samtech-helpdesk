@@ -1,8 +1,8 @@
 <?php
 
-require_once "../app/Core/Controller.php";
-require_once "../app/Models/User.php";
-require_once "../app/Models/Permission.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/Permission.php";
 
 class AdminPermissionController extends Controller
 {

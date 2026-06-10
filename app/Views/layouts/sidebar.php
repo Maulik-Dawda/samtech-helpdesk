@@ -1,5 +1,5 @@
 <?php
-require_once "../app/Helpers/PermissionHelper.php";
+require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

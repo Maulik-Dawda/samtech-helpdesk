@@ -1,10 +1,10 @@
 <?php
 
-require_once "../app/Core/Controller.php";
-require_once "../app/Models/AuthenticatorSecret.php";
-require_once "../app/Models/User.php";
-require_once "../app/Models/MfaRecoveryOtp.php";
-require_once "../app/Models/ActivityLog.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/AuthenticatorSecret.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/MfaRecoveryOtp.php";
+require_once ROOT_PATH . "/app/Models/ActivityLog.php";
 
 use RobThree\Auth\TwoFactorAuth;
 use RobThree\Auth\Providers\Qr\IQRCodeProvider;
@@ -242,7 +242,7 @@ class MfaController extends Controller
             exit;
         }
 
-        require_once "../app/Models/User.php";
+        require_once ROOT_PATH . "/app/Models/User.php";
 
         $userModel = new User();
         $user = $userModel->findByEmail($email);

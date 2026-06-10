@@ -1,6 +1,6 @@
 <?php
 
-require_once "../app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
 
 class HomeController extends Controller
 {

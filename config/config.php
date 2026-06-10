@@ -20,7 +20,9 @@ define('DB_PASS', '');
 |--------------------------------------------------------------------------
 */
 
-define('BASE_URL', 'http://localhost/samtech-helpdesk/public');
+define('ROOT_PATH', dirname(__DIR__));
+
+define('BASE_URL', 'https://support.samtech.ae');
 
 define('APP_NAME', 'Samtech Helpdesk');
 

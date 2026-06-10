@@ -1,4 +1,4 @@
-<?php require_once "../app/Views/layouts/auth-header.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/auth-header.php"; ?>
 
 <div class="container min-vh-100 d-flex align-items-center justify-content-center">
     <div class="auth-card w-100 border-top border-4" style="max-width: 460px; border-color:#b1e96f !important;">
@@ -52,4 +52,4 @@
     </div>
 </div>
 
-<?php require_once "../app/Views/layouts/auth-footer.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/auth-footer.php"; ?>

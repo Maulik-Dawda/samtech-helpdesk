@@ -1,13 +1,13 @@
 <?php
 
-require_once "../app/Core/Controller.php";
-require_once "../app/Models/User.php";
-require_once "../app/Models/LoginAttempt.php";
-require_once "../app/Models/AuthenticatorSecret.php";
-require_once "../app/Models/LoginOtp.php";
-require_once "../app/Services/MailService.php";
-require_once "../app/Models/PasswordResetOtp.php";
-require_once "../app/Models/ActivityLog.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/LoginAttempt.php";
+require_once ROOT_PATH . "/app/Models/AuthenticatorSecret.php";
+require_once ROOT_PATH . "/app/Models/LoginOtp.php";
+require_once ROOT_PATH . "/app/Services/MailService.php";
+require_once ROOT_PATH . "/app/Models/PasswordResetOtp.php";
+require_once ROOT_PATH . "/app/Models/ActivityLog.php";
 
 class AuthController extends Controller
 {

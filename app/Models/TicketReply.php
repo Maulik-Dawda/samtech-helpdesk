@@ -1,6 +1,6 @@
 <?php
 
-require_once "../app/Core/Model.php";
+require_once ROOT_PATH . "/app/Core/Model.php";
 
 class TicketReply extends Model
 {

@@ -1,6 +1,6 @@
 <?php
 
-require_once "../app/Models/Permission.php";
+require_once ROOT_PATH . "/app/Models/Permission.php";
 
 class PermissionHelper
 {
@@ -39,7 +39,7 @@ class PermissionHelper
 
             http_response_code(403);
 
-            require_once "../app/Views/errors/403.php";
+            require_once ROOT_PATH . "/app/Views/errors/403.php";
 
             exit;
         }

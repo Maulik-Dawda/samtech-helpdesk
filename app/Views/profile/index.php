@@ -1,4 +1,4 @@
-<?php require_once "../app/Views/layouts/header.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
 
 <style>
 
@@ -288,4 +288,4 @@ if (empty($initials)) {
 
 </div>
 
-<?php require_once "../app/Views/layouts/footer.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

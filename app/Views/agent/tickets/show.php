@@ -1,4 +1,4 @@
-<?php require_once "../app/Views/layouts/header.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
 
 <?php
 
@@ -508,4 +508,4 @@ $currentStatusClass = $statusClasses[$ticket['status']] ?? 'bg-secondary';
     });
 </script>
 
-<?php require_once "../app/Views/layouts/footer.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

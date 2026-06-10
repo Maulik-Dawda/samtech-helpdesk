@@ -1,4 +1,4 @@
-<?php require_once "../app/Views/layouts/header.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
 
 <?php
 
@@ -416,4 +416,4 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
 
 </div>
 
-<?php require_once "../app/Views/layouts/footer.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

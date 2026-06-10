@@ -16,7 +16,7 @@ class AuthMiddleware
         if ($role !== null && $_SESSION['auth_user_role'] !== $role) {
             http_response_code(403);
 
-            require_once "../app/Views/errors/403.php";
+            require_once ROOT_PATH . "/app/Views/errors/403.php";
 
             exit;
         }

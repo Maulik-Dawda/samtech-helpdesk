@@ -1,10 +1,10 @@
 <?php
 
-require_once "../app/Core/Controller.php";
-require_once "../app/Models/Ticket.php";
-require_once "../app/Models/User.php";
-require_once "../app/Models/Organization.php";
-require_once "../app/Models/ActivityLog.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/Ticket.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/Organization.php";
+require_once ROOT_PATH . "/app/Models/ActivityLog.php";
 
 class DashboardController extends Controller
 {

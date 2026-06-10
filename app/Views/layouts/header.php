@@ -103,7 +103,7 @@
 
 <body>
 
-<?php require_once "../app/Views/layouts/sidebar.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/sidebar.php"; ?>
 
 <div class="main-content">
 

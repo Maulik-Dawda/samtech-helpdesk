@@ -48,7 +48,7 @@ class Router
 
                 [$controllerName, $methodName] = explode('@', $action);
 
-                require_once "../app/Controllers/" . $controllerName . ".php";
+                require_once ROOT_PATH . "/app/Controllers/" . $controllerName . ".php";
 
                 $controller = new $controllerName();
 

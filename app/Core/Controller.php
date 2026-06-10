@@ -6,6 +6,6 @@ class Controller
     {
         extract($data);
 
-        require_once "../app/Views/" . $view . ".php";
+        require_once ROOT_PATH . "/app/Views/" . $view . ".php";
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-require_once "../app/Core/Controller.php";
-require_once "../app/Models/ActivityLog.php";
-require_once "../app/Models/User.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/ActivityLog.php";
+require_once ROOT_PATH . "/app/Models/User.php";
 
 class ActivityLogController extends Controller
 {

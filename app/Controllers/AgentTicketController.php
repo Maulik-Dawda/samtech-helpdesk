@@ -1,11 +1,11 @@
 <?php
 
-require_once "../app/Core/Controller.php";
-require_once "../app/Models/Ticket.php";
-require_once "../app/Models/TicketReply.php";
-require_once "../app/Models/TicketStatusHistory.php";
-require_once "../app/Models/Attachment.php";
-require_once "../app/Services/UploadService.php";
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/Ticket.php";
+require_once ROOT_PATH . "/app/Models/TicketReply.php";
+require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
+require_once ROOT_PATH . "/app/Models/Attachment.php";
+require_once ROOT_PATH . "/app/Services/UploadService.php";
 
 class AgentTicketController extends Controller
 {
