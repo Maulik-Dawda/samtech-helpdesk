@@ -7,8 +7,9 @@ require_once ROOT_PATH . "/app/Models/MfaRecoveryOtp.php";
 require_once ROOT_PATH . "/app/Models/ActivityLog.php";
 
 use RobThree\Auth\TwoFactorAuth;
+use RobThree\Auth\Providers\Qr\IQRCodeProvider;
 
-class DummyQrProvider
+class DummyQrProvider implements IQRCodeProvider
 {
     public function getQRCodeImage(string $qrText, int $size): string
     {
@@ -20,7 +21,6 @@ class DummyQrProvider
         return 'image/png';
     }
 }
-
 class MfaController extends Controller
 {
     private function startSession()
