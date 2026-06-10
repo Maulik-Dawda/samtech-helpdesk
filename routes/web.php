@@ -1,6 +1,6 @@
 <?php
 
-$router->get('/', 'HomeController@index');
+$router->get('/', 'AuthController@userLogin');
 
 $router->get('/user-login', 'AuthController@userLogin');
 $router->post('/user-login', 'AuthController@processUserLogin');
