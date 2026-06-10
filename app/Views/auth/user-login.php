@@ -28,17 +28,18 @@ $hasError = isset($_SESSION['error']);
     .auth-card {
         position: relative;
         z-index: 2;
-        background: rgba(255,255,255,.94);
+        background: rgba(255, 255, 255, .94);
         border-radius: 20px;
         padding: 26px 30px;
-        box-shadow: 0 18px 55px rgba(15,23,42,.10);
+        box-shadow: 0 18px 55px rgba(15, 23, 42, .10);
         border-top: 4px solid #6cb33f;
         backdrop-filter: blur(14px);
     }
 
     .auth-logo {
-        height: 58px;
-        max-width: 220px;
+        height: 85px;
+        max-width: 320px;
+        width: auto;
         object-fit: contain;
     }
 
@@ -82,7 +83,7 @@ $hasError = isset($_SESSION['error']);
     .auth-card .form-control:focus,
     .auth-card .form-select:focus {
         border-color: #6cb33f;
-        box-shadow: 0 0 0 .18rem rgba(108,179,63,.14);
+        box-shadow: 0 0 0 .18rem rgba(108, 179, 63, .14);
     }
 
     .custom-select {
@@ -104,7 +105,7 @@ $hasError = isset($_SESSION['error']);
 
     .custom-select-display.active {
         border-color: #6cb33f;
-        box-shadow: 0 0 0 .18rem rgba(108,179,63,.14);
+        box-shadow: 0 0 0 .18rem rgba(108, 179, 63, .14);
     }
 
     .select-arrow {
@@ -123,7 +124,7 @@ $hasError = isset($_SESSION['error']);
         right: 0;
         background: #fff;
         border-radius: 14px;
-        box-shadow: 0 18px 35px rgba(15,23,42,.14);
+        box-shadow: 0 18px 35px rgba(15, 23, 42, .14);
         border: 1px solid #e5e7eb;
         padding: 8px;
         display: none;
@@ -177,7 +178,7 @@ $hasError = isset($_SESSION['error']);
         border: 0;
         color: #fff;
         font-weight: 800;
-        box-shadow: 0 12px 22px rgba(67,160,38,.22);
+        box-shadow: 0 12px 22px rgba(67, 160, 38, .22);
     }
 
     .btn-login:hover {
@@ -190,30 +191,72 @@ $hasError = isset($_SESSION['error']);
     }
 
     @keyframes shake {
-        0% { transform: translateX(0); }
-        20% { transform: translateX(-8px); }
-        40% { transform: translateX(8px); }
-        60% { transform: translateX(-6px); }
-        80% { transform: translateX(6px); }
-        100% { transform: translateX(0); }
+        0% {
+            transform: translateX(0);
+        }
+
+        20% {
+            transform: translateX(-8px);
+        }
+
+        40% {
+            transform: translateX(8px);
+        }
+
+        60% {
+            transform: translateX(-6px);
+        }
+
+        80% {
+            transform: translateX(6px);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
     }
 
     .security-icon {
         position: absolute;
-        color: rgba(76,175,80,.13);
+        color: rgba(76, 175, 80, .13);
         font-size: 34px;
         z-index: 1;
         animation: floatIcon 7s ease-in-out infinite;
     }
 
-    .icon-1 { left: 13%; top: 28%; }
-    .icon-2 { right: 13%; top: 52%; animation-delay: 1.2s; }
-    .icon-3 { left: 22%; bottom: 17%; animation-delay: 2s; }
-    .icon-4 { right: 24%; top: 13%; animation-delay: .6s; }
+    .icon-1 {
+        left: 13%;
+        top: 28%;
+    }
+
+    .icon-2 {
+        right: 13%;
+        top: 52%;
+        animation-delay: 1.2s;
+    }
+
+    .icon-3 {
+        left: 22%;
+        bottom: 17%;
+        animation-delay: 2s;
+    }
+
+    .icon-4 {
+        right: 24%;
+        top: 13%;
+        animation-delay: .6s;
+    }
 
     @keyframes floatIcon {
-        0%,100% { transform: translateY(0); }
-        50% { transform: translateY(-14px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-14px);
+        }
     }
 
     .footer-text {
@@ -258,8 +301,10 @@ $hasError = isset($_SESSION['error']);
             padding: 22px 28px;
         }
 
-        .auth-logo {
-            height: 48px;
+        @media(max-height: 760px) {
+            .auth-logo {
+                height: 70px;
+            }
         }
 
         .mb-4 {
@@ -283,8 +328,7 @@ $hasError = isset($_SESSION['error']);
                 <img
                     src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
                     alt="Samtech Helpdesk"
-                    class="auth-logo mb-2"
-                >
+                    class="auth-logo mb-2">
 
                 <p class="login-subtitle mb-0">
                     User / Agent Login
@@ -374,8 +418,7 @@ $hasError = isset($_SESSION['error']);
                             placeholder="Enter your email address"
                             autocomplete="email"
                             autofocus
-                            required
-                        >
+                            required>
                     </div>
                 </div>
 
@@ -392,8 +435,7 @@ $hasError = isset($_SESSION['error']);
                             class="form-control"
                             placeholder="Enter your password"
                             autocomplete="current-password"
-                            required
-                        >
+                            required>
 
                         <span class="password-toggle" onclick="togglePassword()">
                             <i class="bi bi-eye" id="passwordIcon"></i>
@@ -425,57 +467,56 @@ $hasError = isset($_SESSION['error']);
 </div>
 
 <script>
-function togglePassword()
-{
-    const password = document.getElementById('password');
-    const icon = document.getElementById('passwordIcon');
+    function togglePassword() {
+        const password = document.getElementById('password');
+        const icon = document.getElementById('passwordIcon');
 
-    if (password.type === 'password') {
-        password.type = 'text';
-        icon.classList.remove('bi-eye');
-        icon.classList.add('bi-eye-slash');
-    } else {
-        password.type = 'password';
-        icon.classList.remove('bi-eye-slash');
-        icon.classList.add('bi-eye');
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
     }
-}
 
-document.addEventListener('DOMContentLoaded', function () {
-    const select = document.getElementById('loginTypeSelect');
-    const display = document.getElementById('loginTypeDisplay');
-    const options = document.getElementById('loginTypeOptions');
-    const valueInput = document.getElementById('loginTypeValue');
-    const optionItems = document.querySelectorAll('.custom-option');
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('loginTypeSelect');
+        const display = document.getElementById('loginTypeDisplay');
+        const options = document.getElementById('loginTypeOptions');
+        const valueInput = document.getElementById('loginTypeValue');
+        const optionItems = document.querySelectorAll('.custom-option');
 
-    display.addEventListener('click', function () {
-        options.classList.toggle('show');
-        display.classList.toggle('active');
-    });
+        display.addEventListener('click', function() {
+            options.classList.toggle('show');
+            display.classList.toggle('active');
+        });
 
-    optionItems.forEach(function (item) {
-        item.addEventListener('click', function () {
-            const value = this.dataset.value;
-            const label = this.dataset.label;
+        optionItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                const value = this.dataset.value;
+                const label = this.dataset.label;
 
-            valueInput.value = value;
-            display.textContent = label;
+                valueInput.value = value;
+                display.textContent = label;
 
-            optionItems.forEach(option => option.classList.remove('selected'));
-            this.classList.add('selected');
+                optionItems.forEach(option => option.classList.remove('selected'));
+                this.classList.add('selected');
 
-            options.classList.remove('show');
-            display.classList.remove('active');
+                options.classList.remove('show');
+                display.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!select.contains(event.target)) {
+                options.classList.remove('show');
+                display.classList.remove('active');
+            }
         });
     });
-
-    document.addEventListener('click', function (event) {
-        if (!select.contains(event.target)) {
-            options.classList.remove('show');
-            display.classList.remove('active');
-        }
-    });
-});
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/auth-footer.php"; ?>
