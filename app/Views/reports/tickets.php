@@ -219,7 +219,7 @@
             <div class="table-responsive">
 
                 <div id="ticketReportTable">
-                    <?php require "../app/Views/reports/partials/ticket-table.php"; ?>
+                    <?php require ROOT_PATH . "/app/Views/reports/partials/ticket-table.php"; ?>
                 </div>
 
             </div>
