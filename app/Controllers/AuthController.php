@@ -331,8 +331,17 @@ class AuthController extends Controller
         $_SESSION['user_login_otp_user_id'] = $user['id'];
         $_SESSION['user_login_otp_email'] = $user['email'];
 
-        // Development mode only
-        $_SESSION['success'] = "Development OTP: " . $otp;
+        $mailSent = MailService::sendLoginOtp($user['email'], $otp);
+
+        if (!$mailSent) {
+            $_SESSION['error'] = "Unable to send OTP email. Please try again later.";
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
+
+        $this->logActivity($user['id'], 'Login OTP sent via email');
+
+        $_SESSION['success'] = "Verification code has been sent to your registered email address.";
     }
 
     public function forgotPasswordPage()
@@ -379,8 +388,17 @@ class AuthController extends Controller
         $_SESSION['forgot_password_user_id'] = $user['id'];
         $_SESSION['forgot_password_email'] = $user['email'];
 
-        // Development mode only. Later we will send this by email.
-        $_SESSION['success'] = "Development OTP: " . $otp;
+        $mailSent = MailService::sendForgotPasswordOtp($user['email'], $otp);
+
+        if (!$mailSent) {
+            $_SESSION['error'] = "Unable to send password reset OTP. Please try again later.";
+            header("Location: " . BASE_URL . "/forgot-password");
+            exit;
+        }
+
+        $this->logActivity($user['id'], 'Password reset OTP sent via email');
+
+        $_SESSION['success'] = "Password reset OTP has been sent to your registered email address.";
 
         header("Location: " . BASE_URL . "/forgot-password-verify");
         exit;
@@ -497,6 +515,18 @@ class AuthController extends Controller
         }
 
         $this->logActivity($userId, 'Password reset completed');
+
+        $user = $userModel->findById($userId);
+
+        MailService::send(
+            $user['email'],
+            'Password Changed Successfully',
+            '
+    <h2>Samtech Helpdesk</h2>
+    <p>Your account password has been changed successfully.</p>
+    <p>If you did not perform this action, contact support immediately.</p>
+    '
+        );
 
         unset($_SESSION['forgot_password_user_id']);
         unset($_SESSION['forgot_password_email']);
