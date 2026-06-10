@@ -7,9 +7,8 @@ require_once ROOT_PATH . "/app/Models/MfaRecoveryOtp.php";
 require_once ROOT_PATH . "/app/Models/ActivityLog.php";
 
 use RobThree\Auth\TwoFactorAuth;
-use RobThree\Auth\Providers\Qr\IQRCodeProvider;
 
-class DummyQrProvider implements IQRCodeProvider
+class DummyQrProvider
 {
     public function getQRCodeImage(string $qrText, int $size): string
     {
@@ -41,9 +40,7 @@ class MfaController extends Controller
 
     public function setup()
     {
-
         $this->redirectIfAuthenticated();
-
         $this->startSession();
 
         if (!isset($_SESSION['mfa_setup_user_id'])) {
@@ -73,7 +70,6 @@ class MfaController extends Controller
     public function verifySetup()
     {
         Csrf::verify();
-
         $this->startSession();
 
         if (!isset($_SESSION['mfa_setup_user_id'])) {
@@ -116,12 +112,16 @@ class MfaController extends Controller
         $_SESSION['auth_user_name'] = $_SESSION['mfa_setup_name'];
         $_SESSION['auth_user_email'] = $_SESSION['mfa_setup_email'];
         $_SESSION['auth_user_role'] = $_SESSION['mfa_setup_role'];
+        $_SESSION['organization_id'] = $_SESSION['mfa_setup_organization_id'] ?? null;
+        $_SESSION['is_organization_admin'] = $_SESSION['mfa_setup_is_organization_admin'] ?? 0;
         $_SESSION['last_activity'] = time();
 
         unset($_SESSION['mfa_setup_user_id']);
         unset($_SESSION['mfa_setup_name']);
         unset($_SESSION['mfa_setup_email']);
         unset($_SESSION['mfa_setup_role']);
+        unset($_SESSION['mfa_setup_organization_id']);
+        unset($_SESSION['mfa_setup_is_organization_admin']);
 
         $this->redirectByRole($_SESSION['auth_user_role']);
     }
@@ -142,7 +142,6 @@ class MfaController extends Controller
     public function verifyLogin()
     {
         Csrf::verify();
-
         $this->startSession();
 
         if (!isset($_SESSION['mfa_pending_user_id'])) {
@@ -182,107 +181,33 @@ class MfaController extends Controller
         $_SESSION['auth_user_name'] = $_SESSION['mfa_pending_name'];
         $_SESSION['auth_user_email'] = $_SESSION['mfa_pending_email'];
         $_SESSION['auth_user_role'] = $_SESSION['mfa_pending_role'];
+        $_SESSION['organization_id'] = $_SESSION['mfa_pending_organization_id'] ?? null;
+        $_SESSION['is_organization_admin'] = $_SESSION['mfa_pending_is_organization_admin'] ?? 0;
         $_SESSION['last_activity'] = time();
 
         unset($_SESSION['mfa_pending_user_id']);
         unset($_SESSION['mfa_pending_name']);
         unset($_SESSION['mfa_pending_email']);
         unset($_SESSION['mfa_pending_role']);
-        
+        unset($_SESSION['mfa_pending_organization_id']);
+        unset($_SESSION['mfa_pending_is_organization_admin']);
+
         $this->logActivity($userId, 'MFA login verified');
+
         $this->redirectByRole($_SESSION['auth_user_role']);
-    }
-
-    private function redirectByRole($role)
-    {
-        if ($role === 'admin') {
-            header("Location: " . BASE_URL . "/admin-dashboard");
-            exit;
-        }
-
-        if ($role === 'agent') {
-            header("Location: " . BASE_URL . "/agent-dashboard");
-            exit;
-        }
-
-        header("Location: " . BASE_URL . "/user-dashboard");
-        exit;
-    }
-
-    private function redirectIfAuthenticated()
-    {
-        $this->startSession();
-
-        if (isset($_SESSION['auth_user_id'])) {
-            $this->redirectByRole($_SESSION['auth_user_role']);
-        }
     }
 
     public function recoveryPage()
     {
         $this->redirectIfAuthenticated();
-
         $this->startSession();
 
         $this->view('auth/mfa-recovery');
     }
 
-    public function processRecovery()
-    {
-        Csrf::verify();
-
-        $this->startSession();
-
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || empty($password)) {
-            $_SESSION['error'] = "Please enter valid email and password.";
-            header("Location: " . BASE_URL . "/mfa-recovery");
-            exit;
-        }
-
-        require_once ROOT_PATH . "/app/Models/User.php";
-
-        $userModel = new User();
-        $user = $userModel->findByEmail($email);
-
-        if (!$user || !in_array($user['role'], ['agent', 'admin'])) {
-            $_SESSION['error'] = "Invalid account details.";
-            header("Location: " . BASE_URL . "/mfa-recovery");
-            exit;
-        }
-
-        if (!password_verify($password, $user['password'])) {
-            $_SESSION['error'] = "Invalid account details.";
-            header("Location: " . BASE_URL . "/mfa-recovery");
-            exit;
-        }
-
-        $tfa = $this->tfa();
-        $newSecret = $tfa->createSecret();
-
-        $secretModel = new AuthenticatorSecret();
-        $existingSecret = $secretModel->findByUserId($user['id']);
-
-        if ($existingSecret) {
-            $secretModel->resetMfa($user['id'], $newSecret);
-        } else {
-            $secretModel->createSecret($user['id'], $newSecret);
-        }
-
-        $_SESSION['mfa_setup_user_id'] = $user['id'];
-        $_SESSION['mfa_setup_name'] = $user['full_name'];
-        $_SESSION['mfa_setup_email'] = $user['email'];
-        $_SESSION['mfa_setup_role'] = $user['role'];
-
-        header("Location: " . BASE_URL . "/mfa-setup");
-        exit;
-    }
     public function sendRecoveryOtp()
     {
         Csrf::verify();
-
         $this->startSession();
 
         $email = trim($_POST['email'] ?? '');
@@ -319,8 +244,9 @@ class MfaController extends Controller
         $_SESSION['mfa_recovery_name'] = $user['full_name'];
         $_SESSION['mfa_recovery_email'] = $user['email'];
         $_SESSION['mfa_recovery_role'] = $user['role'];
+        $_SESSION['mfa_recovery_organization_id'] = $user['organization_id'] ?? null;
+        $_SESSION['mfa_recovery_is_organization_admin'] = $user['is_organization_admin'] ?? 0;
 
-        // Temporary for local testing. Later this will be sent by email.
         $_SESSION['success'] = "Recovery OTP is: " . $otp;
 
         $this->logActivity($user['id'], 'MFA recovery OTP requested');
@@ -330,23 +256,21 @@ class MfaController extends Controller
     }
 
     public function recoveryVerifyPage()
-{
-    $this->redirectIfAuthenticated();
+    {
+        $this->redirectIfAuthenticated();
+        $this->startSession();
 
-    $this->startSession();
+        if (!isset($_SESSION['mfa_recovery_user_id'])) {
+            header("Location: " . BASE_URL . "/mfa-recovery");
+            exit;
+        }
 
-    if (!isset($_SESSION['mfa_recovery_user_id'])) {
-        header("Location: " . BASE_URL . "/mfa-recovery");
-        exit;
+        $this->view('auth/mfa-recovery-verify');
     }
-
-    $this->view('auth/mfa-recovery-verify');
-}
 
     public function verifyRecoveryOtp()
     {
         Csrf::verify();
-
         $this->startSession();
 
         if (!isset($_SESSION['mfa_recovery_user_id'])) {
@@ -391,11 +315,15 @@ class MfaController extends Controller
         $_SESSION['mfa_setup_name'] = $_SESSION['mfa_recovery_name'];
         $_SESSION['mfa_setup_email'] = $_SESSION['mfa_recovery_email'];
         $_SESSION['mfa_setup_role'] = $_SESSION['mfa_recovery_role'];
+        $_SESSION['mfa_setup_organization_id'] = $_SESSION['mfa_recovery_organization_id'] ?? null;
+        $_SESSION['mfa_setup_is_organization_admin'] = $_SESSION['mfa_recovery_is_organization_admin'] ?? 0;
 
         unset($_SESSION['mfa_recovery_user_id']);
         unset($_SESSION['mfa_recovery_name']);
         unset($_SESSION['mfa_recovery_email']);
         unset($_SESSION['mfa_recovery_role']);
+        unset($_SESSION['mfa_recovery_organization_id']);
+        unset($_SESSION['mfa_recovery_is_organization_admin']);
 
         $this->logActivity($userId, 'MFA secret reset completed');
 
@@ -403,25 +331,50 @@ class MfaController extends Controller
         exit;
     }
 
+    private function redirectByRole($role)
+    {
+        if ($role === 'admin') {
+            header("Location: " . BASE_URL . "/admin-dashboard");
+            exit;
+        }
+
+        if ($role === 'agent') {
+            header("Location: " . BASE_URL . "/agent-dashboard");
+            exit;
+        }
+
+        header("Location: " . BASE_URL . "/user-dashboard");
+        exit;
+    }
+
+    private function redirectIfAuthenticated()
+    {
+        $this->startSession();
+
+        if (isset($_SESSION['auth_user_id'])) {
+            $this->redirectByRole($_SESSION['auth_user_role']);
+        }
+    }
+
     private function getIpAddress()
-{
-    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-}
+    {
+        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    }
 
-private function getUserAgent()
-{
-    return $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
-}
+    private function getUserAgent()
+    {
+        return $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+    }
 
-private function logActivity($userId, $action)
-{
-    $logModel = new ActivityLog();
+    private function logActivity($userId, $action)
+    {
+        $logModel = new ActivityLog();
 
-    $logModel->create(
-        $userId,
-        $action,
-        $this->getIpAddress(),
-        $this->getUserAgent()
-    );
-}
+        $logModel->create(
+            $userId,
+            $action,
+            $this->getIpAddress(),
+            $this->getUserAgent()
+        );
+    }
 }
