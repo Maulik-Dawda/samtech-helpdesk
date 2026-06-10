@@ -9,9 +9,9 @@ date_default_timezone_set('Asia/Kolkata');
 */
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'helpdesk_system');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', 'samvrudd_helpdesk_system');
+define('DB_USER', 'samvrudd_helpdesk_developer');
+define('DB_PASS', '^huYovuXmO)R)@r7');
 
 
 /*
