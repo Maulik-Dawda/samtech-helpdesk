@@ -247,7 +247,20 @@ class MfaController extends Controller
         $_SESSION['mfa_recovery_organization_id'] = $user['organization_id'] ?? null;
         $_SESSION['mfa_recovery_is_organization_admin'] = $user['is_organization_admin'] ?? 0;
 
-        $_SESSION['success'] = "Recovery OTP is: " . $otp;
+        $mailSent = MailService::sendMfaRecoveryOtp(
+            $user['email'],
+            $otp
+        );
+
+        if (!$mailSent) {
+            $_SESSION['error'] = "Unable to send recovery OTP email.";
+
+            header("Location: " . BASE_URL . "/mfa-recovery");
+            exit;
+        }
+
+        $_SESSION['success'] =
+            "Recovery OTP has been sent to your registered email address.";
 
         $this->logActivity($user['id'], 'MFA recovery OTP requested');
 
