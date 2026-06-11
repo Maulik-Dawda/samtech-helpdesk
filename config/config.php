@@ -37,7 +37,7 @@ define('SESSION_TIMEOUT', 1800); // 30 Minutes
 |--------------------------------------------------------------------------
 */
 
-define('MAIL_HOST', 'smtp.office365.com');
+define('MAIL_HOST', 'smtp-mail.outlook.com');
 
 define('MAIL_PORT', 587);
 
