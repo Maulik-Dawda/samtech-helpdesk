@@ -26,7 +26,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= BASE_URL ?>/forgot-password">
+        <form method="POST" action="<?= BASE_URL ?>/forgot-password" onsubmit="showSamtechLoader('Sending verification code...')">
             <?= Csrf::field(); ?>
 
             <div class="mb-3">

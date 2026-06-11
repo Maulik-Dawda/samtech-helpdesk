@@ -267,7 +267,7 @@ $hasError = isset($_SESSION['error']);
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>/admin-login">
+            <form method="POST" action="<?= BASE_URL ?>/admin-login" onsubmit="showSamtechLoader('Verifying admin access...')">
 
                 <?= Csrf::field(); ?>
 

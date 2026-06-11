@@ -26,7 +26,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= BASE_URL ?>/reset-password">
+        <form method="POST" action="<?= BASE_URL ?>/reset-password" onsubmit="showSamtechLoader('Updating password...')">
 
             <?= Csrf::field(); ?>
 

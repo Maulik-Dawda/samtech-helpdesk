@@ -17,7 +17,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= BASE_URL ?>/mfa-verify">
+        <form method="POST" action="<?= BASE_URL ?>/mfa-verify" onsubmit="showSamtechLoader('Verifying authenticator code...')">
             <?= Csrf::field(); ?>
 
             <div class="mb-3">

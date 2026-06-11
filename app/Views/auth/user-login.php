@@ -365,7 +365,7 @@ $hasError = isset($_SESSION['error']);
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>/user-login">
+            <form method="POST" action="<?= BASE_URL ?>/user-login" onsubmit="showSamtechLoader('Verifying login...')">
 
                 <?= Csrf::field(); ?>
 

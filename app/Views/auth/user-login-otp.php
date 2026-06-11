@@ -24,7 +24,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= BASE_URL ?>/user-login-otp">
+        <form method="POST" action="<?= BASE_URL ?>/user-login-otp" onsubmit="showSamtechLoader('Verifying OTP...')">
             <?= Csrf::field(); ?>
 
             <div class="mb-3">
