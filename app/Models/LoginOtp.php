@@ -50,4 +50,20 @@ class LoginOtp extends Model
 
         return $stmt->execute([$otpId]);
     }
+    public function findValidUnusedByUserId($userId)
+    {
+        $stmt = $this->db->prepare("
+        SELECT *
+        FROM login_otps
+        WHERE user_id = ?
+          AND is_used = 0
+          AND expires_at > NOW()
+        ORDER BY id DESC
+        LIMIT 1
+    ");
+
+        $stmt->execute([$userId]);
+
+        return $stmt->fetch();
+    }
 }

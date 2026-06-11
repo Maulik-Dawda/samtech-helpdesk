@@ -313,6 +313,20 @@ class AuthController extends Controller
     {
         $this->startSession();
 
+        $otpModel = new LoginOtp();
+
+        $existingOtp = $otpModel->findValidUnusedByUserId($user['id']);
+
+        $_SESSION['user_login_otp_user_id'] = $user['id'];
+        $_SESSION['user_login_otp_email'] = $user['email'];
+
+        if ($existingOtp) {
+            $_SESSION['success'] =
+                "A verification code has already been sent to your registered email address. Please use the same code or wait until it expires.";
+
+            return;
+        }
+
         $otp = random_int(100000, 999999);
 
         $expiresAt = date(
@@ -320,18 +334,16 @@ class AuthController extends Controller
             strtotime('+' . OTP_EXPIRY_MINUTES . ' minutes')
         );
 
-        $otpModel = new LoginOtp();
-
         $otpModel->createOtp(
             $user['id'],
             $otp,
             $expiresAt
         );
 
-        $_SESSION['user_login_otp_user_id'] = $user['id'];
-        $_SESSION['user_login_otp_email'] = $user['email'];
-
-        $mailSent = MailService::sendLoginOtp($user['email'], $otp);
+        $mailSent = MailService::sendLoginOtp(
+            $user['email'],
+            $otp
+        );
 
         if (!$mailSent) {
             $_SESSION['error'] = "Unable to send OTP email. Please try again later.";
@@ -341,7 +353,8 @@ class AuthController extends Controller
 
         $this->logActivity($user['id'], 'Login OTP sent via email');
 
-        $_SESSION['success'] = "Verification code has been sent to your registered email address.";
+        $_SESSION['success'] =
+            "Verification code has been sent to your registered email address.";
     }
 
     public function forgotPasswordPage()
@@ -370,6 +383,21 @@ class AuthController extends Controller
             $this->redirectWithError('/forgot-password', 'No active account found with this email.');
         }
 
+        $otpModel = new PasswordResetOtp();
+
+        $_SESSION['forgot_password_user_id'] = $user['id'];
+        $_SESSION['forgot_password_email'] = $user['email'];
+
+        $existingOtp = $otpModel->findValidUnusedByUserId($user['id']);
+
+        if ($existingOtp) {
+            $_SESSION['success'] =
+                "A password reset OTP has already been sent to your registered email address. Please use the same code or wait until it expires.";
+
+            header("Location: " . BASE_URL . "/forgot-password-verify");
+            exit;
+        }
+
         $otp = random_int(100000, 999999);
 
         $expiresAt = date(
@@ -377,16 +405,11 @@ class AuthController extends Controller
             strtotime('+' . OTP_EXPIRY_MINUTES . ' minutes')
         );
 
-        $otpModel = new PasswordResetOtp();
-
         $otpModel->createOtp(
             $user['id'],
             $otp,
             $expiresAt
         );
-
-        $_SESSION['forgot_password_user_id'] = $user['id'];
-        $_SESSION['forgot_password_email'] = $user['email'];
 
         $mailSent = MailService::sendForgotPasswordOtp($user['email'], $otp);
 
@@ -398,7 +421,8 @@ class AuthController extends Controller
 
         $this->logActivity($user['id'], 'Password reset OTP sent via email');
 
-        $_SESSION['success'] = "Password reset OTP has been sent to your registered email address.";
+        $_SESSION['success'] =
+            "Password reset OTP has been sent to your registered email address.";
 
         header("Location: " . BASE_URL . "/forgot-password-verify");
         exit;
