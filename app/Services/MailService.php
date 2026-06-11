@@ -10,6 +10,8 @@ class MailService
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();
+        $mail->SMTPDebug = 3;
+        $mail->Debugoutput = 'html';
 
         $mail->Host = MAIL_HOST;
         $mail->SMTPAuth = true;
