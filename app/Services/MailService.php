@@ -52,9 +52,10 @@ class MailService
 
             return $mail->send();
         } catch (Exception $e) {
-            error_log("Mail Error: " . $e->getMessage());
-
-            return false;
+            die('<pre>' .
+                'PHPMailer Error: ' . $mail->ErrorInfo . PHP_EOL .
+                'Exception: ' . $e->getMessage() .
+                '</pre>');
         }
     }
 
