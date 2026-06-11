@@ -28,16 +28,32 @@ class ActivityLogController extends Controller
             'date_to' => $_GET['date_to'] ?? ''
         ];
 
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
         $activityModel = new ActivityLog();
         $userModel = new User();
 
-        $logs = $activityModel->getFilteredLogs($filters);
+        $totalRecords = $activityModel->countFilteredLogs($filters);
+        $totalPages = max(1, ceil($totalRecords / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $logs = $activityModel->getFilteredLogs($filters, $perPage, $offset);
         $users = $userModel->getAllUsersForAdmin();
 
         $this->view('admin/activity-logs/index', [
             'logs' => $logs,
             'users' => $users,
-            'filters' => $filters
+            'filters' => $filters,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages
         ]);
     }
 }
