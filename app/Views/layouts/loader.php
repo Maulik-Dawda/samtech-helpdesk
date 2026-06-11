@@ -96,7 +96,7 @@
 
         <div class="samtech-loader-circle">
             <img
-                src="<?= BASE_URL ?>/assets/images/samtech-icon.png"
+                src="<?php echo BASE_URL; ?>/assets/images/samtech-icon.png?v=<?= time(); ?>"
                 alt="Samtech">
         </div>
 
@@ -112,80 +112,78 @@
 </div>
 
 <script>
-function showSamtechLoader(message = 'Processing your request...')
-{
-    const loader = document.getElementById('samtechLoaderOverlay');
-    const text = document.getElementById('samtechLoaderText');
+    function showSamtechLoader(message = 'Processing your request...') {
+        const loader = document.getElementById('samtechLoaderOverlay');
+        const text = document.getElementById('samtechLoaderText');
 
-    if (text) {
-        text.textContent = message;
+        if (text) {
+            text.textContent = message;
+        }
+
+        if (loader) {
+            loader.classList.add('show');
+        }
     }
 
-    if (loader) {
-        loader.classList.add('show');
+    function hideSamtechLoader() {
+        const loader = document.getElementById('samtechLoaderOverlay');
+
+        if (loader) {
+            loader.classList.remove('show');
+        }
     }
-}
 
-function hideSamtechLoader()
-{
-    const loader = document.getElementById('samtechLoaderOverlay');
+    document.addEventListener('DOMContentLoaded', function() {
 
-    if (loader) {
-        loader.classList.remove('show');
-    }
-}
+        document.querySelectorAll('form').forEach(function(form) {
 
-document.addEventListener('DOMContentLoaded', function () {
+            form.addEventListener('submit', function() {
 
-    document.querySelectorAll('form').forEach(function(form) {
+                let message = 'Processing your request...';
 
-        form.addEventListener('submit', function () {
+                const action = form.getAttribute('action') || '';
 
-            let message = 'Processing your request...';
+                if (action.includes('login')) {
+                    message = 'Verifying credentials...';
+                }
 
-            const action = form.getAttribute('action') || '';
+                if (action.includes('otp')) {
+                    message = 'Verifying OTP...';
+                }
 
-            if (action.includes('login')) {
-                message = 'Verifying credentials...';
-            }
+                if (action.includes('forgot-password')) {
+                    message = 'Sending verification code...';
+                }
 
-            if (action.includes('otp')) {
-                message = 'Verifying OTP...';
-            }
+                if (action.includes('reset-password')) {
+                    message = 'Updating password...';
+                }
 
-            if (action.includes('forgot-password')) {
-                message = 'Sending verification code...';
-            }
+                showSamtechLoader(message);
+            });
 
-            if (action.includes('reset-password')) {
-                message = 'Updating password...';
-            }
+        });
 
-            showSamtechLoader(message);
+        document.querySelectorAll('a').forEach(function(link) {
+
+            link.addEventListener('click', function() {
+
+                const href = link.getAttribute('href');
+
+                if (
+                    !href ||
+                    href === '#' ||
+                    href.startsWith('javascript:') ||
+                    link.hasAttribute('data-bs-toggle') ||
+                    link.hasAttribute('target')
+                ) {
+                    return;
+                }
+
+                showSamtechLoader('Loading...');
+            });
+
         });
 
     });
-
-    document.querySelectorAll('a').forEach(function(link) {
-
-        link.addEventListener('click', function () {
-
-            const href = link.getAttribute('href');
-
-            if (
-                !href ||
-                href === '#' ||
-                href.startsWith('javascript:') ||
-                link.hasAttribute('data-bs-toggle') ||
-                link.hasAttribute('target')
-            ) {
-                return;
-            }
-
-            showSamtechLoader('Loading...');
-        });
-
-    });
-
-});
 </script>
