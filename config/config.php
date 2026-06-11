@@ -37,18 +37,13 @@ define('SESSION_TIMEOUT', 1800); // 30 Minutes
 |--------------------------------------------------------------------------
 */
 
-define('MAIL_HOST', 'smtp-mail.outlook.com');
-
+define('MAIL_HOST', 'smtp-relay.brevo.com');
 define('MAIL_PORT', 587);
 
-define('MAIL_USERNAME', 'samtech-verification@outlook.com');
-
-define('MAIL_PASSWORD', 'qtcvdsppefpyylwa');
-
-define('MAIL_ENCRYPTION', 'tls');
+define('MAIL_USERNAME', 'ac4d3e001@smtp-brevo.com');
+define('MAIL_PASSWORD', '');
 
 define('MAIL_FROM_EMAIL', 'samtech-verification@outlook.com');
-
 define('MAIL_FROM_NAME', 'Samtech Helpdesk Security');
 
 

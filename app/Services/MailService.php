@@ -10,8 +10,6 @@ class MailService
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();
-        $mail->SMTPDebug = 3;
-        $mail->Debugoutput = 'html';
 
         $mail->Host = MAIL_HOST;
         $mail->SMTPAuth = true;
@@ -31,7 +29,7 @@ class MailService
         }
 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = MAIL_PORT;
+        $mail->Port = 587;
 
         $mail->CharSet = 'UTF-8';
 
