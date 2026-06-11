@@ -234,11 +234,7 @@ class MfaController extends Controller
             exit;
         }
 
-        $otp = random_int(100000, 999999);
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
-
         $otpModel = new MfaRecoveryOtp();
-        $otpModel->createOtp($user['id'], $otp, $expiresAt);
 
         $_SESSION['mfa_recovery_user_id'] = $user['id'];
         $_SESSION['mfa_recovery_name'] = $user['full_name'];
@@ -247,22 +243,37 @@ class MfaController extends Controller
         $_SESSION['mfa_recovery_organization_id'] = $user['organization_id'] ?? null;
         $_SESSION['mfa_recovery_is_organization_admin'] = $user['is_organization_admin'] ?? 0;
 
-        $mailSent = MailService::sendMfaRecoveryOtp(
-            $user['email'],
-            $otp
+        $existingOtp = $otpModel->findValidUnusedByUserId($user['id']);
+
+        if ($existingOtp) {
+            $_SESSION['success'] =
+                "A recovery OTP has already been sent to your registered email address. Please use the same code or wait until it expires.";
+
+            header("Location: " . BASE_URL . "/mfa-recovery-verify");
+            exit;
+        }
+
+        $otp = random_int(100000, 999999);
+
+        $expiresAt = date(
+            'Y-m-d H:i:s',
+            strtotime('+' . OTP_EXPIRY_MINUTES . ' minutes')
         );
+
+        $otpModel->createOtp($user['id'], $otp, $expiresAt);
+
+        $mailSent = MailService::sendMfaRecoveryOtp($user['email'], $otp);
 
         if (!$mailSent) {
             $_SESSION['error'] = "Unable to send recovery OTP email.";
-
             header("Location: " . BASE_URL . "/mfa-recovery");
             exit;
         }
 
+        $this->logActivity($user['id'], 'MFA recovery OTP sent via email');
+
         $_SESSION['success'] =
             "Recovery OTP has been sent to your registered email address.";
-
-        $this->logActivity($user['id'], 'MFA recovery OTP requested');
 
         header("Location: " . BASE_URL . "/mfa-recovery-verify");
         exit;
@@ -309,7 +320,13 @@ class MfaController extends Controller
             exit;
         }
 
-        $otpModel->markUsed($otpRow['id']);
+        $marked = $otpModel->markUsed($otpRow['id']);
+
+        if (!$marked) {
+            $_SESSION['error'] = "Unable to verify OTP. Please try again.";
+            header("Location: " . BASE_URL . "/mfa-recovery-verify");
+            exit;
+        }
         $this->logActivity($userId, 'MFA recovery OTP verified');
 
         $tfa = $this->tfa();
