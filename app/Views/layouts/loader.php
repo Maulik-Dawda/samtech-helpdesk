@@ -8,7 +8,6 @@
         display: none;
         align-items: center;
         justify-content: center;
-        transition: all .3s ease;
     }
 
     #samtechLoaderOverlay.show {
@@ -17,48 +16,42 @@
 
     .samtech-loader-box {
         background: #ffffff;
-        border-radius: 24px;
-        padding: 35px;
+        border-radius: 20px;
+        padding: 28px;
         text-align: center;
-        min-width: 280px;
+        min-width: 240px;
         box-shadow:
-            0 25px 60px rgba(15, 23, 42, .12),
-            0 10px 25px rgba(15, 23, 42, .08);
+            0 20px 50px rgba(15, 23, 42, .10),
+            0 8px 20px rgba(15, 23, 42, .06);
     }
 
     .samtech-loader-circle {
-        width: 100px;
-        height: 100px;
+        width: 72px;
+        height: 72px;
         margin: 0 auto 18px;
+        border-radius: 50%;
+        border: 4px solid rgba(177, 233, 111, .2);
+        border-top-color: #b1e96f;
+        border-right-color: #6cb33f;
+        animation: samtechSpin .8s linear infinite;
         position: relative;
-        animation: samtechPulse 1.6s ease-in-out infinite;
     }
 
-    .samtech-loader-circle::before {
+    .samtech-loader-circle::after {
         content: "";
         position: absolute;
-        inset: -8px;
+        inset: 10px;
         border-radius: 50%;
-        border: 4px solid rgba(177, 233, 111, 0.25);
-        border-top: 4px solid #b1e96f;
-        border-right: 4px solid #6cb33f;
-        animation: samtechSpin 1s linear infinite;
-    }
-
-    .samtech-loader-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 50%;
-        background: #ffffff;
-        padding: 12px;
+        border: 3px solid rgba(177, 233, 111, .15);
+        border-bottom-color: #6cb33f;
+        animation: samtechSpinReverse 1.2s linear infinite;
     }
 
     .samtech-loader-title {
-        font-size: 17px;
-        font-weight: 700;
+        font-size: 16px;
+        font-weight: 800;
         color: #111827;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
     }
 
     .samtech-loader-text {
@@ -76,17 +69,13 @@
         }
     }
 
-    @keyframes samtechPulse {
-        0% {
-            transform: scale(1);
+    @keyframes samtechSpinReverse {
+        from {
+            transform: rotate(360deg);
         }
 
-        50% {
-            transform: scale(1.05);
-        }
-
-        100% {
-            transform: scale(1);
+        to {
+            transform: rotate(0deg);
         }
     }
 </style>
@@ -94,11 +83,7 @@
 <div id="samtechLoaderOverlay">
     <div class="samtech-loader-box">
 
-        <div class="samtech-loader-circle">
-            <img
-                src="<?php echo BASE_URL; ?>/assets/images/samtech-icon.png?v=<?= time(); ?>"
-                alt="Samtech">
-        </div>
+        <div class="samtech-loader-circle"></div>
 
         <div class="samtech-loader-title">
             Samtech Helpdesk
@@ -133,30 +118,30 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
-        document.querySelectorAll('form').forEach(function(form) {
+        document.querySelectorAll('form').forEach(function (form) {
 
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function () {
 
                 let message = 'Processing your request...';
 
                 const action = form.getAttribute('action') || '';
 
-                if (action.includes('login')) {
+                if (action.includes('admin-login')) {
+                    message = 'Verifying admin access...';
+                } else if (action.includes('login')) {
                     message = 'Verifying credentials...';
-                }
-
-                if (action.includes('otp')) {
+                } else if (action.includes('otp')) {
                     message = 'Verifying OTP...';
-                }
-
-                if (action.includes('forgot-password')) {
+                } else if (action.includes('forgot-password')) {
                     message = 'Sending verification code...';
-                }
-
-                if (action.includes('reset-password')) {
+                } else if (action.includes('reset-password')) {
                     message = 'Updating password...';
+                } else if (action.includes('tickets')) {
+                    message = 'Processing ticket...';
+                } else if (action.includes('reports')) {
+                    message = 'Preparing report...';
                 }
 
                 showSamtechLoader(message);
@@ -164,9 +149,9 @@
 
         });
 
-        document.querySelectorAll('a').forEach(function(link) {
+        document.querySelectorAll('a').forEach(function (link) {
 
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function () {
 
                 const href = link.getAttribute('href');
 
@@ -175,7 +160,9 @@
                     href === '#' ||
                     href.startsWith('javascript:') ||
                     link.hasAttribute('data-bs-toggle') ||
-                    link.hasAttribute('target')
+                    link.hasAttribute('target') ||
+                    href.startsWith('mailto:') ||
+                    href.startsWith('tel:')
                 ) {
                     return;
                 }
