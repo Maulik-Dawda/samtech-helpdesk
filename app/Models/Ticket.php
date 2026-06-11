@@ -390,4 +390,40 @@ class Ticket extends Model
 
         return $stmt->fetchAll();
     }
+    public function countOrganizationTickets($organizationId)
+    {
+        $stmt = $this->db->prepare("
+        SELECT COUNT(*) AS total
+        FROM tickets
+        WHERE organization_id = ?
+    ");
+
+        $stmt->execute([$organizationId]);
+
+        $row = $stmt->fetch();
+
+        return (int)($row['total'] ?? 0);
+    }
+
+    public function getOrganizationTicketsPaginated(
+        $organizationId,
+        $limit,
+        $offset
+    ) {
+        $stmt = $this->db->prepare(
+            "
+        SELECT *
+        FROM tickets
+        WHERE organization_id = ?
+        ORDER BY created_at DESC
+        LIMIT " . (int)$limit . "
+        OFFSET " . (int)$offset
+        );
+
+        $stmt->execute([
+            $organizationId
+        ]);
+
+        return $stmt->fetchAll();
+    }
 }

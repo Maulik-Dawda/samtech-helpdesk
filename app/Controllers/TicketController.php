@@ -135,18 +135,41 @@ class TicketController extends Controller
         $userModel = new User();
         $user = $userModel->findById($_SESSION['auth_user_id']);
 
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
         if (!$user || empty($user['organization_id'])) {
+
             $tickets = [];
+            $totalRecords = 0;
+            $totalPages = 1;
         } else {
+
             $ticketModel = new Ticket();
 
-            $tickets = $ticketModel->getOrganizationTickets(
+            $totalRecords = $ticketModel->countOrganizationTickets(
                 $user['organization_id']
+            );
+
+            $totalPages = max(
+                1,
+                ceil($totalRecords / $perPage)
+            );
+
+            $tickets = $ticketModel->getOrganizationTicketsPaginated(
+                $user['organization_id'],
+                $perPage,
+                $offset
             );
         }
 
         $this->view('tickets/index', [
-            'tickets' => $tickets
+            'tickets' => $tickets,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages
         ]);
     }
 
