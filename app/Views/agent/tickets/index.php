@@ -99,7 +99,7 @@
             </div>
 
             <span class="badge-soft status-open">
-                <?= count($tickets); ?> Tickets
+                Showing <?= count($tickets); ?> of <?= $totalRecords ?? 0; ?> Tickets
             </span>
         </div>
 
@@ -135,22 +135,22 @@
                             <?php foreach ($tickets as $ticket): ?>
 
                                 <?php
-                                    $priorityClass = match ($ticket['priority']) {
-                                        'low' => 'priority-low',
-                                        'medium' => 'priority-medium',
-                                        'high' => 'priority-high',
-                                        'urgent' => 'priority-urgent',
-                                        default => 'priority-low'
-                                    };
+                                $priorityClass = match ($ticket['priority']) {
+                                    'low' => 'priority-low',
+                                    'medium' => 'priority-medium',
+                                    'high' => 'priority-high',
+                                    'urgent' => 'priority-urgent',
+                                    default => 'priority-low'
+                                };
 
-                                    $statusClass = match ($ticket['status']) {
-                                        'open' => 'status-open',
-                                        'in_progress' => 'status-in-progress',
-                                        'pending' => 'status-pending',
-                                        'resolved' => 'status-resolved',
-                                        'closed' => 'status-closed',
-                                        default => 'status-open'
-                                    };
+                                $statusClass = match ($ticket['status']) {
+                                    'open' => 'status-open',
+                                    'in_progress' => 'status-in-progress',
+                                    'pending' => 'status-pending',
+                                    'resolved' => 'status-resolved',
+                                    'closed' => 'status-closed',
+                                    default => 'status-open'
+                                };
                                 ?>
 
                                 <tr>
@@ -208,6 +208,7 @@
                     </table>
 
                 </div>
+                <?php require ROOT_PATH . "/app/Views/partials/pagination.php"; ?>
 
             <?php endif; ?>
 

@@ -14,12 +14,31 @@ class AgentTicketController extends Controller
         AuthMiddleware::timeout();
         AuthMiddleware::check('agent');
 
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
         $ticketModel = new Ticket();
 
-        $tickets = $ticketModel->getAllTicketsForAgent();
+        $totalRecords = $ticketModel->countAllTicketsForAgent();
+        $totalPages = max(1, ceil($totalRecords / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $tickets = $ticketModel->getAllTicketsForAgentPaginated(
+            $perPage,
+            $offset
+        );
 
         $this->view('agent/tickets/index', [
-            'tickets' => $tickets
+            'tickets' => $tickets,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages
         ]);
     }
 

@@ -105,6 +105,38 @@ class Ticket extends Model
 
         return $stmt->fetchAll();
     }
+    public function countAllTicketsForAgent()
+    {
+        $stmt = $this->db->prepare("
+        SELECT COUNT(*) AS total
+        FROM tickets
+    ");
+
+        $stmt->execute();
+
+        $row = $stmt->fetch();
+
+        return (int)($row['total'] ?? 0);
+    }
+
+    public function getAllTicketsForAgentPaginated($limit, $offset)
+    {
+        $stmt = $this->db->prepare(
+            "
+        SELECT 
+            tickets.*,
+            users.full_name AS customer_name
+        FROM tickets
+        JOIN users ON users.id = tickets.user_id
+        ORDER BY tickets.created_at DESC
+        LIMIT " . (int)$limit . "
+        OFFSET " . (int)$offset
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
 
     public function findForAgent($ticketId)
     {
