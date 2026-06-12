@@ -20,7 +20,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= BASE_URL ?>/agents/tickets/store" enctype="multipart/form-data">
+        <form method="POST" action="<?= BASE_URL ?>/agent/tickets/store" enctype="multipart/form-data">
             <?= Csrf::field(); ?>
 
             <div class="mb-3">
