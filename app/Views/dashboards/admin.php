@@ -374,7 +374,7 @@
         <div class="col-xl-2 col-md-4 col-sm-6">
             <div class="stat-card stat-total">
                 <div class="stat-icon icon-total">
-                    <i class="bi bi-ticket-perforated"></i>
+                    <i class="bi bi-ticket-detailed"></i>
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['total']; ?></div>
                 <div class="stat-label">Total Tickets</div>
