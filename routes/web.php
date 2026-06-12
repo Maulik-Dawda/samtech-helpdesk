@@ -95,3 +95,6 @@ $router->post('/organizations/create', 'AdminOrganizationController@store');
 
 $router->get('/organizations/edit/{id}', 'AdminOrganizationController@edit');
 $router->post('/organizations/update/{id}', 'AdminOrganizationController@update');
+
+$router->get('/agent/tickets/create', 'AgentTicketController@create');
+$router->post('/agent/tickets/store', 'AgentTicketController@store');

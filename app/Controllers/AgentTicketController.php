@@ -6,6 +6,7 @@ require_once ROOT_PATH . "/app/Models/TicketReply.php";
 require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
 require_once ROOT_PATH . "/app/Models/Attachment.php";
 require_once ROOT_PATH . "/app/Services/UploadService.php";
+require_once ROOT_PATH . "/app/Models/Organization.php";
 
 class AgentTicketController extends Controller
 {
@@ -240,4 +241,71 @@ class AgentTicketController extends Controller
         header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
         exit;
     }
+    public function create()
+{
+    AuthMiddleware::timeout();
+    AuthMiddleware::check('agent');
+
+    $organizationModel = new Organization();
+
+    $organizations = $organizationModel->getAllActive();
+
+    $this->view('agent/tickets/create', [
+        'organizations' => $organizations
+    ]);
+}
+public function store()
+{
+    Csrf::verify();
+
+    AuthMiddleware::timeout();
+    AuthMiddleware::check('agent');
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $organizationId = (int)($_POST['organization_id'] ?? 0);
+    $subject = trim($_POST['subject'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $priority = $_POST['priority'] ?? 'medium';
+
+    if (
+        empty($organizationId) ||
+        empty($subject) ||
+        empty($description)
+    ) {
+        $_SESSION['error'] = 'All required fields must be completed.';
+        header("Location: " . BASE_URL . "/agent/tickets/create");
+        exit;
+    }
+
+    $ticketModel = new Ticket();
+
+    $ticketNo = $ticketModel->generateTicketNo();
+
+    $created = $ticketModel->create([
+        'ticket_no' => $ticketNo,
+        'user_id' => $_SESSION['auth_user_id'],
+        'organization_id' => $organizationId,
+        'created_by' => $_SESSION['auth_user_id'],
+        'created_by_role' => 'agent',
+        'subject' => $subject,
+        'description' => $description,
+        'priority' => $priority,
+        'status' => 'open'
+    ]);
+
+    if (!$created) {
+        $_SESSION['error'] = 'Unable to create ticket.';
+        header("Location: " . BASE_URL . "/agent/tickets/create");
+        exit;
+    }
+
+    $_SESSION['success'] =
+        'Ticket created successfully.';
+
+    header("Location: " . BASE_URL . "/agent/tickets");
+    exit;
+}
 }

@@ -322,5 +322,18 @@ class User extends Model
 
         return $stmt->fetch();
     }
+    public function getAgents()
+{
+    $stmt = $this->db->prepare("
+        SELECT *
+        FROM users
+        WHERE role = 'agent'
+        AND is_active = 1
+    ");
+
+    $stmt->execute();
+
+    return $stmt->fetchAll();
+}
     
 }

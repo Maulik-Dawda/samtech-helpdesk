@@ -183,6 +183,18 @@ function activeMenu($path, $currentUri)
         <a class="<?= activeMenu('/tickets/create', $currentUri); ?>" href="<?= BASE_URL ?>/tickets/create">Create Ticket</a>
     <?php endif; ?>
 
+    <?php if ($role === 'agent'): ?>
+
+        <a
+            class="<?= activeMenu('/agent/tickets/create', $currentUri); ?>"
+            href="<?= BASE_URL ?>/agent/tickets/create">
+
+            Create Ticket
+
+        </a>
+
+    <?php endif; ?>
+
     <?php if ($role === 'agent' || $role === 'admin'): ?>
         <a class="<?= activeMenu('/agent/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/agent/tickets">All Tickets</a>
     <?php endif; ?>
@@ -200,19 +212,19 @@ function activeMenu($path, $currentUri)
     <?php endif; ?>
     <?php if ($role === 'admin' || $role === 'agent'): ?>
 
-    <div class="sidebar-title">Organizations</div>
+        <div class="sidebar-title">Organizations</div>
 
-    <a class="<?= activeMenu('/organizations', $currentUri); ?>" href="<?= BASE_URL ?>/organizations">
-        <i class="bi bi-building me-2"></i>
-        View Organizations
-    </a>
+        <a class="<?= activeMenu('/organizations', $currentUri); ?>" href="<?= BASE_URL ?>/organizations">
+            <i class="bi bi-building me-2"></i>
+            View Organizations
+        </a>
 
-    <a class="<?= activeMenu('/organizations/create', $currentUri); ?>" href="<?= BASE_URL ?>/organizations/create">
-        <i class="bi bi-plus-circle me-2"></i>
-        Create Organization
-    </a>
+        <a class="<?= activeMenu('/organizations/create', $currentUri); ?>" href="<?= BASE_URL ?>/organizations/create">
+            <i class="bi bi-plus-circle me-2"></i>
+            Create Organization
+        </a>
 
-<?php endif; ?>
+    <?php endif; ?>
 
     <?php if ($role === 'user' && $isOrgAdmin == 1): ?>
 
