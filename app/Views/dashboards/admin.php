@@ -73,12 +73,29 @@
         opacity: .12;
     }
 
-    .stat-total::after { background: #3b82f6; }
-    .stat-open::after { background: #22c55e; }
-    .stat-progress::after { background: #8b5cf6; }
-    .stat-pending::after { background: #f97316; }
-    .stat-resolved::after { background: #14b8a6; }
-    .stat-closed::after { background: #ef4444; }
+    .stat-total::after {
+        background: #3b82f6;
+    }
+
+    .stat-open::after {
+        background: #22c55e;
+    }
+
+    .stat-progress::after {
+        background: #8b5cf6;
+    }
+
+    .stat-pending::after {
+        background: #f97316;
+    }
+
+    .stat-resolved::after {
+        background: #14b8a6;
+    }
+
+    .stat-closed::after {
+        background: #ef4444;
+    }
 
     .stat-icon {
         width: 48px;
@@ -354,80 +371,140 @@
 
     <div class="row g-3 mb-4">
 
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <!-- Total Tickets -->
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <div class="stat-card stat-total">
-                <div class="stat-icon icon-total">
-                    <i class="bi bi-ticket-perforated"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['total']; ?></div>
-                <div class="stat-label">Total Tickets</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Overall
+                <div class="d-flex align-items-center">
+
+                    <div class="stat-icon icon-total">
+                        <i class="bi bi-ticket-detailed"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <div class="stat-number">
+                            <?= (int)$ticketCounts['total']; ?>
+                        </div>
+
+                        <div class="stat-label">
+                            Total Tickets
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <!-- Open -->
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <div class="stat-card stat-open">
-                <div class="stat-icon icon-open">
-                    <i class="bi bi-folder2-open"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['open_count']; ?></div>
-                <div class="stat-label">Open</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Active queue
+                <div class="d-flex align-items-center">
+
+                    <div class="stat-icon icon-open">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <div class="stat-number">
+                            <?= (int)$ticketCounts['open_count']; ?>
+                        </div>
+
+                        <div class="stat-label">
+                            Open
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <!-- In Progress -->
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <div class="stat-card stat-progress">
-                <div class="stat-icon icon-progress">
-                    <i class="bi bi-clock-history"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['in_progress_count']; ?></div>
-                <div class="stat-label">In Progress</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Being handled
+                <div class="d-flex align-items-center">
+
+                    <div class="stat-icon icon-progress">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <div class="stat-number">
+                            <?= (int)$ticketCounts['in_progress_count']; ?>
+                        </div>
+
+                        <div class="stat-label">
+                            In Progress
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <!-- Pending -->
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <div class="stat-card stat-pending">
-                <div class="stat-icon icon-pending">
-                    <i class="bi bi-hourglass-split"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['pending_count']; ?></div>
-                <div class="stat-label">Pending</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Awaiting action
+                <div class="d-flex align-items-center">
+
+                    <div class="stat-icon icon-pending">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <div class="stat-number">
+                            <?= (int)$ticketCounts['pending_count']; ?>
+                        </div>
+
+                        <div class="stat-label">
+                            Pending
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <!-- Resolved -->
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <div class="stat-card stat-resolved">
-                <div class="stat-icon icon-resolved">
-                    <i class="bi bi-check2-circle"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['resolved_count']; ?></div>
-                <div class="stat-label">Resolved</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Completed
+                <div class="d-flex align-items-center">
+
+                    <div class="stat-icon icon-resolved">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <div class="stat-number">
+                            <?= (int)$ticketCounts['resolved_count']; ?>
+                        </div>
+
+                        <div class="stat-label">
+                            Resolved
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <!-- Closed -->
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <div class="stat-card stat-closed">
-                <div class="stat-icon icon-closed">
-                    <i class="bi bi-x-octagon"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['closed_count']; ?></div>
-                <div class="stat-label">Closed</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Archived
+                <div class="d-flex align-items-center">
+
+                    <div class="stat-icon icon-closed">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <div class="stat-number">
+                            <?= (int)$ticketCounts['closed_count']; ?>
+                        </div>
+
+                        <div class="stat-label">
+                            Closed
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
