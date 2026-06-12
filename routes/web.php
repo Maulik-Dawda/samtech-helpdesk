@@ -88,3 +88,10 @@ $router->get('/reports/ticket-detail', 'ReportController@ticketDetail');
 $router->get('/profile', 'ProfileController@index');
 
 $router->get('/admin/activity-logs', 'ActivityLogController@index');
+
+$router->get('/organizations', 'AdminOrganizationController@index');
+$router->get('/organizations/create', 'AdminOrganizationController@create');
+$router->post('/organizations/create', 'AdminOrganizationController@store');
+
+$router->get('/organizations/edit/{id}', 'AdminOrganizationController@edit');
+$router->post('/organizations/update/{id}', 'AdminOrganizationController@update');

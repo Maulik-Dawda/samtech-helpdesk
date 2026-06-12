@@ -25,118 +25,114 @@ function activeMenu($path, $currentUri)
     }
 
     .sidebar {
-        width: 260px;
+        width: 280px;
         height: 100vh;
-        background: #111827;
+        background: linear-gradient(180deg,
+                #0f172a 0%,
+                #111827 100%);
+
         position: fixed;
         left: 0;
         top: 0;
+
         color: #fff;
         z-index: 1000;
 
         overflow-y: auto;
         overflow-x: hidden;
 
-        padding: 20px 16px;
+        padding: 20px 18px;
+
+        border-right: 1px solid rgba(255, 255, 255, .05);
 
         box-shadow:
-            4px 0 20px rgba(0, 0, 0, .12);
-    }
-
-    .sidebar::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-        background: #1f2937;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-        background: #4b5563;
-        border-radius: 20px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb:hover {
-        background: #6b7280;
+            8px 0 30px rgba(15, 23, 42, .15);
     }
 
     .sidebar-logo {
         background: #ffffff;
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 25px;
+        border-radius: 18px;
+        padding: 18px;
+        margin-bottom: 24px;
+
+        box-shadow:
+            0 8px 20px rgba(0, 0, 0, .08);
     }
 
     .sidebar-logo img {
         width: 100%;
-        height: auto;
         display: block;
     }
 
     .sidebar-title {
         font-size: 11px;
         font-weight: 700;
-        color: #9ca3af;
+        color: #94a3b8;
         text-transform: uppercase;
-        letter-spacing: .08em;
-        margin: 18px 10px 8px;
+        letter-spacing: .12em;
+        margin: 22px 10px 10px;
     }
 
     .sidebar a {
         display: flex;
         align-items: center;
+        gap: 12px;
 
         text-decoration: none;
 
-        color: #d1d5db;
+        color: #cbd5e1;
 
-        padding: 11px 14px;
+        padding: 12px 14px;
 
-        border-radius: 10px;
+        border-radius: 12px;
 
-        margin-bottom: 5px;
+        margin-bottom: 6px;
 
         font-size: 14px;
         font-weight: 500;
 
-        transition: all .2s ease;
+        transition: all .25s ease;
+    }
+
+    .sidebar a i {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
     }
 
     .sidebar a:hover {
-        background: #1f2937;
+        background: rgba(255, 255, 255, .06);
         color: #ffffff;
+        transform: translateX(4px);
     }
 
     .sidebar a.active {
-        background: #b1e96f;
+        background: linear-gradient(135deg,
+                #b1e96f,
+                #8fd14f);
+
         color: #111827;
-        font-weight: 600;
+
+        font-weight: 700;
+
+        box-shadow:
+            0 10px 20px rgba(177, 233, 111, .25);
+    }
+
+    .sidebar a.active i {
+        color: #111827;
     }
 
     .main-content {
-        margin-left: 260px;
+        margin-left: 280px;
 
-        height: 100vh;
+        min-height: 100vh;
 
         overflow-y: auto;
-        overflow-x: hidden;
 
         background: #f8fafc;
 
         padding: 25px;
-    }
-
-    .main-content::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .main-content::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 20px;
-    }
-
-    .main-content::-webkit-scrollbar-track {
-        background: #f1f5f9;
     }
 
     @media (max-width:768px) {
@@ -192,10 +188,24 @@ function activeMenu($path, $currentUri)
         <div class="sidebar-title">Admin</div>
 
         <a class="<?= activeMenu('/admin/users', $currentUri); ?>" href="<?= BASE_URL ?>/admin/users">User Management</a>
-        <a class="<?= activeMenu('/admin/organizations', $currentUri); ?>" href="<?= BASE_URL ?>/admin/organizations">Organizations</a>
         <a class="<?= activeMenu('/admin/permissions', $currentUri); ?>" href="<?= BASE_URL ?>/admin/permissions">Permissions</a>
         <a class="<?= activeMenu('/admin/activity-logs', $currentUri); ?>" href="<?= BASE_URL ?>/admin/activity-logs">
             Activity Logs
+        </a>
+
+    <?php endif; ?>
+    <?php if ($role === 'admin' || $role === 'agent'): ?>
+
+        <div class="sidebar-title">Organizations</div>
+
+        <a class="<?= activeMenu('/organizations', $currentUri); ?>" href="<?= BASE_URL ?>/organizations">
+            <i class="bi bi-building me-2"></i>
+            View Organizations
+        </a>
+
+        <a class="<?= activeMenu('/organizations/create', $currentUri); ?>" href="<?= BASE_URL ?>/organizations/create">
+            <i class="bi bi-plus-circle me-2"></i>
+            Create Organization
         </a>
 
     <?php endif; ?>

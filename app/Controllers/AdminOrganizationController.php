@@ -5,22 +5,28 @@ require_once ROOT_PATH . "/app/Models/Organization.php";
 
 class AdminOrganizationController extends Controller
 {
-    private function adminGuard()
+    private function staffGuard()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('admin');
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+
+        $role = $_SESSION['auth_user_role'] ?? '';
+
+        if (!in_array($role, ['admin', 'agent'])) {
+            http_response_code(403);
+            echo "Access denied.";
+            exit;
         }
     }
 
     public function index()
     {
-        $this->adminGuard();
+        $this->staffGuard();
 
         $organizationModel = new Organization();
-
         $organizations = $organizationModel->getAll();
 
         $this->view('admin/organizations/index', [
@@ -30,7 +36,7 @@ class AdminOrganizationController extends Controller
 
     public function create()
     {
-        $this->adminGuard();
+        $this->staffGuard();
 
         $this->view('admin/organizations/create');
     }
@@ -38,8 +44,7 @@ class AdminOrganizationController extends Controller
     public function store()
     {
         Csrf::verify();
-
-        $this->adminGuard();
+        $this->staffGuard();
 
         $name = trim($_POST['name'] ?? '');
         $email = trim($_POST['email'] ?? '');
@@ -49,19 +54,19 @@ class AdminOrganizationController extends Controller
 
         if (empty($name)) {
             $_SESSION['error'] = "Organization name is required.";
-            header("Location: " . BASE_URL . "/admin/organizations/create");
+            header("Location: " . BASE_URL . "/organizations/create");
             exit;
         }
 
         if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Invalid organization email.";
-            header("Location: " . BASE_URL . "/admin/organizations/create");
+            header("Location: " . BASE_URL . "/organizations/create");
             exit;
         }
 
         if ($maxUsers < 1) {
             $_SESSION['error'] = "Max users must be at least 1.";
-            header("Location: " . BASE_URL . "/admin/organizations/create");
+            header("Location: " . BASE_URL . "/organizations/create");
             exit;
         }
 
@@ -69,7 +74,7 @@ class AdminOrganizationController extends Controller
 
         if ($organizationModel->nameExists($name)) {
             $_SESSION['error'] = "Organization name already exists.";
-            header("Location: " . BASE_URL . "/admin/organizations/create");
+            header("Location: " . BASE_URL . "/organizations/create");
             exit;
         }
 
@@ -83,22 +88,21 @@ class AdminOrganizationController extends Controller
 
         if (!$created) {
             $_SESSION['error'] = "Unable to create organization.";
-            header("Location: " . BASE_URL . "/admin/organizations/create");
+            header("Location: " . BASE_URL . "/organizations/create");
             exit;
         }
 
         $_SESSION['success'] = "Organization created successfully.";
 
-        header("Location: " . BASE_URL . "/admin/organizations");
+        header("Location: " . BASE_URL . "/organizations");
         exit;
     }
 
     public function edit($id)
     {
-        $this->adminGuard();
+        $this->staffGuard();
 
         $organizationModel = new Organization();
-
         $organization = $organizationModel->findById($id);
 
         if (!$organization) {
@@ -115,11 +119,9 @@ class AdminOrganizationController extends Controller
     public function update($id)
     {
         Csrf::verify();
-
-        $this->adminGuard();
+        $this->staffGuard();
 
         $organizationModel = new Organization();
-
         $organization = $organizationModel->findById($id);
 
         if (!$organization) {
@@ -137,25 +139,25 @@ class AdminOrganizationController extends Controller
 
         if (empty($name)) {
             $_SESSION['error'] = "Organization name is required.";
-            header("Location: " . BASE_URL . "/admin/organizations/edit/" . $id);
+            header("Location: " . BASE_URL . "/organizations/edit/" . $id);
             exit;
         }
 
         if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Invalid organization email.";
-            header("Location: " . BASE_URL . "/admin/organizations/edit/" . $id);
+            header("Location: " . BASE_URL . "/organizations/edit/" . $id);
             exit;
         }
 
         if ($maxUsers < 1) {
             $_SESSION['error'] = "Max users must be at least 1.";
-            header("Location: " . BASE_URL . "/admin/organizations/edit/" . $id);
+            header("Location: " . BASE_URL . "/organizations/edit/" . $id);
             exit;
         }
 
         if ($organizationModel->nameExists($name, $id)) {
             $_SESSION['error'] = "Organization name already exists.";
-            header("Location: " . BASE_URL . "/admin/organizations/edit/" . $id);
+            header("Location: " . BASE_URL . "/organizations/edit/" . $id);
             exit;
         }
 
@@ -170,13 +172,13 @@ class AdminOrganizationController extends Controller
 
         if (!$updated) {
             $_SESSION['error'] = "Unable to update organization.";
-            header("Location: " . BASE_URL . "/admin/organizations/edit/" . $id);
+            header("Location: " . BASE_URL . "/organizations/edit/" . $id);
             exit;
         }
 
         $_SESSION['success'] = "Organization updated successfully.";
 
-        header("Location: " . BASE_URL . "/admin/organizations");
+        header("Location: " . BASE_URL . "/organizations");
         exit;
     }
 }
