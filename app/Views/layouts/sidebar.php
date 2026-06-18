@@ -192,6 +192,15 @@ function activeMenu($path, $currentUri)
             Create Ticket
 
         </a>
+
+    <?php endif; ?>
+
+    <?php if ($role === 'agent' || $role === 'admin'): ?>
+        <a class="<?= activeMenu('/agent/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/agent/tickets">All Tickets</a>
+    <?php endif; ?>
+
+    <?php if ($role === 'agent'): ?>
+
         <div class="sidebar-title">Users</div>
 
         <a href="<?= BASE_URL ?>/agent/users">
@@ -204,9 +213,7 @@ function activeMenu($path, $currentUri)
 
     <?php endif; ?>
 
-    <?php if ($role === 'agent' || $role === 'admin'): ?>
-        <a class="<?= activeMenu('/agent/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/agent/tickets">All Tickets</a>
-    <?php endif; ?>
+
 
     <?php if ($role === 'admin'): ?>
 
