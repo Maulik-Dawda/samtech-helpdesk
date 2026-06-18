@@ -1,10 +1,5 @@
 <?php
 
-require_once ROOT_PATH . '/vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(ROOT_PATH);
-$dotenv->safeLoad();
-
 date_default_timezone_set('Asia/Kolkata');
 
 /*
@@ -38,24 +33,27 @@ define('SESSION_TIMEOUT', 1800); // 30 Minutes
 |--------------------------------------------------------------------------
 | Mail Configuration
 |--------------------------------------------------------------------------
+| Brevo SMTP
+|--------------------------------------------------------------------------
 */
 
-define('MAIL_DEBUG', $_ENV['MAIL_DEBUG'] ?? 0);
+define('MAIL_HOST', 'smtp-relay.brevo.com');
+define('MAIL_PORT', 587);
 
-define('MAIL_HOST', $_ENV['MAIL_HOST']);
-define('MAIL_PORT', $_ENV['MAIL_PORT']);
+define('MAIL_USERNAME', 'ac4d3e001@smtp-brevo.com');
+define('MAIL_PASSWORD', '');
 
-define('MAIL_USERNAME', $_ENV['MAIL_USERNAME']);
-define('MAIL_PASSWORD', $_ENV['MAIL_PASSWORD']);
+define('MAIL_FROM_EMAIL', 'samtech-verification@outlook.com');
+define('MAIL_FROM_NAME', 'Samtech Helpdesk Security');
 
-define('MAIL_FROM_EMAIL', $_ENV['MAIL_FROM_EMAIL']);
-define('MAIL_FROM_NAME', $_ENV['MAIL_FROM_NAME']);
 
-define('TICKET_MAIL_USERNAME', $_ENV['TICKET_MAIL_USERNAME']);
-define('TICKET_MAIL_PASSWORD', $_ENV['TICKET_MAIL_PASSWORD']);
+define('TICKET_MAIL_USERNAME', 'samtech-helpdesk@outlook.com');
 
-define('TICKET_FROM_EMAIL', $_ENV['TICKET_FROM_EMAIL']);
-define('TICKET_FROM_NAME', $_ENV['TICKET_FROM_NAME']);
+define('TICKET_MAIL_PASSWORD', 'dtbgdjvvcussmwit');
+
+define('TICKET_FROM_EMAIL', 'samtech-helpdesk@outlook.com');
+
+define('TICKET_FROM_NAME', 'Samtech Helpdesk');
 
 
 
