@@ -152,6 +152,12 @@
 
                                     <?php if ($user['role'] !== 'agent'): ?>
 
+                                        <a
+                                            href="<?= BASE_URL ?>/agent/users/edit/<?= $user['id']; ?>"
+                                            class="action-link">
+                                            Edit
+                                        </a>
+
                                         <?php if ((int)$user['is_active'] === 1): ?>
 
                                             <a
