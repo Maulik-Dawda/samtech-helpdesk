@@ -18,7 +18,7 @@ class MailService
         | Keep 0 in production.
         | Use 2 only while testing SMTP errors.
         */
-        $mail->SMTPDebug = defined('MAIL_DEBUG') ? MAIL_DEBUG : 0;
+        $mail->SMTPDebug = (int)(defined('MAIL_DEBUG') ? MAIL_DEBUG : 0);
         $mail->Debugoutput = 'html';
 
         $mail->Host = MAIL_HOST;
@@ -73,15 +73,13 @@ class MailService
             );
 
             return $mail->send();
-
         } catch (Exception $e) {
 
-            error_log(
-                "Mail Error: " .
-                ($mail->ErrorInfo ?? '') .
-                " | Exception: " .
-                $e->getMessage()
-            );
+            echo "<pre>";
+            echo "PHPMailer Error: " . $mail->ErrorInfo . PHP_EOL;
+            echo "Exception: " . $e->getMessage() . PHP_EOL;
+            echo "</pre>";
+            exit;
 
             return false;
         }
