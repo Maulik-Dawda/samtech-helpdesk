@@ -58,13 +58,9 @@ class DashboardController extends Controller
     $ticketModel = new Ticket();
 
     $ticketCounts = $ticketModel->getDashboardCounts();
-
     $recentTickets = $ticketModel->getRecentTickets(8);
-
     $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
-
-    $organizationTickets =
-        $ticketModel->getOrganizationTicketCounts();
+    $organizationTickets = $ticketModel->getOrganizationTicketCounts();
 
     $this->view('dashboards/agent', [
         'ticketCounts' => $ticketCounts,

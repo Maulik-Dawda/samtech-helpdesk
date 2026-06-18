@@ -174,6 +174,14 @@
         gap: 10px;
     }
 
+    .dashboard-card-title i {
+        color: #475569;
+    }
+
+    .dashboard-card-body {
+        padding: 20px;
+    }
+
     .view-all-btn {
         border: 1px solid #d6dde8;
         color: #111827;
@@ -299,6 +307,11 @@
         flex-shrink: 0;
     }
 
+    .chart-box {
+        height: 260px;
+        position: relative;
+    }
+
     @media(max-width: 768px) {
         .dashboard-hero {
             padding: 18px;
@@ -345,9 +358,7 @@
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['total']; ?></div>
                 <div class="stat-label">Total Tickets</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Overall
-                </div>
+                <div class="stat-trend"><i class="bi bi-arrow-up-right"></i> Overall</div>
             </div>
         </div>
 
@@ -358,9 +369,7 @@
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['open_count']; ?></div>
                 <div class="stat-label">Open</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Active queue
-                </div>
+                <div class="stat-trend"><i class="bi bi-arrow-up-right"></i> Active queue</div>
             </div>
         </div>
 
@@ -371,9 +380,7 @@
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['in_progress_count']; ?></div>
                 <div class="stat-label">In Progress</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Being handled
-                </div>
+                <div class="stat-trend"><i class="bi bi-arrow-up-right"></i> Being handled</div>
             </div>
         </div>
 
@@ -384,9 +391,7 @@
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['pending_count']; ?></div>
                 <div class="stat-label">Pending</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Awaiting action
-                </div>
+                <div class="stat-trend"><i class="bi bi-arrow-up-right"></i> Awaiting action</div>
             </div>
         </div>
 
@@ -397,9 +402,7 @@
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['resolved_count']; ?></div>
                 <div class="stat-label">Resolved</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Completed
-                </div>
+                <div class="stat-trend"><i class="bi bi-arrow-up-right"></i> Completed</div>
             </div>
         </div>
 
@@ -410,8 +413,61 @@
                 </div>
                 <div class="stat-number"><?= (int)$ticketCounts['closed_count']; ?></div>
                 <div class="stat-label">Closed</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Archived
+                <div class="stat-trend"><i class="bi bi-arrow-up-right"></i> Archived</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-4 col-lg-6">
+            <div class="dashboard-card h-100">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">
+                        <i class="bi bi-pie-chart"></i>
+                        Tickets by Status
+                    </h5>
+                </div>
+
+                <div class="dashboard-card-body">
+                    <div class="chart-box">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-6">
+            <div class="dashboard-card h-100">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Tickets Over Time
+                    </h5>
+                </div>
+
+                <div class="dashboard-card-body">
+                    <div class="chart-box">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-12">
+            <div class="dashboard-card h-100">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">
+                        <i class="bi bi-building"></i>
+                        Tickets by Organization
+                    </h5>
+                </div>
+
+                <div class="dashboard-card-body">
+                    <div class="chart-box">
+                        <canvas id="organizationChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -442,13 +498,14 @@
                                 <th>Organization</th>
                                 <th>User</th>
                                 <th>Status</th>
+                                <th>Created At</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             <?php if (empty($recentTickets)): ?>
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">
+                                    <td colspan="5" class="text-center text-muted py-4">
                                         No recent tickets found.
                                     </td>
                                 </tr>
@@ -484,6 +541,10 @@
                                                 <?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?>
                                             </span>
                                         </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($ticket['created_at'] ?? '-'); ?>
+                                        </td>
                                     </tr>
 
                                 <?php endforeach; ?>
@@ -502,6 +563,13 @@
                     Quick Actions
                 </div>
 
+                <a href="<?= BASE_URL ?>/agent/tickets/create" class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-plus-circle"></i>
+                    </span>
+                    Create Ticket
+                </a>
+
                 <a href="<?= BASE_URL ?>/agent/tickets" class="quick-action-link">
                     <span class="quick-action-icon">
                         <i class="bi bi-ticket-detailed"></i>
@@ -509,178 +577,163 @@
                     View Tickets
                 </a>
 
-                <a href="<?= BASE_URL ?>/reports/tickets" class="quick-action-link">
+                <a href="<?= BASE_URL ?>/organizations/create" class="quick-action-link">
                     <span class="quick-action-icon">
-                        <i class="bi bi-bar-chart-line"></i>
+                        <i class="bi bi-building-add"></i>
                     </span>
-                    Ticket Reports
+                    Create Organization
                 </a>
 
-                <a href="<?= BASE_URL ?>/profile" class="quick-action-link">
+                <a href="<?= BASE_URL ?>/agent/users/create" class="quick-action-link">
                     <span class="quick-action-icon">
-                        <i class="bi bi-person-circle"></i>
+                        <i class="bi bi-person-plus"></i>
                     </span>
-                    My Profile
-                </a>
-
-                <a href="<?= BASE_URL ?>/logout" class="quick-action-link">
-                    <span class="quick-action-icon">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </span>
-                    Logout
+                    Create User
                 </a>
 
             </div>
         </div>
 
     </div>
-    <div class="row mt-4">
-
-    <div class="col-lg-8">
-
-        <div class="card dashboard-chart-card">
-
-            <div class="card-header bg-white">
-                <h5 class="mb-0 fw-bold">
-                    Ticket Trend
-                </h5>
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="ticketTrendChart"></canvas>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-lg-4">
-
-        <div class="card dashboard-chart-card">
-
-            <div class="card-header bg-white">
-                <h5 class="mb-0 fw-bold">
-                    Priority Distribution
-                </h5>
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="priorityChart"></canvas>
-
-            </div>
-
-        </div>
-
-    </div>
 
 </div>
-<div class="row mt-4">
 
-    <div class="col-lg-12">
-
-        <div class="card dashboard-chart-card">
-
-            <div class="card-header bg-white">
-                <h5 class="mb-0 fw-bold">
-                    Tickets by Organization
-                </h5>
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="organizationChart"></canvas>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<script>
-
-new Chart(
-    document.getElementById('ticketTrendChart'),
-    {
-        type:'line',
-        data:{
-            labels:[
-                <?php foreach($monthlyTickets as $row): ?>
-                    '<?= $row['month']; ?>',
-                <?php endforeach; ?>
-            ],
-            datasets:[{
-                label:'Tickets',
-                data:[
-                    <?php foreach($monthlyTickets as $row): ?>
-                        <?= $row['total']; ?>,
-                    <?php endforeach; ?>
-                ],
-                borderColor:'#84cc16',
-                backgroundColor:'rgba(132,204,22,.2)',
-                tension:.4,
-                fill:true
-            }]
-        }
-    }
-);
-
-</script>
-
-<script>
-
-new Chart(
-    document.getElementById('priorityChart'),
-    {
-        type:'doughnut',
-        data:{
-            labels:[
-                <?php foreach($priorityTickets as $row): ?>
-                    '<?= ucfirst($row['priority']); ?>',
-                <?php endforeach; ?>
-            ],
-            datasets:[{
-                data:[
-                    <?php foreach($priorityTickets as $row): ?>
-                        <?= $row['total']; ?>,
-                    <?php endforeach; ?>
-                ]
-            }]
-        }
-    }
-);
-
-</script>
-<script>
-
-new Chart(
-    document.getElementById('organizationChart'),
-    {
-        type:'bar',
-        data:{
-            labels:[
-                <?php foreach($organizationTickets as $row): ?>
-                    '<?= addslashes($row['name']); ?>',
-                <?php endforeach; ?>
-            ],
-            datasets:[{
-                label:'Tickets',
-                data:[
-                    <?php foreach($organizationTickets as $row): ?>
-                        <?= $row['total']; ?>,
-                    <?php endforeach; ?>
-                ],
-                backgroundColor:'#84cc16'
-            }]
-        }
-    }
-);
-
-</script>
-
-</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const chartFont = {
+        family: "'Inter', 'Arial', sans-serif",
+        size: 12
+    };
+
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Open', 'In Progress', 'Pending', 'Resolved', 'Closed'],
+            datasets: [{
+                data: [
+                    <?= (int)$ticketCounts['open_count']; ?>,
+                    <?= (int)$ticketCounts['in_progress_count']; ?>,
+                    <?= (int)$ticketCounts['pending_count']; ?>,
+                    <?= (int)$ticketCounts['resolved_count']; ?>,
+                    <?= (int)$ticketCounts['closed_count']; ?>
+                ],
+                backgroundColor: [
+                    '#22c55e',
+                    '#8b5cf6',
+                    '#f97316',
+                    '#14b8a6',
+                    '#ef4444'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        font: chartFont
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: {
+            labels: <?= json_encode(array_column($monthlyTickets ?? [], 'month')); ?>,
+            datasets: [{
+                label: 'Tickets',
+                data: <?= json_encode(array_column($monthlyTickets ?? [], 'total')); ?>,
+                borderColor: '#3b941f',
+                backgroundColor: 'rgba(177,233,111,.25)',
+                tension: .4,
+                fill: true,
+                pointBackgroundColor: '#3b941f',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: chartFont
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#eef2f7'
+                    },
+                    ticks: {
+                        font: chartFont
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('organizationChart'), {
+        type: 'bar',
+        data: {
+            labels: <?= json_encode(array_column($organizationTickets ?? [], 'name')); ?>,
+            datasets: [{
+                label: 'Tickets',
+                data: <?= json_encode(array_column($organizationTickets ?? [], 'total')); ?>,
+                backgroundColor: '#6cb33f',
+                borderRadius: 8,
+                barThickness: 18
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#eef2f7'
+                    },
+                    ticks: {
+                        font: chartFont
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: chartFont
+                    }
+                }
+            }
+        }
+    });
+</script>
+
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
