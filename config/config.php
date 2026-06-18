@@ -33,26 +33,23 @@ define('SESSION_TIMEOUT', 1800); // 30 Minutes
 |--------------------------------------------------------------------------
 | Mail Configuration
 |--------------------------------------------------------------------------
-| Brevo SMTP
-|--------------------------------------------------------------------------
 */
 
-define('MAIL_HOST', 'smtp-relay.brevo.com');
-define('MAIL_PORT', 587);
+define('MAIL_DEBUG', 2);
 
-define('MAIL_USERNAME', 'ac4d3e001@smtp-brevo.com');
+define('MAIL_HOST', 'mail.samtech.ae');
+define('MAIL_PORT', 465);
+
+define('MAIL_USERNAME', 'helpdesk@samtech.ae');
 define('MAIL_PASSWORD', '');
 
-define('MAIL_FROM_EMAIL', 'samtech-verification@outlook.com');
-define('MAIL_FROM_NAME', 'Samtech Helpdesk Security');
+define('MAIL_FROM_EMAIL', 'helpdesk@samtech.ae');
+define('MAIL_FROM_NAME', 'Samtech Verification');
 
+define('TICKET_MAIL_USERNAME', 'helpdesk@samtech.ae');
+define('TICKET_MAIL_PASSWORD', '');
 
-define('TICKET_MAIL_USERNAME', 'samtech-helpdesk@outlook.com');
-
-define('TICKET_MAIL_PASSWORD', 'dtbgdjvvcussmwit');
-
-define('TICKET_FROM_EMAIL', 'samtech-helpdesk@outlook.com');
-
+define('TICKET_FROM_EMAIL', 'helpdesk@samtech.ae');
 define('TICKET_FROM_NAME', 'Samtech Helpdesk');
 
 

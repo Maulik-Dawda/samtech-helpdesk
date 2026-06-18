@@ -11,6 +11,16 @@ class MailService
 
         $mail->isSMTP();
 
+        /*
+        |--------------------------------------------------------------------------
+        | SMTP DEBUG
+        |--------------------------------------------------------------------------
+        | Keep 0 in production.
+        | Use 2 only while testing SMTP errors.
+        */
+        $mail->SMTPDebug = defined('MAIL_DEBUG') ? MAIL_DEBUG : 0;
+        $mail->Debugoutput = 'html';
+
         $mail->Host = MAIL_HOST;
         $mail->SMTPAuth = true;
 
@@ -28,10 +38,19 @@ class MailService
             $fromName = MAIL_FROM_NAME;
         }
 
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        /*
+        |--------------------------------------------------------------------------
+        | TMDHosting Recommended SMTP
+        |--------------------------------------------------------------------------
+        | Host: mail.samtech.ae
+        | Port: 465
+        | Encryption: SSL
+        */
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = MAIL_PORT;
 
         $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
 
         $mail->setFrom($fromEmail, $fromName);
 
@@ -46,13 +65,24 @@ class MailService
             $mail = self::baseMailer($type);
 
             $mail->addAddress($to);
+
             $mail->Subject = $subject;
             $mail->Body = $body;
-            $mail->AltBody = strip_tags($body);
+            $mail->AltBody = strip_tags(
+                str_replace(['<br>', '<br/>', '<br />'], "\n", $body)
+            );
 
             return $mail->send();
+
         } catch (Exception $e) {
-            error_log("Mail Error: " . $mail->ErrorInfo . " | " . $e->getMessage());
+
+            error_log(
+                "Mail Error: " .
+                ($mail->ErrorInfo ?? '') .
+                " | Exception: " .
+                $e->getMessage()
+            );
+
             return false;
         }
     }
@@ -108,7 +138,7 @@ class MailService
         return '
         <div style="margin:0;padding:0;background:#f4f7f4;font-family:Arial,sans-serif;">
             <div style="max-width:560px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
-                
+
                 <div style="background:#111827;padding:22px;text-align:center;">
                     <h2 style="margin:0;color:#ffffff;font-size:22px;">
                         Samtech Helpdesk
@@ -150,7 +180,7 @@ class MailService
         return '
         <div style="margin:0;padding:0;background:#f4f7f4;font-family:Arial,sans-serif;">
             <div style="max-width:560px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
-                
+
                 <div style="background:#111827;padding:22px;text-align:center;">
                     <h2 style="margin:0;color:#ffffff;font-size:22px;">
                         Samtech Helpdesk
