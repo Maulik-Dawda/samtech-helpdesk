@@ -9,7 +9,7 @@ class AgentUserController extends Controller
     private function agentGuard()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('admin');
+        AuthMiddleware::check('agent');
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -24,7 +24,7 @@ class AgentUserController extends Controller
 
         $users = $userModel->getAllUsersForAgent();
 
-        $this->view('admin/users/index', [
+        $this->view('agent/users/index', [
             'users' => $users
         ]);
     }
@@ -37,7 +37,7 @@ class AgentUserController extends Controller
 
         $organizations = $organizationModel->getAllActive();
 
-        $this->view('admin/users/create', [
+        $this->view('agent/users/create', [
             'organizations' => $organizations
         ]);
     }
@@ -51,7 +51,6 @@ class AgentUserController extends Controller
         $fullName = trim($_POST['full_name'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
-        $role = 'user';
         $organizationId = $_POST['organization_id'] ?? null;
         $isOrganizationAdmin = isset($_POST['is_organization_admin']) ? 1 : 0;
 
@@ -59,44 +58,31 @@ class AgentUserController extends Controller
             empty($fullName) ||
             empty($email) ||
             empty($password) ||
-            empty($role)
+            empty($organizationId)
         ) {
-            $_SESSION['error'] = "All required fields are mandatory.";
-            header("Location: " . BASE_URL . "/admin/users/create");
+            $_SESSION['error'] = "Full name, email, password and organization are required.";
+            header("Location: " . BASE_URL . "/agent/users/create");
             exit;
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Invalid email address.";
-            header("Location: " . BASE_URL . "/admin/users/create");
-            exit;
-        }
-
-        if (!in_array($role, $allowedRoles)) {
-            $_SESSION['error'] = "Invalid role selected.";
-            header("Location: " . BASE_URL . "/admin/users/create");
+            header("Location: " . BASE_URL . "/agent/users/create");
             exit;
         }
 
         if (strlen($password) < 8) {
             $_SESSION['error'] = "Password must be at least 8 characters.";
-            header("Location: " . BASE_URL . "/admin/users/create");
+            header("Location: " . BASE_URL . "/agent/users/create");
             exit;
         }
 
-        if ($role === 'admin') {
-            $organizationId = null;
-            $isOrganizationAdmin = 0;
-        }
+        $organizationModel = new Organization();
+        $organization = $organizationModel->findById($organizationId);
 
-        if ($role === 'agent') {
-            $organizationId = null;
-            $isOrganizationAdmin = 0;
-        }
-
-        if ($role === 'user' && empty($organizationId)) {
-            $_SESSION['error'] = "Organization is required for user accounts.";
-            header("Location: " . BASE_URL . "/admin/users/create");
+        if (!$organization || (int)$organization['is_active'] !== 1) {
+            $_SESSION['error'] = "Invalid or inactive organization selected.";
+            header("Location: " . BASE_URL . "/agent/users/create");
             exit;
         }
 
@@ -104,7 +90,7 @@ class AgentUserController extends Controller
 
         if ($userModel->emailExists($email)) {
             $_SESSION['error'] = "Email already exists.";
-            header("Location: " . BASE_URL . "/admin/users/create");
+            header("Location: " . BASE_URL . "/agent/users/create");
             exit;
         }
 
@@ -118,13 +104,13 @@ class AgentUserController extends Controller
 
         if (!$created) {
             $_SESSION['error'] = "Unable to create user.";
-            header("Location: " . BASE_URL . "/admin/users/create");
+            header("Location: " . BASE_URL . "/agent/users/create");
             exit;
         }
 
         $_SESSION['success'] = "User created successfully.";
 
-        header("Location: " . BASE_URL . "/admin/users");
+        header("Location: " . BASE_URL . "/agent/users");
         exit;
     }
 
@@ -143,15 +129,15 @@ class AgentUserController extends Controller
             exit;
         }
 
-        if ($user['role'] === 'admin') {
+        if ($user['role'] !== 'user') {
             http_response_code(403);
-            echo "Admin accounts cannot be edited.";
+            echo "Only user accounts can be edited by agents.";
             exit;
         }
 
         $organizations = $organizationModel->getAllActive();
 
-        $this->view('admin/users/edit', [
+        $this->view('agent/users/edit', [
             'user' => $user,
             'organizations' => $organizations
         ]);
@@ -173,75 +159,69 @@ class AgentUserController extends Controller
             exit;
         }
 
-        if ($existingUser['role'] === 'admin') {
+        if ($existingUser['role'] !== 'user') {
             http_response_code(403);
-            echo "Admin accounts cannot be updated.";
+            echo "Only user accounts can be updated by agents.";
             exit;
         }
 
         $fullName = trim($_POST['full_name'] ?? '');
         $email = trim($_POST['email'] ?? '');
-        $updated = $userModel->updateUserByAgent(...);
         $organizationId = $_POST['organization_id'] ?? null;
         $isOrganizationAdmin = isset($_POST['is_organization_admin']) ? 1 : 0;
         $isActive = isset($_POST['is_active']) ? 1 : 0;
 
-        $allowedRoles = [
-            'agent',
-            'user'
-        ];
-
         if (
             empty($fullName) ||
             empty($email) ||
-            empty($role)
+            empty($organizationId)
         ) {
-            $_SESSION['error'] = "All required fields are mandatory.";
-            header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
+            $_SESSION['error'] = "Full name, email and organization are required.";
+            header("Location: " . BASE_URL . "/agent/users/edit/" . $id);
             exit;
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Invalid email address.";
-            header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
+            header("Location: " . BASE_URL . "/agent/users/edit/" . $id);
             exit;
         }
 
-        if (!in_array($role, $allowedRoles)) {
-            $_SESSION['error'] = "Invalid role selected.";
-            header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
+        $organizationModel = new Organization();
+        $organization = $organizationModel->findById($organizationId);
+
+        if (!$organization || (int)$organization['is_active'] !== 1) {
+            $_SESSION['error'] = "Invalid or inactive organization selected.";
+            header("Location: " . BASE_URL . "/agent/users/edit/" . $id);
             exit;
         }
 
-        if ($role === 'agent') {
-            $organizationId = null;
-            $isOrganizationAdmin = 0;
-        }
-
-        if ($role === 'user' && empty($organizationId)) {
-            $_SESSION['error'] = "Organization is required for user accounts.";
-            header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
+        if (
+            strtolower($email) !== strtolower($existingUser['email']) &&
+            $userModel->emailExists($email)
+        ) {
+            $_SESSION['error'] = "Email already exists.";
+            header("Location: " . BASE_URL . "/agent/users/edit/" . $id);
             exit;
         }
 
-        $updated = $userModel->updateUserByAdmin($id, [
+        $updated = $userModel->updateUserByAgent($id, [
             'organization_id' => $organizationId,
             'full_name' => $fullName,
             'email' => $email,
-            'role' => $role,
             'is_organization_admin' => $isOrganizationAdmin,
             'is_active' => $isActive
         ]);
 
         if (!$updated) {
             $_SESSION['error'] = "Unable to update user.";
-            header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
+            header("Location: " . BASE_URL . "/agent/users/edit/" . $id);
             exit;
         }
 
         $_SESSION['success'] = "User updated successfully.";
 
-        header("Location: " . BASE_URL . "/admin/users");
+        header("Location: " . BASE_URL . "/agent/users");
         exit;
     }
 
@@ -259,17 +239,23 @@ class AgentUserController extends Controller
             exit;
         }
 
-        if ($user['role'] === 'admin') {
+        if ($user['role'] !== 'user') {
             http_response_code(403);
-            echo "Admin accounts cannot be disabled.";
+            echo "Only user accounts can be disabled by agents.";
             exit;
         }
 
-        $userModel->disableUserByAgent($id);
+        $disabled = $userModel->disableUserByAgent($id);
+
+        if (!$disabled) {
+            $_SESSION['error'] = "Unable to disable user.";
+            header("Location: " . BASE_URL . "/agent/users");
+            exit;
+        }
 
         $_SESSION['success'] = "User disabled successfully.";
 
-        header("Location: " . BASE_URL . "/admin/users");
+        header("Location: " . BASE_URL . "/agent/users");
         exit;
     }
 }
