@@ -411,4 +411,18 @@ class User extends Model
 
         return $stmt->execute([$id]);
     }
+    public function toggleUserStatusByAgent($id, $status)
+{
+    $stmt = $this->db->prepare("
+        UPDATE users
+        SET is_active = ?
+        WHERE id = ?
+        AND role = 'user'
+    ");
+
+    return $stmt->execute([
+        $status,
+        $id
+    ]);
+}
 }

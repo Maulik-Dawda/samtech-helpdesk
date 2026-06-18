@@ -226,36 +226,40 @@ class AgentUserController extends Controller
     }
 
     public function disable($id)
-    {
-        $this->agentGuard();
+{
+    $this->agentGuard();
 
-        $userModel = new User();
+    $userModel = new User();
 
-        $user = $userModel->findById($id);
+    $user = $userModel->findById($id);
 
-        if (!$user) {
-            http_response_code(404);
-            echo "User not found.";
-            exit;
-        }
+    if (!$user) {
+        http_response_code(404);
+        echo "User not found.";
+        exit;
+    }
 
-        if ($user['role'] !== 'user') {
-            http_response_code(403);
-            echo "Only user accounts can be disabled by agents.";
-            exit;
-        }
+    if ($user['role'] !== 'user') {
+        http_response_code(403);
+        echo "Only user accounts can be updated by agents.";
+        exit;
+    }
 
-        $disabled = $userModel->disableUserByAgent($id);
+    $newStatus = ((int)$user['is_active'] === 1) ? 0 : 1;
 
-        if (!$disabled) {
-            $_SESSION['error'] = "Unable to disable user.";
-            header("Location: " . BASE_URL . "/agent/users");
-            exit;
-        }
+    $updated = $userModel->toggleUserStatusByAgent($id, $newStatus);
 
-        $_SESSION['success'] = "User disabled successfully.";
-
+    if (!$updated) {
+        $_SESSION['error'] = "Unable to update user status.";
         header("Location: " . BASE_URL . "/agent/users");
         exit;
     }
+
+    $_SESSION['success'] = $newStatus === 1
+        ? "User enabled successfully."
+        : "User disabled successfully.";
+
+    header("Location: " . BASE_URL . "/agent/users");
+    exit;
+}
 }
