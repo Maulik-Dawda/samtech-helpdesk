@@ -682,5 +682,5 @@ new Chart(
 </script>
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
