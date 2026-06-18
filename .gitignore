@@ -7,6 +7,8 @@
 # Environment Files
 # =========================
 .env
+/vendor/
+/node_modules/
 .env.local
 .env.production
 

@@ -1,5 +1,10 @@
 <?php
 
+require_once ROOT_PATH . '/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(ROOT_PATH);
+$dotenv->safeLoad();
+
 date_default_timezone_set('Asia/Kolkata');
 
 /*
@@ -35,22 +40,22 @@ define('SESSION_TIMEOUT', 1800); // 30 Minutes
 |--------------------------------------------------------------------------
 */
 
-define('MAIL_DEBUG', 2);
+define('MAIL_DEBUG', $_ENV['MAIL_DEBUG'] ?? 0);
 
-define('MAIL_HOST', 'mail.samtech.ae');
-define('MAIL_PORT', 465);
+define('MAIL_HOST', $_ENV['MAIL_HOST']);
+define('MAIL_PORT', $_ENV['MAIL_PORT']);
 
-define('MAIL_USERNAME', 'helpdesk@samtech.ae');
-define('MAIL_PASSWORD', '');
+define('MAIL_USERNAME', $_ENV['MAIL_USERNAME']);
+define('MAIL_PASSWORD', $_ENV['MAIL_PASSWORD']);
 
-define('MAIL_FROM_EMAIL', 'helpdesk@samtech.ae');
-define('MAIL_FROM_NAME', 'Samtech Verification');
+define('MAIL_FROM_EMAIL', $_ENV['MAIL_FROM_EMAIL']);
+define('MAIL_FROM_NAME', $_ENV['MAIL_FROM_NAME']);
 
-define('TICKET_MAIL_USERNAME', 'helpdesk@samtech.ae');
-define('TICKET_MAIL_PASSWORD', '');
+define('TICKET_MAIL_USERNAME', $_ENV['TICKET_MAIL_USERNAME']);
+define('TICKET_MAIL_PASSWORD', $_ENV['TICKET_MAIL_PASSWORD']);
 
-define('TICKET_FROM_EMAIL', 'helpdesk@samtech.ae');
-define('TICKET_FROM_NAME', 'Samtech Helpdesk');
+define('TICKET_FROM_EMAIL', $_ENV['TICKET_FROM_EMAIL']);
+define('TICKET_FROM_NAME', $_ENV['TICKET_FROM_NAME']);
 
 
 
