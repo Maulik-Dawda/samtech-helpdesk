@@ -18,7 +18,7 @@
 
                 <div class="card-body p-4">
 
-                    <form method="POST" action="<?= BASE_URL ?>/admin/users/create">
+                    <form method="POST" action="<?= BASE_URL ?>/agent/users/create">
 
                         <?= Csrf::field(); ?>
 
