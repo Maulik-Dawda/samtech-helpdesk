@@ -4,7 +4,7 @@ require_once ROOT_PATH . "/app/Core/Controller.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
 
-class AdminUserController extends Controller
+class AgentUserController extends Controller
 {
     private function agentGuard()
     {
