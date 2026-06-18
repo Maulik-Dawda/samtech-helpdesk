@@ -35,7 +35,7 @@
 
                     <form
                         method="POST"
-                        action="<?= BASE_URL ?>/admin/users/update/<?= $user['id']; ?>"
+                        action="<?= BASE_URL ?>/agent/users/update/<?= $user['id']; ?>"
                     >
 
                         <?= Csrf::field(); ?>
@@ -158,7 +158,7 @@
                         <div class="d-flex justify-content-between">
 
                             <a
-                                href="<?= BASE_URL ?>/admin/users"
+                                href="<?= BASE_URL ?>/agent/users"
                                 class="btn btn-outline-secondary"
                             >
                                 Back

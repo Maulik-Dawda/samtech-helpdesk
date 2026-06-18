@@ -61,7 +61,7 @@
             </div>
 
             <a
-                href="<?= BASE_URL ?>/admin/users/create"
+                href="<?= BASE_URL ?>/agent/users/create"
                 class="btn btn-primary-custom"
             >
                 Create User
@@ -151,17 +151,17 @@
 
                                 <td>
 
-                                    <?php if($user['role'] !== 'admin'): ?>
+                                    <?php if($user['role'] !== 'agent'): ?>
 
                                         <a
-                                            href="<?= BASE_URL ?>/admin/users/edit/<?= $user['id']; ?>"
+                                            href="<?= BASE_URL ?>/agent/users/edit/<?= $user['id']; ?>"
                                             class="action-link"
                                         >
                                             Edit
                                         </a>
 
                                         <a
-                                            href="<?= BASE_URL ?>/admin/users/disable/<?= $user['id']; ?>"
+                                            href="<?= BASE_URL ?>/agent/users/disable/<?= $user['id']; ?>"
                                             class="action-link"
                                             onclick="return confirm('Disable this user?')"
                                         >
