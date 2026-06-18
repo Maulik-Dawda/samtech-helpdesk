@@ -192,6 +192,15 @@ function activeMenu($path, $currentUri)
             Create Ticket
 
         </a>
+        <div class="sidebar-title">Users</div>
+
+        <a href="<?= BASE_URL ?>/agent/users">
+            Manage Users
+        </a>
+
+        <a href="<?= BASE_URL ?>/agent/users/create">
+            Create User
+        </a>
 
     <?php endif; ?>
 

@@ -98,3 +98,13 @@ $router->post('/organizations/update/{id}', 'AdminOrganizationController@update'
 
 $router->get('/agent/tickets/create', 'AgentTicketController@create');
 $router->post('/agent/tickets/store', 'AgentTicketController@store');
+
+$router->get('/agent/users', 'AgentUserController@index');
+
+$router->get('/agent/users/create', 'AgentUserController@create');
+$router->post('/agent/users/create', 'AgentUserController@store');
+
+$router->get('/agent/users/edit/{id}', 'AgentUserController@edit');
+$router->post('/agent/users/update/{id}', 'AgentUserController@update');
+
+$router->get('/agent/users/disable/{id}', 'AgentUserController@disable');

@@ -323,17 +323,92 @@ class User extends Model
         return $stmt->fetch();
     }
     public function getAgents()
-{
-    $stmt = $this->db->prepare("
+    {
+        $stmt = $this->db->prepare("
         SELECT *
         FROM users
         WHERE role = 'agent'
         AND is_active = 1
     ");
 
-    $stmt->execute();
+        $stmt->execute();
 
-    return $stmt->fetchAll();
-}
-    
+        return $stmt->fetchAll();
+    }
+    public function getAllUsersForAgent()
+    {
+        $stmt = $this->db->prepare("
+        SELECT
+            users.*,
+            organizations.name AS organization_name
+        FROM users
+        LEFT JOIN organizations
+            ON organizations.id = users.organization_id
+        WHERE users.role = 'user'
+        ORDER BY users.created_at DESC
+    ");
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+    public function createByAgent($data)
+    {
+        $stmt = $this->db->prepare("
+        INSERT INTO users
+        (
+            organization_id,
+            full_name,
+            email,
+            password,
+            role,
+            is_organization_admin,
+            is_email_verified,
+            is_active
+        )
+        VALUES (?, ?, ?, ?, 'user', ?, 1, 1)
+    ");
+
+        return $stmt->execute([
+            $data['organization_id'],
+            $data['full_name'],
+            $data['email'],
+            password_hash($data['password'], PASSWORD_BCRYPT),
+            $data['is_organization_admin']
+        ]);
+    }
+    public function updateUserByAgent($id, $data)
+    {
+        $stmt = $this->db->prepare("
+        UPDATE users
+        SET
+            organization_id = ?,
+            full_name = ?,
+            email = ?,
+            is_organization_admin = ?,
+            is_active = ?
+        WHERE id = ?
+        AND role = 'user'
+    ");
+
+        return $stmt->execute([
+            $data['organization_id'],
+            $data['full_name'],
+            $data['email'],
+            $data['is_organization_admin'],
+            $data['is_active'],
+            $id
+        ]);
+    }
+    public function disableUserByAgent($id)
+    {
+        $stmt = $this->db->prepare("
+        UPDATE users
+        SET is_active = 0
+        WHERE id = ?
+        AND role = 'user'
+    ");
+
+        return $stmt->execute([$id]);
+    }
 }
