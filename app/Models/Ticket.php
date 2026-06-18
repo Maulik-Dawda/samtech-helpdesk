@@ -458,4 +458,19 @@ class Ticket extends Model
 
         return $stmt->fetchAll();
     }
+    public function getPriorityTicketCounts()
+{
+    $stmt = $this->db->prepare("
+        SELECT
+            priority,
+            COUNT(*) AS total
+        FROM tickets
+        GROUP BY priority
+        ORDER BY total DESC
+    ");
+
+    $stmt->execute();
+
+    return $stmt->fetchAll();
+}
 }

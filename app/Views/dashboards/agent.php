@@ -534,6 +534,152 @@
         </div>
 
     </div>
+    <div class="row mt-4">
+
+    <div class="col-lg-8">
+
+        <div class="card dashboard-chart-card">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    Ticket Trend
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="ticketTrendChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="card dashboard-chart-card">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    Priority Distribution
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="priorityChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="row mt-4">
+
+    <div class="col-lg-12">
+
+        <div class="card dashboard-chart-card">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    Tickets by Organization
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="organizationChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+new Chart(
+    document.getElementById('ticketTrendChart'),
+    {
+        type:'line',
+        data:{
+            labels:[
+                <?php foreach($monthlyTickets as $row): ?>
+                    '<?= $row['month']; ?>',
+                <?php endforeach; ?>
+            ],
+            datasets:[{
+                label:'Tickets',
+                data:[
+                    <?php foreach($monthlyTickets as $row): ?>
+                        <?= $row['total']; ?>,
+                    <?php endforeach; ?>
+                ],
+                borderColor:'#84cc16',
+                backgroundColor:'rgba(132,204,22,.2)',
+                tension:.4,
+                fill:true
+            }]
+        }
+    }
+);
+
+</script>
+
+<script>
+
+new Chart(
+    document.getElementById('priorityChart'),
+    {
+        type:'doughnut',
+        data:{
+            labels:[
+                <?php foreach($priorityTickets as $row): ?>
+                    '<?= ucfirst($row['priority']); ?>',
+                <?php endforeach; ?>
+            ],
+            datasets:[{
+                data:[
+                    <?php foreach($priorityTickets as $row): ?>
+                        <?= $row['total']; ?>,
+                    <?php endforeach; ?>
+                ]
+            }]
+        }
+    }
+);
+
+</script>
+<script>
+
+new Chart(
+    document.getElementById('organizationChart'),
+    {
+        type:'bar',
+        data:{
+            labels:[
+                <?php foreach($organizationTickets as $row): ?>
+                    '<?= addslashes($row['name']); ?>',
+                <?php endforeach; ?>
+            ],
+            datasets:[{
+                label:'Tickets',
+                data:[
+                    <?php foreach($organizationTickets as $row): ?>
+                        <?= $row['total']; ?>,
+                    <?php endforeach; ?>
+                ],
+                backgroundColor:'#84cc16'
+            }]
+        }
+    }
+);
+
+</script>
 
 </div>
 

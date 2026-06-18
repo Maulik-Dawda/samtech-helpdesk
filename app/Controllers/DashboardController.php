@@ -49,24 +49,30 @@ class DashboardController extends Controller
     }
 
     public function agent()
-    {
-        AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+{
+    AuthMiddleware::timeout();
+    AuthMiddleware::check('agent');
 
-        $this->startSession();
+    $this->startSession();
 
-        $ticketModel = new Ticket();
+    $ticketModel = new Ticket();
 
-        $ticketCounts = $ticketModel->getDashboardCounts();
-        $recentTickets = $ticketModel->getRecentTickets(8);
-        $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
+    $ticketCounts = $ticketModel->getDashboardCounts();
 
-        $this->view('dashboards/agent', [
-            'ticketCounts' => $ticketCounts,
-            'recentTickets' => $recentTickets,
-            'monthlyTickets' => $monthlyTickets
-        ]);
-    }
+    $recentTickets = $ticketModel->getRecentTickets(8);
+
+    $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
+
+    $organizationTickets =
+        $ticketModel->getOrganizationTicketCounts();
+
+    $this->view('dashboards/agent', [
+        'ticketCounts' => $ticketCounts,
+        'recentTickets' => $recentTickets,
+        'monthlyTickets' => $monthlyTickets,
+        'organizationTickets' => $organizationTickets
+    ]);
+}
 
     public function user()
     {
