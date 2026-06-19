@@ -5,9 +5,6 @@ require_once ROOT_PATH . "/app/Core/Controller.php";
 require_once ROOT_PATH . "/app/Models/Ticket.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
-
-require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
-
 require_once ROOT_PATH . "/app/Models/TicketReply.php";
 require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
 require_once ROOT_PATH . "/app/Models/Attachment.php";
@@ -15,26 +12,25 @@ require_once ROOT_PATH . "/app/Models/Attachment.php";
 class ReportController extends Controller
 {
     private function reportGuard($permissionKey = 'view_ticket_reports')
-    {
-        AuthMiddleware::timeout();
+{
+    AuthMiddleware::timeout();
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $role = $_SESSION['auth_user_role'] ?? '';
-
-        if ($role === 'admin') {
-            return;
-        }
-
-        PermissionHelper::require($permissionKey);
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
+
+    $role = $_SESSION['auth_user_role'] ?? '';
+
+    if ($role === 'admin') {
+        return;
+    }
+
+    PermissionHelper::require($permissionKey);
+}
 
     public function tickets()
     {
-        $this->reportGuard('view_ticket_reports');
-
+$this->reportGuard();
         $filters = [
             'organization_id' => $_GET['organization_id'] ?? '',
             'user_id' => $_GET['user_id'] ?? '',
@@ -68,7 +64,7 @@ class ReportController extends Controller
 
     public function printTickets()
     {
-        $this->reportGuard('print_ticket_reports');
+$this->reportGuard();
 
         $filters = [
             'organization_id' => $_GET['organization_id'] ?? '',
@@ -91,7 +87,7 @@ class ReportController extends Controller
     }
     public function filterTickets()
     {
-        $this->reportGuard('view_ticket_reports');
+        $this->reportGuard();
 
         $filters = [
             'organization_id' => $_GET['organization_id'] ?? '',

@@ -220,7 +220,6 @@ function activeMenu($path, $currentUri)
         <div class="sidebar-title">Admin</div>
 
         <a class="<?= activeMenu('/admin/users', $currentUri); ?>" href="<?= BASE_URL ?>/admin/users">User Management</a>
-        <a class="<?= activeMenu('/admin/permissions', $currentUri); ?>" href="<?= BASE_URL ?>/admin/permissions">Permissions</a>
         <a class="<?= activeMenu('/admin/activity-logs', $currentUri); ?>" href="<?= BASE_URL ?>/admin/activity-logs">
             Activity Logs
         </a>
@@ -250,23 +249,19 @@ function activeMenu($path, $currentUri)
 
     <?php endif; ?>
 
-    <?php if (
-        $role === 'admin'
-        || PermissionHelper::has('view_ticket_reports')
-        || PermissionHelper::has('view_ticket_detail_report')
-    ): ?>
+   <?php if ($role === 'admin' || $role === 'agent'): ?>
 
-        <div class="sidebar-title">Reports</div>
+    <div class="sidebar-title">Reports</div>
 
-        <?php if ($role === 'admin' || PermissionHelper::has('view_ticket_reports')): ?>
-            <a class="<?= activeMenu('/reports/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/reports/tickets">Ticket Reports</a>
-        <?php endif; ?>
+    <a class="<?= activeMenu('/reports/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/reports/tickets">
+        Ticket Reports
+    </a>
 
-        <?php if ($role === 'admin' || PermissionHelper::has('view_ticket_detail_report')): ?>
-            <a class="<?= activeMenu('/reports/ticket-detail', $currentUri); ?>" href="<?= BASE_URL ?>/reports/ticket-detail">Ticket Detail Report</a>
-        <?php endif; ?>
+    <a class="<?= activeMenu('/reports/ticket-detail', $currentUri); ?>" href="<?= BASE_URL ?>/reports/ticket-detail">
+        Ticket Detail Report
+    </a>
 
-    <?php endif; ?>
+<?php endif; ?>
 
     <div class="sidebar-title">Account</div>
 
