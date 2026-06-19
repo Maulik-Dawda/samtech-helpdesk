@@ -19,7 +19,7 @@
                 </div>
 
                 <?php if (
-                    $_SESSION['auth_user_role'] === 'admin'
+                    $_SESSION['auth_user_role'] === 'admin' || 'agent'
                     ||
                     PermissionHelper::has('print_ticket_reports')
                 ): ?>
