@@ -11,26 +11,27 @@ require_once ROOT_PATH . "/app/Models/Attachment.php";
 
 class ReportController extends Controller
 {
-    private function reportGuard($permissionKey = 'view_ticket_reports')
-{
-    AuthMiddleware::timeout();
+    private function reportGuard()
+    {
+        AuthMiddleware::timeout();
 
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $role = $_SESSION['auth_user_role'] ?? '';
+
+        if (!in_array($role, ['admin', 'agent'])) {
+            http_response_code(403);
+            require_once ROOT_PATH . "/app/Views/errors/403.php";
+            exit;
+        }
     }
-
-    $role = $_SESSION['auth_user_role'] ?? '';
-
-    if ($role === 'admin') {
-        return;
-    }
-
-    PermissionHelper::require($permissionKey);
-}
 
     public function tickets()
     {
-$this->reportGuard();
+        $this->reportGuard();
+
         $filters = [
             'organization_id' => $_GET['organization_id'] ?? '',
             'user_id' => $_GET['user_id'] ?? '',
@@ -46,11 +47,8 @@ $this->reportGuard();
         $organizationModel = new Organization();
 
         $tickets = $ticketModel->getReportTickets($filters);
-
         $organizations = $organizationModel->getAllActive();
-
         $users = $userModel->getUsersByRole('user');
-
         $agents = $userModel->getUsersByRole('agent');
 
         $this->view('reports/tickets', [
@@ -64,7 +62,7 @@ $this->reportGuard();
 
     public function printTickets()
     {
-$this->reportGuard();
+        $this->reportGuard();
 
         $filters = [
             'organization_id' => $_GET['organization_id'] ?? '',
@@ -85,6 +83,7 @@ $this->reportGuard();
             'filters' => $filters
         ]);
     }
+
     public function filterTickets()
     {
         $this->reportGuard();
@@ -107,9 +106,10 @@ $this->reportGuard();
             'tickets' => $tickets
         ]);
     }
+
     public function ticketDetail()
     {
-        $this->reportGuard('view_ticket_detail_report');
+        $this->reportGuard();
 
         $ticketId = $_GET['ticket_id'] ?? '';
 
