@@ -26,10 +26,9 @@
 
                     <a
                         href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
-                        target="_blank"
                         id="printReportBtn"
                         class="btn btn-primary-custom">
-                        Print Report
+                        Download PDF
                     </a>
 
                 <?php endif; ?>
@@ -250,23 +249,30 @@
         `;
 
             fetch('<?= BASE_URL ?>/reports/tickets/filter?' + queryString)
-                .then(response => response.text())
-                .then(html => {
-                    tableWrapper.innerHTML = html;
+    .then(response => response.text())
+    .then(html => {
+        tableWrapper.innerHTML = html;
 
-                    if (printBtn) {
-                        printBtn.href =
-                            '<?= BASE_URL ?>/reports/tickets/print?' + queryString;
-                    }
-                })
-                .catch(() => {
-                    tableWrapper.innerHTML = `
-                    <div class="alert alert-danger">
-                        Unable to load report data.
-                    </div>
-                `;
-                });
-        });
+        if (printBtn) {
+            printBtn.href =
+                '<?= BASE_URL ?>/reports/tickets/print?' + queryString;
+        }
+
+        if (typeof hideSamtechLoader === 'function') {
+            hideSamtechLoader();
+        }
+    })
+    .catch(() => {
+        tableWrapper.innerHTML = `
+            <div class="alert alert-danger">
+                Unable to load report data.
+            </div>
+        `;
+
+        if (typeof hideSamtechLoader === 'function') {
+            hideSamtechLoader();
+        }
+    });
 
     });
 </script>
