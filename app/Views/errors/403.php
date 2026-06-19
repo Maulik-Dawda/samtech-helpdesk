@@ -116,7 +116,7 @@
         <?php if($role === 'admin'): ?>
 
             <a
-                href="<?= BASE_URL ?>/admin/dashboard"
+                href="<?= BASE_URL ?>/admin-dashboard"
                 class="btn btn-home"
             >
                 Go To Dashboard
@@ -125,7 +125,7 @@
         <?php elseif($role === 'agent'): ?>
 
             <a
-                href="<?= BASE_URL ?>/agent/dashboard"
+                href="<?= BASE_URL ?>/agent-dashboard"
                 class="btn btn-home"
             >
                 Go To Dashboard
@@ -134,7 +134,7 @@
         <?php else: ?>
 
             <a
-                href="<?= BASE_URL ?>/dashboard"
+                href="<?= BASE_URL ?>/user-dashboard"
                 class="btn btn-home"
             >
                 Go To Dashboard
