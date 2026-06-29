@@ -23,8 +23,7 @@
                 <a
                     href="<?= BASE_URL ?>/reports/tickets/print"
                     id="printReportBtn"
-                    class="btn btn-primary-custom"
-                >
+                    class="btn btn-primary-custom">
                     Print Report
                 </a>
 
@@ -48,12 +47,11 @@
 
                             <option value="">All Organizations</option>
 
-                            <?php foreach($organizations as $organization): ?>
+                            <?php foreach ($organizations as $organization): ?>
 
                                 <option
                                     value="<?= $organization['id']; ?>"
-                                    <?= $filters['organization_id']==$organization['id']?'selected':''; ?>
-                                >
+                                    <?= $filters['organization_id'] == $organization['id'] ? 'selected' : ''; ?>>
                                     <?= htmlspecialchars($organization['name']); ?>
                                 </option>
 
@@ -73,12 +71,11 @@
 
                             <option value="">All Users</option>
 
-                            <?php foreach($users as $user): ?>
+                            <?php foreach ($users as $user): ?>
 
                                 <option
                                     value="<?= $user['id']; ?>"
-                                    <?= $filters['user_id']==$user['id']?'selected':''; ?>
-                                >
+                                    <?= $filters['user_id'] == $user['id'] ? 'selected' : ''; ?>>
                                     <?= htmlspecialchars($user['full_name']); ?>
                                 </option>
 
@@ -98,12 +95,11 @@
 
                             <option value="">All Agents</option>
 
-                            <?php foreach($agents as $agent): ?>
+                            <?php foreach ($agents as $agent): ?>
 
                                 <option
                                     value="<?= $agent['id']; ?>"
-                                    <?= $filters['agent_id']==$agent['id']?'selected':''; ?>
-                                >
+                                    <?= $filters['agent_id'] == $agent['id'] ? 'selected' : ''; ?>>
                                     <?= htmlspecialchars($agent['full_name']); ?>
                                 </option>
 
@@ -122,11 +118,11 @@
                             class="form-select">
 
                             <option value="">All</option>
-                            <option value="open" <?= $filters['status']=='open'?'selected':''; ?>>Open</option>
-                            <option value="in_progress" <?= $filters['status']=='in_progress'?'selected':''; ?>>In Progress</option>
-                            <option value="pending" <?= $filters['status']=='pending'?'selected':''; ?>>Pending</option>
-                            <option value="resolved" <?= $filters['status']=='resolved'?'selected':''; ?>>Resolved</option>
-                            <option value="closed" <?= $filters['status']=='closed'?'selected':''; ?>>Closed</option>
+                            <option value="open" <?= $filters['status'] == 'open' ? 'selected' : ''; ?>>Open</option>
+                            <option value="in_progress" <?= $filters['status'] == 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
+                            <option value="pending" <?= $filters['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option>
+                            <option value="resolved" <?= $filters['status'] == 'resolved' ? 'selected' : ''; ?>>Resolved</option>
+                            <option value="closed" <?= $filters['status'] == 'closed' ? 'selected' : ''; ?>>Closed</option>
 
                         </select>
 
@@ -141,10 +137,10 @@
                             class="form-select">
 
                             <option value="">All</option>
-                            <option value="low" <?= $filters['priority']=='low'?'selected':''; ?>>Low</option>
-                            <option value="medium" <?= $filters['priority']=='medium'?'selected':''; ?>>Medium</option>
-                            <option value="high" <?= $filters['priority']=='high'?'selected':''; ?>>High</option>
-                            <option value="urgent" <?= $filters['priority']=='urgent'?'selected':''; ?>>Urgent</option>
+                            <option value="low" <?= $filters['priority'] == 'low' ? 'selected' : ''; ?>>Low</option>
+                            <option value="medium" <?= $filters['priority'] == 'medium' ? 'selected' : ''; ?>>Medium</option>
+                            <option value="high" <?= $filters['priority'] == 'high' ? 'selected' : ''; ?>>High</option>
+                            <option value="urgent" <?= $filters['priority'] == 'urgent' ? 'selected' : ''; ?>>Urgent</option>
 
                         </select>
 
@@ -205,53 +201,54 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
 
-document.addEventListener("DOMContentLoaded",function(){
+        const form = document.getElementById("ticketReportFilterForm");
 
-    const form=document.getElementById("ticketReportFilterForm");
+        const table = document.getElementById("ticketReportTable");
 
-    const table=document.getElementById("ticketReportTable");
+        const printBtn = document.getElementById("printReportBtn");
 
-    const printBtn=document.getElementById("printReportBtn");
+        function loadReport() {
 
-    function loadReport(){
+            const query = new URLSearchParams(new FormData(form)).toString();
 
-        const query=new URLSearchParams(new FormData(form)).toString();
+            table.innerHTML =
+                '<div class="text-center p-4"><div class="spinner-border text-success"></div><div class="mt-2">Loading...</div></div>';
 
-        table.innerHTML=
-        '<div class="text-center p-4"><div class="spinner-border text-success"></div><div class="mt-2">Loading...</div></div>';
+            fetch("<?= BASE_URL ?>/reports/tickets/filter?" + query)
 
-        fetch("<?= BASE_URL ?>/reports/tickets/filter?"+query)
+                .then(r => r.text())
 
-        .then(r=>r.text())
+                .then(html => {
 
-        .then(html=>{
+                    table.innerHTML = html;
 
-            table.innerHTML=html;
+                    printBtn.href = "<?= BASE_URL ?>/reports/tickets/print?" + query;
 
-            printBtn.href="<?= BASE_URL ?>/reports/tickets/print?"+query;
+                })
 
-        })
+                .catch(() => {
 
-        .catch(()=>{
+                    table.innerHTML =
+                        '<div class="alert alert-danger">Unable to load report.</div>';
 
-            table.innerHTML=
-            '<div class="alert alert-danger">Unable to load report.</div>';
+                });
+
+        }
+
+        form.addEventListener("submit", function(e) {
+            if (typeof hideSamtechLoader === 'function') {
+                hideSamtechLoader();
+            }
+
+            e.preventDefault();
+
+            loadReport();
 
         });
 
-    }
-
-    form.addEventListener("submit",function(e){
-
-        e.preventDefault();
-
-        loadReport();
-
     });
-
-});
-
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
