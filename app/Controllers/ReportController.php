@@ -30,14 +30,55 @@ class ReportController extends Controller
     private function getFilters()
     {
         return [
-            'organization_id' => $_GET['organization_id'] ?? '',
-            'user_id' => $_GET['user_id'] ?? '',
-            'agent_id' => $_GET['agent_id'] ?? '',
-            'status' => $_GET['status'] ?? '',
-            'priority' => $_GET['priority'] ?? '',
-            'date_from' => $_GET['date_from'] ?? '',
-            'date_to' => $_GET['date_to'] ?? ''
+            'organization_id' => trim($_GET['organization_id'] ?? ''),
+            'user_id' => trim($_GET['user_id'] ?? ''),
+            'agent_id' => trim($_GET['agent_id'] ?? ''),
+            'status' => trim($_GET['status'] ?? ''),
+            'priority' => trim($_GET['priority'] ?? ''),
+            'date_from' => trim($_GET['date_from'] ?? ''),
+            'date_to' => trim($_GET['date_to'] ?? '')
         ];
+    }
+
+    private function getAppliedFilters($filters)
+    {
+        $applied = [];
+
+        if (!empty($filters['organization_id'])) {
+            $organizationModel = new Organization();
+            $organization = $organizationModel->findById($filters['organization_id']);
+            $applied['Organization'] = $organization['name'] ?? $filters['organization_id'];
+        }
+
+        if (!empty($filters['user_id'])) {
+            $userModel = new User();
+            $user = $userModel->findById($filters['user_id']);
+            $applied['User'] = $user['full_name'] ?? $filters['user_id'];
+        }
+
+        if (!empty($filters['agent_id'])) {
+            $userModel = new User();
+            $agent = $userModel->findById($filters['agent_id']);
+            $applied['Agent'] = $agent['full_name'] ?? $filters['agent_id'];
+        }
+
+        if (!empty($filters['status'])) {
+            $applied['Status'] = ucwords(str_replace('_', ' ', $filters['status']));
+        }
+
+        if (!empty($filters['priority'])) {
+            $applied['Priority'] = ucfirst($filters['priority']);
+        }
+
+        if (!empty($filters['date_from'])) {
+            $applied['From Date'] = $filters['date_from'];
+        }
+
+        if (!empty($filters['date_to'])) {
+            $applied['To Date'] = $filters['date_to'];
+        }
+
+        return $applied;
     }
 
     public function tickets()
@@ -68,12 +109,10 @@ class ReportController extends Controller
         $filters = $this->getFilters();
 
         $ticketModel = new Ticket();
-
         $tickets = $ticketModel->getReportTickets($filters);
 
-        $this->view('reports/partials/ticket-table', [
-            'tickets' => $tickets
-        ]);
+        require ROOT_PATH . "/app/Views/reports/partials/ticket-table.php";
+        exit;
     }
 
     public function printTickets()
@@ -83,12 +122,13 @@ class ReportController extends Controller
         $filters = $this->getFilters();
 
         $ticketModel = new Ticket();
-
         $tickets = $ticketModel->getReportTickets($filters);
+        $appliedFilters = $this->getAppliedFilters($filters);
 
         $this->view('reports/print-tickets', [
             'tickets' => $tickets,
-            'filters' => $filters
+            'filters' => $filters,
+            'appliedFilters' => $appliedFilters
         ]);
     }
 

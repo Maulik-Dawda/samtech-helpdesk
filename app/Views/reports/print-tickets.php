@@ -1,236 +1,301 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <meta charset="UTF-8">
+    <title>Ticket Report</title>
 
-<meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 8mm;
+        }
 
-<title>Ticket Report</title>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+            color: #111827;
+            font-size: 10px;
+            background: #ffffff;
+        }
 
-<style>
+        .page {
+            width: 100%;
+        }
 
-@page{
-    size:A4 landscape;
-    margin:12mm;
-}
+        .print-actions {
+            margin: 12px 0;
+        }
 
-body{
-    font-family:Arial,sans-serif;
-    color:#111827;
-    font-size:11px;
-    margin:0;
-}
+        .print-btn {
+            background: #b1e96f;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.header{
-    width:100%;
-    border-bottom:3px solid #b1e96f;
-    padding-bottom:15px;
-    margin-bottom:20px;
-}
+        .report-header {
+            border-bottom: 3px solid #b1e96f;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
 
-.logo{
-    height:55px;
-}
+        .logo {
+            height: 58px;
+            max-width: 260px;
+            object-fit: contain;
+        }
 
-.title{
-    font-size:24px;
-    font-weight:bold;
-    margin-top:10px;
-}
+        .report-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
 
-.subtitle{
-    color:#6b7280;
-    font-size:13px;
-}
+        .report-subtitle {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 2px;
+        }
 
-.generated{
-    float:right;
-    text-align:right;
-    margin-top:-70px;
-    font-size:11px;
-    color:#6b7280;
-}
+        .meta {
+            text-align: right;
+            color: #475569;
+            font-size: 10px;
+            line-height: 1.5;
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+        .filter-box {
+            border: 1px solid #dbe3ed;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 9px 10px;
+            margin-bottom: 12px;
+        }
 
-th{
-    background:#111827;
-    color:white;
-    padding:10px;
-    border:1px solid #d1d5db;
-    font-size:11px;
-}
+        .filter-title {
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #111827;
+            font-size: 11px;
+        }
 
-td{
-    padding:8px;
-    border:1px solid #e5e7eb;
-    font-size:10px;
-    vertical-align:top;
-}
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
 
-.footer{
-    margin-top:20px;
-    text-align:center;
-    color:#6b7280;
-    font-size:10px;
-}
+        .filter-chip {
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            border-radius: 999px;
+            padding: 5px 9px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
 
-.print-btn{
-    margin-bottom:20px;
-}
+        .filter-chip strong {
+            color: #111827;
+        }
 
-@media print{
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            page-break-inside: auto;
+        }
 
-.print-btn{
-display:none;
-}
+        thead {
+            display: table-header-group;
+        }
 
-body{
-margin:0;
-}
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
 
-}
+        th {
+            background: #111827;
+            color: #ffffff;
+            text-align: left;
+            padding: 7px 5px;
+            border: 1px solid #111827;
+            font-size: 9px;
+            font-weight: 800;
+        }
 
-</style>
+        td {
+            padding: 6px 5px;
+            border: 1px solid #d1d5db;
+            vertical-align: top;
+            font-size: 8.8px;
+            word-wrap: break-word;
+        }
 
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .footer-note {
+            margin-top: 12px;
+            color: #64748b;
+            font-size: 9px;
+            text-align: center;
+        }
+
+        .ticket-no { width: 12%; }
+        .org { width: 15%; }
+        .user { width: 12%; }
+        .subject { width: 25%; }
+        .priority { width: 8%; }
+        .status { width: 10%; }
+        .created { width: 11%; }
+        .closed-by { width: 7%; }
+
+        @media print {
+            .print-actions {
+                display: none;
+            }
+
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="print-btn">
+<div class="page">
 
-<button onclick="window.print();">
+    <div class="print-actions">
+        <button onclick="window.print()" class="print-btn">
+            Print / Save PDF
+        </button>
+    </div>
 
-Print Report
+    <div class="report-header">
 
-</button>
+        <div>
+            <img
+                src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
+                class="logo"
+                alt="Samtech">
 
-</div>
+            <div class="report-title">
+                Ticket Report
+            </div>
 
-<div class="header">
+            <div class="report-subtitle">
+                Samtech Helpdesk Management System
+            </div>
+        </div>
 
-<img
-src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
-class="logo">
+        <div class="meta">
+            <strong>Generated On</strong><br>
+            <?= date('d M Y, h:i A'); ?><br><br>
+            <strong>Generated By</strong><br>
+            <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'System'); ?>
+        </div>
 
-<div class="title">
+    </div>
 
-Ticket Report
+    <div class="filter-box">
+        <div class="filter-title">
+            Applied Filters
+        </div>
 
-</div>
+        <div class="filter-row">
+            <?php if (empty($appliedFilters)): ?>
 
-<div class="subtitle">
+                <span class="filter-chip">
+                    <strong>All Tickets</strong>
+                </span>
 
-Samtech Helpdesk Management System
+            <?php else: ?>
 
-</div>
+                <?php foreach ($appliedFilters as $label => $value): ?>
 
-<div class="generated">
+                    <span class="filter-chip">
+                        <strong><?= htmlspecialchars($label); ?>:</strong>
+                        <?= htmlspecialchars($value); ?>
+                    </span>
 
-Generated :
-<br>
+                <?php endforeach; ?>
 
-<?= date('d M Y h:i A'); ?>
+            <?php endif; ?>
+        </div>
+    </div>
 
-</div>
+    <table>
+        <thead>
+            <tr>
+                <th class="ticket-no">Ticket No</th>
+                <th class="org">Organization</th>
+                <th class="user">User</th>
+                <th class="subject">Subject</th>
+                <th class="priority">Priority</th>
+                <th class="status">Status</th>
+                <th class="created">Created</th>
+                <th class="closed-by">Closed By</th>
+            </tr>
+        </thead>
 
-</div>
+        <tbody>
 
-<table>
+            <?php if (empty($tickets)): ?>
 
-<thead>
+                <tr>
+                    <td colspan="8" style="text-align:center;">
+                        No records found.
+                    </td>
+                </tr>
 
-<tr>
+            <?php else: ?>
 
-<th>Ticket No</th>
+                <?php foreach ($tickets as $ticket): ?>
 
-<th>Organization</th>
+                    <tr>
+                        <td><?= htmlspecialchars($ticket['ticket_no']); ?></td>
+                        <td><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
+                        <td><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
+                        <td><?= htmlspecialchars($ticket['subject']); ?></td>
+                        <td><?= htmlspecialchars(ucfirst($ticket['priority'])); ?></td>
+                        <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?></td>
+                        <td><?= htmlspecialchars($ticket['created_at']); ?></td>
+                        <td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
+                    </tr>
 
-<th>User</th>
+                <?php endforeach; ?>
 
-<th>Subject</th>
+            <?php endif; ?>
 
-<th>Priority</th>
+        </tbody>
+    </table>
 
-<th>Status</th>
-
-<th>Created</th>
-
-<th>Closed By</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<?php if(empty($tickets)): ?>
-
-<tr>
-
-<td colspan="8" style="text-align:center">
-
-No Records Found
-
-</td>
-
-</tr>
-
-<?php else: ?>
-
-<?php foreach($tickets as $ticket): ?>
-
-<tr>
-
-<td><?= htmlspecialchars($ticket['ticket_no']) ?></td>
-
-<td><?= htmlspecialchars($ticket['organization_name'] ?? '-') ?></td>
-
-<td><?= htmlspecialchars($ticket['customer_name'] ?? '-') ?></td>
-
-<td><?= htmlspecialchars($ticket['subject']) ?></td>
-
-<td><?= ucfirst($ticket['priority']) ?></td>
-
-<td><?= ucwords(str_replace('_',' ',$ticket['status'])) ?></td>
-
-<td><?= htmlspecialchars($ticket['created_at']) ?></td>
-
-<td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-') ?></td>
-
-</tr>
-
-<?php endforeach; ?>
-
-<?php endif; ?>
-
-</tbody>
-
-</table>
-
-<div class="footer">
-
-This report is system generated by Samtech Helpdesk.
+    <div class="footer-note">
+        This report is system generated by Samtech Helpdesk.
+    </div>
 
 </div>
 
 <script>
-
-window.onload=function(){
-
-setTimeout(function(){
-
-window.print();
-
-},400);
-
-}
-
+    window.onload = function () {
+        setTimeout(function () {
+            window.print();
+        }, 400);
+    };
 </script>
 
 </body>
-
 </html>
