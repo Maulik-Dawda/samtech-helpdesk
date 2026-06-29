@@ -1,349 +1,236 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Ticket Report</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: #111827;
-            margin: 30px;
-            font-size: 12px;
-        }
+<meta charset="UTF-8">
 
-        .report-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 3px solid #b1e96f;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
+<title>Ticket Report</title>
 
-        .company-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
+<style>
 
-        .report-title {
-            font-size: 16px;
-            color: #374151;
-        }
+@page{
+    size:A4 landscape;
+    margin:12mm;
+}
 
-        .meta {
-            text-align: right;
-            color: #6b7280;
-            font-size: 11px;
-        }
+body{
+    font-family:Arial,sans-serif;
+    color:#111827;
+    font-size:11px;
+    margin:0;
+}
 
-        .summary {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+.header{
+    width:100%;
+    border-bottom:3px solid #b1e96f;
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
 
-        .summary-box {
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            border-radius: 8px;
-            min-width: 120px;
-        }
+.logo{
+    height:55px;
+}
 
-        .summary-box strong {
-            display: block;
-            font-size: 18px;
-            margin-top: 4px;
-        }
+.title{
+    font-size:24px;
+    font-weight:bold;
+    margin-top:10px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.subtitle{
+    color:#6b7280;
+    font-size:13px;
+}
 
-        th {
-            background: #f3f4f6;
-            color: #374151;
-            text-align: left;
-            padding: 8px;
-            border: 1px solid #e5e7eb;
-            font-size: 11px;
-        }
+.generated{
+    float:right;
+    text-align:right;
+    margin-top:-70px;
+    font-size:11px;
+    color:#6b7280;
+}
 
-        td {
-            padding: 8px;
-            border: 1px solid #e5e7eb;
-            vertical-align: top;
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+}
 
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: bold;
-        }
+th{
+    background:#111827;
+    color:white;
+    padding:10px;
+    border:1px solid #d1d5db;
+    font-size:11px;
+}
 
-        .status-open {
-            background: #dcfce7;
-            color: #15803d;
-        }
+td{
+    padding:8px;
+    border:1px solid #e5e7eb;
+    font-size:10px;
+    vertical-align:top;
+}
 
-        .status-in-progress {
-            background: #ede9fe;
-            color: #6d28d9;
-        }
+.footer{
+    margin-top:20px;
+    text-align:center;
+    color:#6b7280;
+    font-size:10px;
+}
 
-        .status-pending {
-            background: #fce7f3;
-            color: #be185d;
-        }
+.print-btn{
+    margin-bottom:20px;
+}
 
-        .status-resolved {
-            background: #ffedd5;
-            color: #c2410c;
-        }
+@media print{
 
-        .status-closed {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
+.print-btn{
+display:none;
+}
 
-        .priority-low {
-            background: #e5e7eb;
-            color: #374151;
-        }
+body{
+margin:0;
+}
 
-        .priority-medium {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
+}
 
-        .priority-high {
-            background: #fef3c7;
-            color: #92400e;
-        }
+</style>
 
-        .priority-urgent {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .print-actions {
-            margin-bottom: 20px;
-        }
-
-        .print-btn {
-            background: #b1e96f;
-            border: none;
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .footer-note {
-            margin-top: 25px;
-            color: #6b7280;
-            font-size: 11px;
-            text-align: center;
-        }
-
-        @media print {
-            .print-actions {
-                display: none;
-            }
-
-            body {
-                margin: 15px;
-            }
-
-            @page {
-                size: A4 landscape;
-                margin: 12mm;
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-    <div class="print-actions">
-        <button onclick="window.print()" class="print-btn">
-            Print Report
-        </button>
-    </div>
+<div class="print-btn">
 
-    <div class="report-header">
+<button onclick="window.print();">
 
-        <div>
-            <div class="company-title">
-                Samtech Helpdesk
-            </div>
+Print Report
 
-            <div class="report-title">
-                Ticket Report
-            </div>
-        </div>
+</button>
 
-        <div class="meta">
-            Generated On:<br>
-            <?= date('d M Y, h:i A'); ?>
-            <br><br>
-            Total Records:<br>
-            <?= count($tickets); ?>
-        </div>
+</div>
 
-    </div>
+<div class="header">
 
-    <div class="summary">
+<img
+src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
+class="logo">
 
-        <div class="summary-box">
-            Total Tickets
-            <strong><?= count($tickets); ?></strong>
-        </div>
+<div class="title">
 
-        <div class="summary-box">
-            Open
-            <strong>
-                <?= count(array_filter($tickets, fn($t) => $t['status'] === 'open')); ?>
-            </strong>
-        </div>
+Ticket Report
 
-        <div class="summary-box">
-            Pending
-            <strong>
-                <?= count(array_filter($tickets, fn($t) => $t['status'] === 'pending')); ?>
-            </strong>
-        </div>
+</div>
 
-        <div class="summary-box">
-            Resolved
-            <strong>
-                <?= count(array_filter($tickets, fn($t) => $t['status'] === 'resolved')); ?>
-            </strong>
-        </div>
+<div class="subtitle">
 
-        <div class="summary-box">
-            Closed
-            <strong>
-                <?= count(array_filter($tickets, fn($t) => $t['status'] === 'closed')); ?>
-            </strong>
-        </div>
+Samtech Helpdesk Management System
 
-    </div>
+</div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Ticket No</th>
-                <th>Organization</th>
-                <th>User</th>
-                <th>Subject</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Closed At</th>
-                <th>Closed By</th>
-            </tr>
-        </thead>
+<div class="generated">
 
-        <tbody>
+Generated :
+<br>
 
-            <?php if (empty($tickets)): ?>
+<?= date('d M Y h:i A'); ?>
 
-                <tr>
-                    <td colspan="9" style="text-align:center;">
-                        No records found.
-                    </td>
-                </tr>
+</div>
 
-            <?php else: ?>
+</div>
 
-                <?php foreach($tickets as $ticket): ?>
+<table>
 
-                    <?php
-                        $statusClass = match($ticket['status']) {
-                            'open' => 'status-open',
-                            'in_progress' => 'status-in-progress',
-                            'pending' => 'status-pending',
-                            'resolved' => 'status-resolved',
-                            'closed' => 'status-closed',
-                            default => 'status-open'
-                        };
+<thead>
 
-                        $priorityClass = match($ticket['priority']) {
-                            'low' => 'priority-low',
-                            'medium' => 'priority-medium',
-                            'high' => 'priority-high',
-                            'urgent' => 'priority-urgent',
-                            default => 'priority-low'
-                        };
-                    ?>
+<tr>
 
-                    <tr>
-                        <td>
-                            <?= htmlspecialchars($ticket['ticket_no']); ?>
-                        </td>
+<th>Ticket No</th>
 
-                        <td>
-                            <?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?>
-                        </td>
+<th>Organization</th>
 
-                        <td>
-                            <?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?>
-                        </td>
+<th>User</th>
 
-                        <td>
-                            <?= htmlspecialchars($ticket['subject']); ?>
-                        </td>
+<th>Subject</th>
 
-                        <td>
-                            <span class="badge <?= $priorityClass; ?>">
-                                <?= htmlspecialchars(ucfirst($ticket['priority'])); ?>
-                            </span>
-                        </td>
+<th>Priority</th>
 
-                        <td>
-                            <span class="badge <?= $statusClass; ?>">
-                                <?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?>
-                            </span>
-                        </td>
+<th>Status</th>
 
-                        <td>
-                            <?= htmlspecialchars($ticket['created_at']); ?>
-                        </td>
+<th>Created</th>
 
-                        <td>
-                            <?= !empty($ticket['closed_at'])
-                                ? htmlspecialchars($ticket['closed_at'])
-                                : '-'; ?>
-                        </td>
+<th>Closed By</th>
 
-                        <td>
-                            <?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?>
-                        </td>
-                    </tr>
+</tr>
 
-                <?php endforeach; ?>
+</thead>
 
-            <?php endif; ?>
+<tbody>
 
-        </tbody>
-    </table>
+<?php if(empty($tickets)): ?>
 
-    <div class="footer-note">
-        This is a system generated report from Samtech Helpdesk.
-    </div>
+<tr>
 
-    <script>
-        window.onload = function () {
-            setTimeout(function () {
-                window.print();
-            }, 500);
-        };
-    </script>
+<td colspan="8" style="text-align:center">
+
+No Records Found
+
+</td>
+
+</tr>
+
+<?php else: ?>
+
+<?php foreach($tickets as $ticket): ?>
+
+<tr>
+
+<td><?= htmlspecialchars($ticket['ticket_no']) ?></td>
+
+<td><?= htmlspecialchars($ticket['organization_name'] ?? '-') ?></td>
+
+<td><?= htmlspecialchars($ticket['customer_name'] ?? '-') ?></td>
+
+<td><?= htmlspecialchars($ticket['subject']) ?></td>
+
+<td><?= ucfirst($ticket['priority']) ?></td>
+
+<td><?= ucwords(str_replace('_',' ',$ticket['status'])) ?></td>
+
+<td><?= htmlspecialchars($ticket['created_at']) ?></td>
+
+<td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-') ?></td>
+
+</tr>
+
+<?php endforeach; ?>
+
+<?php endif; ?>
+
+</tbody>
+
+</table>
+
+<div class="footer">
+
+This report is system generated by Samtech Helpdesk.
+
+</div>
+
+<script>
+
+window.onload=function(){
+
+setTimeout(function(){
+
+window.print();
+
+},400);
+
+}
+
+</script>
 
 </body>
+
 </html>

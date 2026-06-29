@@ -9,6 +9,7 @@
             <div class="d-flex justify-content-between align-items-center">
 
                 <div>
+
                     <h4 class="fw-bold mb-1">
                         Ticket Reports
                     </h4>
@@ -16,22 +17,16 @@
                     <small class="text-muted">
                         Filter and print ticket reports.
                     </small>
+
                 </div>
 
-                <?php if (
-                    $_SESSION['auth_user_role'] === 'admin' || 'agent'
-                    ||
-                    PermissionHelper::has('print_ticket_reports')
-                ): ?>
-
-                    <a
-                        href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
-                        id="printReportBtn"
-                        class="btn btn-primary-custom">
-                        Download PDF
-                    </a>
-
-                <?php endif; ?>
+                <a
+                    href="<?= BASE_URL ?>/reports/tickets/print"
+                    id="printReportBtn"
+                    class="btn btn-primary-custom"
+                >
+                    Print Report
+                </a>
 
             </div>
 
@@ -41,30 +36,24 @@
 
             <form id="ticketReportFilterForm">
 
-
                 <div class="row g-3">
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            Organization
-                        </label>
+                        <label class="form-label">Organization</label>
 
                         <select
                             name="organization_id"
                             class="form-select">
 
-                            <option value="">
-                                All Organizations
-                            </option>
+                            <option value="">All Organizations</option>
 
-                            <?php foreach ($organizations as $organization): ?>
+                            <?php foreach($organizations as $organization): ?>
 
                                 <option
                                     value="<?= $organization['id']; ?>"
-                                    <?= $filters['organization_id'] == $organization['id']
-                                        ? 'selected'
-                                        : ''; ?>>
+                                    <?= $filters['organization_id']==$organization['id']?'selected':''; ?>
+                                >
                                     <?= htmlspecialchars($organization['name']); ?>
                                 </option>
 
@@ -76,25 +65,20 @@
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            User
-                        </label>
+                        <label class="form-label">User</label>
 
                         <select
                             name="user_id"
                             class="form-select">
 
-                            <option value="">
-                                All Users
-                            </option>
+                            <option value="">All Users</option>
 
-                            <?php foreach ($users as $user): ?>
+                            <?php foreach($users as $user): ?>
 
                                 <option
                                     value="<?= $user['id']; ?>"
-                                    <?= $filters['user_id'] == $user['id']
-                                        ? 'selected'
-                                        : ''; ?>>
+                                    <?= $filters['user_id']==$user['id']?'selected':''; ?>
+                                >
                                     <?= htmlspecialchars($user['full_name']); ?>
                                 </option>
 
@@ -106,25 +90,20 @@
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            Agent
-                        </label>
+                        <label class="form-label">Agent</label>
 
                         <select
                             name="agent_id"
                             class="form-select">
 
-                            <option value="">
-                                All Agents
-                            </option>
+                            <option value="">All Agents</option>
 
-                            <?php foreach ($agents as $agent): ?>
+                            <?php foreach($agents as $agent): ?>
 
                                 <option
                                     value="<?= $agent['id']; ?>"
-                                    <?= $filters['agent_id'] == $agent['id']
-                                        ? 'selected'
-                                        : ''; ?>>
+                                    <?= $filters['agent_id']==$agent['id']?'selected':''; ?>
+                                >
                                     <?= htmlspecialchars($agent['full_name']); ?>
                                 </option>
 
@@ -136,46 +115,44 @@
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            Status
-                        </label>
+                        <label class="form-label">Status</label>
 
                         <select
                             name="status"
                             class="form-select">
+
                             <option value="">All</option>
-                            <option value="open">Open</option>
-                            <option value="in_progress">In Progress</option>
-                            <option value="pending">Pending</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="closed">Closed</option>
+                            <option value="open" <?= $filters['status']=='open'?'selected':''; ?>>Open</option>
+                            <option value="in_progress" <?= $filters['status']=='in_progress'?'selected':''; ?>>In Progress</option>
+                            <option value="pending" <?= $filters['status']=='pending'?'selected':''; ?>>Pending</option>
+                            <option value="resolved" <?= $filters['status']=='resolved'?'selected':''; ?>>Resolved</option>
+                            <option value="closed" <?= $filters['status']=='closed'?'selected':''; ?>>Closed</option>
+
                         </select>
 
                     </div>
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            Priority
-                        </label>
+                        <label class="form-label">Priority</label>
 
                         <select
                             name="priority"
                             class="form-select">
+
                             <option value="">All</option>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                            <option value="urgent">Urgent</option>
+                            <option value="low" <?= $filters['priority']=='low'?'selected':''; ?>>Low</option>
+                            <option value="medium" <?= $filters['priority']=='medium'?'selected':''; ?>>Medium</option>
+                            <option value="high" <?= $filters['priority']=='high'?'selected':''; ?>>High</option>
+                            <option value="urgent" <?= $filters['priority']=='urgent'?'selected':''; ?>>Urgent</option>
+
                         </select>
 
                     </div>
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            From Date
-                        </label>
+                        <label class="form-label">From Date</label>
 
                         <input
                             type="date"
@@ -187,9 +164,7 @@
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
-                            To Date
-                        </label>
+                        <label class="form-label">To Date</label>
 
                         <input
                             type="date"
@@ -204,7 +179,9 @@
                         <button
                             type="submit"
                             class="btn btn-primary-custom w-100">
+
                             Apply Filters
+
                         </button>
 
                     </div>
@@ -215,11 +192,9 @@
 
             <hr>
 
-            <div class="table-responsive">
+            <div id="ticketReportTable">
 
-                <div id="ticketReportTable">
-                    <?php require ROOT_PATH . "/app/Views/reports/partials/ticket-table.php"; ?>
-                </div>
+                <?php require ROOT_PATH . "/app/Views/reports/partials/ticket-table.php"; ?>
 
             </div>
 
@@ -230,51 +205,53 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
 
-        const form = document.getElementById('ticketReportFilterForm');
-        const tableWrapper = document.getElementById('ticketReportTable');
-        const printBtn = document.getElementById('printReportBtn');
+document.addEventListener("DOMContentLoaded",function(){
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    const form=document.getElementById("ticketReportFilterForm");
 
-            const formData = new FormData(form);
-            const queryString = new URLSearchParams(formData).toString();
+    const table=document.getElementById("ticketReportTable");
 
-            tableWrapper.innerHTML = `
-            <div class="text-center p-4">
-                Loading report...
-            </div>
-        `;
+    const printBtn=document.getElementById("printReportBtn");
 
-            fetch('<?= BASE_URL ?>/reports/tickets/filter?' + queryString)
-    .then(response => response.text())
-    .then(html => {
-        tableWrapper.innerHTML = html;
+    function loadReport(){
 
-        if (printBtn) {
-            printBtn.href =
-                '<?= BASE_URL ?>/reports/tickets/print?' + queryString;
-        }
+        const query=new URLSearchParams(new FormData(form)).toString();
 
-        if (typeof hideSamtechLoader === 'function') {
-            hideSamtechLoader();
-        }
-    })
-    .catch(() => {
-        tableWrapper.innerHTML = `
-            <div class="alert alert-danger">
-                Unable to load report data.
-            </div>
-        `;
+        table.innerHTML=
+        '<div class="text-center p-4"><div class="spinner-border text-success"></div><div class="mt-2">Loading...</div></div>';
 
-        if (typeof hideSamtechLoader === 'function') {
-            hideSamtechLoader();
-        }
+        fetch("<?= BASE_URL ?>/reports/tickets/filter?"+query)
+
+        .then(r=>r.text())
+
+        .then(html=>{
+
+            table.innerHTML=html;
+
+            printBtn.href="<?= BASE_URL ?>/reports/tickets/print?"+query;
+
+        })
+
+        .catch(()=>{
+
+            table.innerHTML=
+            '<div class="alert alert-danger">Unable to load report.</div>';
+
+        });
+
+    }
+
+    form.addEventListener("submit",function(e){
+
+        e.preventDefault();
+
+        loadReport();
+
     });
 
-    });
+});
+
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
