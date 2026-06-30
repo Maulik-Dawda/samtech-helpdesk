@@ -57,9 +57,10 @@
         }
 
         .logo {
+            width: 170px;
+            height: auto;
             display: block;
-            height: 58px;
-            width: auto;
+            background: #ffffff;
         }
 
         .report-title {
