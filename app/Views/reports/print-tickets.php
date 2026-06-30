@@ -54,11 +54,13 @@
             background: #ffffff;
             padding: 6px 10px;
             border-radius: 6px;
+            width: 100px;
+            height: 100px;
         }
 
         .logo {
-            width: 170px;
-            height: auto;
+            width: 100px;
+            height: 100px;
             display: block;
             background: #ffffff;
         }
