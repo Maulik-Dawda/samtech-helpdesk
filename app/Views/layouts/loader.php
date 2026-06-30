@@ -118,11 +118,15 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
-        document.querySelectorAll('form').forEach(function (form) {
+        document.querySelectorAll('form').forEach(function(form) {
 
-            form.addEventListener('submit', function () {
+            if (form.hasAttribute('data-no-loader')) {
+                return;
+            }
+
+            form.addEventListener('submit', function() {
 
                 let message = 'Processing your request...';
 
@@ -149,9 +153,9 @@
 
         });
 
-        document.querySelectorAll('a').forEach(function (link) {
+        document.querySelectorAll('a').forEach(function(link) {
 
-            link.addEventListener('click', function () {
+            link.addEventListener('click', function() {
 
                 const href = link.getAttribute('href');
 

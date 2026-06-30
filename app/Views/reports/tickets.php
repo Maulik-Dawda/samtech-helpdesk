@@ -34,7 +34,7 @@
 
         <div class="card-body">
 
-            <form id="ticketReportFilterForm">
+            <form id="ticketReportFilterForm" data-no-loader="true">
 
                 <div class="row g-3">
 
@@ -202,54 +202,59 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
 
-        const form = document.getElementById("ticketReportFilterForm");
+    const form = document.getElementById("ticketReportFilterForm");
+    const table = document.getElementById("ticketReportTable");
+    const printBtn = document.getElementById("printReportBtn");
 
-        const table = document.getElementById("ticketReportTable");
+    if (!form || !table) {
+        return;
+    }
 
-        const printBtn = document.getElementById("printReportBtn");
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
 
-        function loadReport() {
-
-            const query = new URLSearchParams(new FormData(form)).toString();
-
-            table.innerHTML =
-                '<div class="text-center p-4"><div class="spinner-border text-success"></div><div class="mt-2">Loading...</div></div>';
-
-            fetch("<?= BASE_URL ?>/reports/tickets/filter?" + query)
-
-                .then(r => r.text())
-
-                .then(html => {
-
-                    table.innerHTML = html;
-
-                    printBtn.href = "<?= BASE_URL ?>/reports/tickets/print?" + query;
-
-                })
-
-                .catch(() => {
-
-                    table.innerHTML =
-                        '<div class="alert alert-danger">Unable to load report.</div>';
-
-                });
-
+        if (typeof hideSamtechLoader === 'function') {
+            hideSamtechLoader();
         }
 
-        form.addEventListener("submit", function(e) {
+        const query = new URLSearchParams(new FormData(form)).toString();
+
+        table.innerHTML =
+            '<div class="text-center p-4"><div class="spinner-border text-success"></div><div class="mt-2">Loading report...</div></div>';
+
+        fetch("<?= BASE_URL ?>/reports/tickets/filter?" + query, {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(html) {
+            table.innerHTML = html;
+
+            if (printBtn) {
+                printBtn.href = "<?= BASE_URL ?>/reports/tickets/print?" + query;
+            }
+
             if (typeof hideSamtechLoader === 'function') {
                 hideSamtechLoader();
             }
+        })
+        .catch(function() {
+            table.innerHTML =
+                '<div class="alert alert-danger">Unable to load report.</div>';
 
-            e.preventDefault();
-
-            loadReport();
-
+            if (typeof hideSamtechLoader === 'function') {
+                hideSamtechLoader();
+            }
         });
-
     });
+
+});
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
