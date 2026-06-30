@@ -116,21 +116,20 @@ class ReportController extends Controller
     }
 
     public function printTickets()
-    {
-        $this->reportGuard();
+{
+    $this->reportGuard();
 
-        $filters = $this->getFilters();
+    $filters = $this->getFilters();
 
-        $ticketModel = new Ticket();
-        $tickets = $ticketModel->getReportTickets($filters);
-        $appliedFilters = $this->getAppliedFilters($filters);
+    $ticketModel = new Ticket();
 
-        $this->view('reports/print-tickets', [
-            'tickets' => $tickets,
-            'filters' => $filters,
-            'appliedFilters' => $appliedFilters
-        ]);
-    }
+    $tickets = $ticketModel->getReportTickets($filters);
+
+    $this->view('reports/print-tickets', [
+        'tickets' => $tickets,
+        'filters' => $filters
+    ]);
+}
 
     public function ticketDetail()
     {

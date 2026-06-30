@@ -21,11 +21,12 @@
                 </div>
 
                 <a
-                    href="<?= BASE_URL ?>/reports/tickets/print"
-                    id="printReportBtn"
-                    class="btn btn-primary-custom">
-                    Print Report
-                </a>
+    href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
+    target="_blank"
+    id="printReportBtn"
+    class="btn btn-primary-custom">
+    Print Report
+</a>
 
             </div>
 
