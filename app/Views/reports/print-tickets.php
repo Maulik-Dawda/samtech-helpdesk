@@ -222,7 +222,7 @@
                 <div class="logo-box">
 
                     <img
-                        src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
+                        src="<?= BASE_URL ?>/assets/images/samtech-logo-report.png"
                         class="logo"
                         alt="Samtech">
 
