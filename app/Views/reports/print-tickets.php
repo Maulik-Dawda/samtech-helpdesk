@@ -49,10 +49,17 @@
             align-items: flex-start;
         }
 
+        .logo-box {
+            display: inline-block;
+            background: #ffffff;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
         .logo {
             display: block;
-            width: 180px;
-            height: auto;
+            height: 58px;
+            width: auto;
         }
 
         .report-title {
@@ -211,10 +218,14 @@
         <div class="report-header">
 
             <div>
-                <img
-                    src="<?= BASE_URL ?>/assets/images/samtech-logo.svg"
-                    class="logo"
-                    alt="Samtech">
+                <div class="logo-box">
+
+                    <img
+                        src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
+                        class="logo"
+                        alt="Samtech">
+
+                </div>
 
                 <div class="report-title">
                     Ticket Report
