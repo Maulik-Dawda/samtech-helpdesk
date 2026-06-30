@@ -212,7 +212,7 @@
 
             <div>
                 <img
-                    src="<?= BASE_URL ?>/assets/images/samtech-logo.svg"
+                    src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
                     class="logo"
                     alt="Samtech">
 
