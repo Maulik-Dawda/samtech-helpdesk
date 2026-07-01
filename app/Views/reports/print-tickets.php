@@ -215,7 +215,7 @@
 
 
                 <img
-                    src="<?= BASE_URL ?>/assets/images/samtech-logo-report.png"
+                    src="<?= BASE_URL ?>/public/assets/images/samtech-logo-report.png"
                     class="logo"
                     alt="Samtech">
             </div>

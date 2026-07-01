@@ -26,7 +26,7 @@ define('BASE_URL', 'https://support.samtech.ae');
 
 define('APP_NAME', 'Samtech Helpdesk');
 
-define('SESSION_TIMEOUT', 1800); // 30 Minutes
+define('SESSION_TIMEOUT', 2700); // 45 Minutes
 
 
 /*
