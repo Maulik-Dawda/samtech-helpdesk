@@ -8,7 +8,7 @@
     <style>
         @page {
             size: Letter portrait;
-            margin: 10mm;
+            margin: 9mm;
         }
 
         html,
@@ -16,11 +16,10 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: 100%;
             font-family: Arial, sans-serif;
             color: #111827;
-            font-size: 10px;
             background: #ffffff;
+            font-size: 10px;
         }
 
         .page {
@@ -42,71 +41,57 @@
 
         .report-header {
             border-bottom: 3px solid #b1e96f;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
         }
 
-
         .logo {
-            width: 200px;
-            height: 100px;
+            width: 185px;
+            height: auto;
             display: block;
             background: #ffffff;
         }
 
         .report-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
-            margin-top: 6px;
+            margin-top: 8px;
+            color: #111827;
         }
 
         .report-subtitle {
             color: #64748b;
             font-size: 11px;
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
         .meta {
             text-align: right;
             color: #475569;
             font-size: 10px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
-        .filter-box {
-            border: 1px solid #dbe3ed;
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 9px 10px;
-            margin-bottom: 12px;
+        .criteria {
+            margin: 0 0 14px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+            font-size: 10.5px;
+            line-height: 1.8;
         }
 
-        .filter-title {
-            font-weight: 800;
-            margin-bottom: 6px;
-            color: #111827;
-            font-size: 11px;
-        }
-
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .filter-chip {
-            border: 1px solid #d1d5db;
-            background: #ffffff;
-            border-radius: 999px;
-            padding: 5px 9px;
-            font-size: 10px;
+        .criteria-row {
+            display: inline-block;
+            margin-right: 18px;
             white-space: nowrap;
         }
 
-        .filter-chip strong {
+        .criteria-label {
+            font-weight: 800;
             color: #111827;
         }
 
@@ -132,7 +117,7 @@
             text-align: left;
             padding: 7px 5px;
             border: 1px solid #111827;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
         }
 
@@ -140,7 +125,7 @@
             padding: 6px 5px;
             border: 1px solid #d1d5db;
             vertical-align: top;
-            font-size: 9.5px;
+            font-size: 9px;
             word-wrap: break-word;
         }
 
@@ -149,43 +134,22 @@
         }
 
         .footer-note {
-            margin-top: 12px;
+            margin-top: 14px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
             color: #64748b;
             font-size: 9px;
             text-align: center;
         }
 
-        .ticket-no {
-            width: 12%;
-        }
-
-        .org {
-            width: 13%;
-        }
-
-        .user {
-            width: 10%;
-        }
-
-        .subject {
-            width: 30%;
-        }
-
-        .priority {
-            width: 8%;
-        }
-
-        .status {
-            width: 10%;
-        }
-
-        .created {
-            width: 12%;
-        }
-
-        .closed-by {
-            width: 9%;
-        }
+        .ticket-no { width: 12%; }
+        .org { width: 13%; }
+        .user { width: 11%; }
+        .subject { width: 29%; }
+        .priority { width: 8%; }
+        .status { width: 10%; }
+        .created { width: 12%; }
+        .closed-by { width: 9%; }
 
         @media print {
             .print-actions {
@@ -202,24 +166,21 @@
 
 <body>
 
-    <div class="page">
+<div class="page">
 
-        <div class="print-actions">
-            <button onclick="window.print()" class="print-btn">
-                Print / Save PDF
-            </button>
-        </div>
+    <div class="print-actions">
+        <button onclick="window.print()" class="print-btn">
+            Print / Save PDF
+        </button>
+    </div>
 
-        <div class="report-header">
+    <div class="report-header">
 
-            <div>
-
-
-                <img
-                    src="<?= BASE_URL ?>/assets/images/samtech-logo-report.png"
-                    class="logo"
-                    alt="Samtech">
-            </div>
+        <div>
+            <img
+                src="<?= BASE_URL ?>/assets/images/samtech-logo-report.png"
+                class="logo"
+                alt="Samtech">
 
             <div class="report-title">
                 Ticket Report
@@ -233,77 +194,73 @@
         <div class="meta">
             <strong>Generated On</strong><br>
             <?= date('d M Y, h:i A'); ?><br><br>
+
             <strong>Generated By</strong><br>
-            <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'System'); ?>
+            <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'System'); ?><br><br>
+
+            <strong>Total Records</strong><br>
+            <?= count($tickets); ?>
         </div>
 
     </div>
 
     <?php
+        $criteria = [];
 
-    $appliedFilters = [];
-
-    if (!empty($filters['organization_id'])) {
-        foreach ($organizations as $organization) {
-            if ($organization['id'] == $filters['organization_id']) {
-                $appliedFilters[] = "Organization: " . $organization['name'];
-                break;
+        if (!empty($filters['organization_id']) && !empty($organizations)) {
+            foreach ($organizations as $organization) {
+                if ($organization['id'] == $filters['organization_id']) {
+                    $criteria['Organization'] = $organization['name'];
+                    break;
+                }
             }
         }
-    }
 
-    if (!empty($filters['user_id'])) {
-        foreach ($users as $user) {
-            if ($user['id'] == $filters['user_id']) {
-                $appliedFilters[] = "User: " . $user['full_name'];
-                break;
+        if (!empty($filters['user_id']) && !empty($users)) {
+            foreach ($users as $user) {
+                if ($user['id'] == $filters['user_id']) {
+                    $criteria['User'] = $user['full_name'];
+                    break;
+                }
             }
         }
-    }
 
-    if (!empty($filters['agent_id'])) {
-        foreach ($agents as $agent) {
-            if ($agent['id'] == $filters['agent_id']) {
-                $appliedFilters[] = "Agent: " . $agent['full_name'];
-                break;
+        if (!empty($filters['agent_id']) && !empty($agents)) {
+            foreach ($agents as $agent) {
+                if ($agent['id'] == $filters['agent_id']) {
+                    $criteria['Agent'] = $agent['full_name'];
+                    break;
+                }
             }
         }
-    }
 
-    if (!empty($filters['status'])) {
-        $appliedFilters[] = "Status: " . ucwords(str_replace('_', ' ', $filters['status']));
-    }
+        if (!empty($filters['status'])) {
+            $criteria['Status'] = ucwords(str_replace('_', ' ', $filters['status']));
+        }
 
-    if (!empty($filters['priority'])) {
-        $appliedFilters[] = "Priority: " . ucfirst($filters['priority']);
-    }
+        if (!empty($filters['priority'])) {
+            $criteria['Priority'] = ucfirst($filters['priority']);
+        }
 
-    if (!empty($filters['date_from'])) {
-        $appliedFilters[] = "From: " . date('d M Y', strtotime($filters['date_from']));
-    }
+        if (!empty($filters['date_from'])) {
+            $criteria['From'] = date('d M Y', strtotime($filters['date_from']));
+        }
 
-    if (!empty($filters['date_to'])) {
-        $appliedFilters[] = "To: " . date('d M Y', strtotime($filters['date_to']));
-    }
-
+        if (!empty($filters['date_to'])) {
+            $criteria['To'] = date('d M Y', strtotime($filters['date_to']));
+        }
     ?>
 
-    <?php if (!empty($appliedFilters)): ?>
-
-        <div style="margin-bottom:18px;border-bottom:1px solid #d1d5db;padding-bottom:8px;line-height:1.7;">
-
-            <strong style="font-size:11px;">Applied Filters:</strong>
-
-            <div style="margin-top:5px;font-size:10px;color:#555;">
-
-                <?= implode(" &nbsp;&nbsp; | &nbsp;&nbsp; ", $appliedFilters); ?>
-
-            </div>
-
+    <?php if (!empty($criteria)): ?>
+        <div class="criteria">
+            <?php foreach ($criteria as $label => $value): ?>
+                <span class="criteria-row">
+                    <span class="criteria-label"><?= htmlspecialchars($label); ?>:</span>
+                    <?= htmlspecialchars($value); ?>
+                </span>
+            <?php endforeach; ?>
         </div>
-
     <?php endif; ?>
-
 
     <table>
         <thead>
@@ -321,48 +278,45 @@
 
         <tbody>
 
-            <?php if (empty($tickets)): ?>
+        <?php if (empty($tickets)): ?>
 
+            <tr>
+                <td colspan="8" style="text-align:center;">
+                    No records found.
+                </td>
+            </tr>
+
+        <?php else: ?>
+
+            <?php foreach ($tickets as $ticket): ?>
                 <tr>
-                    <td colspan="8" style="text-align:center;">
-                        No records found.
-                    </td>
+                    <td><?= htmlspecialchars($ticket['ticket_no']); ?></td>
+                    <td><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
+                    <td><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
+                    <td><?= htmlspecialchars($ticket['subject']); ?></td>
+                    <td><?= htmlspecialchars(ucfirst($ticket['priority'])); ?></td>
+                    <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?></td>
+                    <td><?= htmlspecialchars($ticket['created_at']); ?></td>
+                    <td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
                 </tr>
+            <?php endforeach; ?>
 
-            <?php else: ?>
-
-                <?php foreach ($tickets as $ticket): ?>
-
-                    <tr>
-                        <td><?= htmlspecialchars($ticket['ticket_no']); ?></td>
-                        <td><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
-                        <td><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
-                        <td><?= htmlspecialchars($ticket['subject']); ?></td>
-                        <td><?= htmlspecialchars(ucfirst($ticket['priority'])); ?></td>
-                        <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?></td>
-                        <td><?= htmlspecialchars($ticket['created_at']); ?></td>
-                        <td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
-                    </tr>
-
-                <?php endforeach; ?>
-
-            <?php endif; ?>
+        <?php endif; ?>
 
         </tbody>
     </table>
 
     <div class="footer-note">
-        This report is system generated by Samtech Helpdesk.
+        Samtech Helpdesk • System Generated Report • Confidential Internal Document
     </div>
 
-    </div>
+</div>
 
-    <script>
-        window.addEventListener("load", function() {
-            window.print();
-        });
-    </script>
+<script>
+    window.addEventListener("load", function () {
+        window.print();
+    });
+</script>
 
 </body>
-
 </html>
