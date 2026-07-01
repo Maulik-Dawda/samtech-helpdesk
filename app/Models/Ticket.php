@@ -459,8 +459,8 @@ class Ticket extends Model
         return $stmt->fetchAll();
     }
     public function getPriorityTicketCounts()
-{
-    $stmt = $this->db->prepare("
+    {
+        $stmt = $this->db->prepare("
         SELECT
             priority,
             COUNT(*) AS total
@@ -469,8 +469,54 @@ class Ticket extends Model
         ORDER BY total DESC
     ");
 
-    $stmt->execute();
+        $stmt->execute();
 
-    return $stmt->fetchAll();
-}
+        return $stmt->fetchAll();
+    }
+    public function searchTicketsForReport($keyword)
+    {
+        $keyword = trim($keyword);
+
+        if ($keyword === '') {
+            return [];
+        }
+
+        $search = '%' . $keyword . '%';
+
+        $stmt = $this->db->prepare("
+        SELECT 
+            tickets.id,
+            tickets.ticket_no,
+            tickets.subject,
+            tickets.status,
+            tickets.priority,
+            tickets.created_at,
+            users.full_name AS customer_name,
+            users.email AS customer_email,
+            organizations.name AS organization_name
+        FROM tickets
+        LEFT JOIN users 
+            ON users.id = tickets.user_id
+        LEFT JOIN organizations 
+            ON organizations.id = tickets.organization_id
+        WHERE 
+            tickets.ticket_no LIKE ?
+            OR tickets.subject LIKE ?
+            OR users.full_name LIKE ?
+            OR users.email LIKE ?
+            OR organizations.name LIKE ?
+        ORDER BY tickets.created_at DESC
+        LIMIT 20
+    ");
+
+        $stmt->execute([
+            $search,
+            $search,
+            $search,
+            $search,
+            $search
+        ]);
+
+        return $stmt->fetchAll();
+    }
 }

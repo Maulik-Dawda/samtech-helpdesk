@@ -137,6 +137,54 @@ class ReportController extends Controller
             'agents' => $userModel->getUsersByRole('agent')
         ]);
     }
+    public function searchTickets()
+    {
+        $this->reportGuard();
+
+        $keyword = trim($_GET['q'] ?? '');
+
+        $ticketModel = new Ticket();
+
+        $tickets = $ticketModel->searchTicketsForReport($keyword);
+
+        require ROOT_PATH . "/app/Views/reports/partials/ticket-search-results.php";
+
+        exit;
+    }
+
+    public function printTicketDetail($id)
+    {
+        $this->reportGuard();
+
+        $ticketModel = new Ticket();
+
+        $ticket = $ticketModel->findByIdForReport($id);
+
+        if (!$ticket) {
+            http_response_code(404);
+            exit('Ticket not found');
+        }
+
+        $replyModel = new TicketReply();
+        $historyModel = new TicketStatusHistory();
+        $attachmentModel = new Attachment();
+
+        $replies = $replyModel->getByTicketId($ticket['id']);
+
+        $statusHistory = $historyModel->getByTicketId($ticket['id']);
+
+        $attachments = $attachmentModel->getTicketAttachments($ticket['id']);
+
+        $replyAttachments = $attachmentModel->getReplyAttachmentsByTicketId($ticket['id']);
+
+        $this->view('reports/print-ticket-detail', [
+            'ticket' => $ticket,
+            'replies' => $replies,
+            'statusHistory' => $statusHistory,
+            'attachments' => $attachments,
+            'replyAttachments' => $replyAttachments
+        ]);
+    }
 
     public function ticketDetail()
     {

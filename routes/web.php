@@ -108,3 +108,6 @@ $router->get('/agent/users/edit/{id}', 'AgentUserController@edit');
 $router->post('/agent/users/update/{id}', 'AgentUserController@update');
 
 $router->get('/agent/users/disable/{id}', 'AgentUserController@disable');
+
+$router->get('/reports/ticket-search', 'ReportController@searchTickets');
+$router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketDetail');
