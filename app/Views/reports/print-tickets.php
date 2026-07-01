@@ -51,7 +51,7 @@
 
 
         .logo {
-            width: 100px;
+            width: 200px;
             height: 100px;
             display: block;
             background: #ffffff;
