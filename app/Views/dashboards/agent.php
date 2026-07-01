@@ -449,7 +449,7 @@
 
                 <div class="dashboard-card-body">
                     <div class="chart-box">
-                        <canvas id="dailyChart"></canvas>
+                        <canvas id="monthlyChart"></canvas>
                     </div>
                 </div>
             </div>
