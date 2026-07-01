@@ -49,6 +49,7 @@
             align-items: flex-start;
         }
 
+
         .logo {
             width: 100px;
             height: 100px;
@@ -215,7 +216,7 @@
 
 
                 <img
-                    src="<?= BASE_URL ?>/public/assets/images/samtech-logo-report.png"
+                    src="<?= BASE_URL ?>/public\assets\images\samtech-logo-report.png"
                     class="logo"
                     alt="Samtech">
             </div>
