@@ -307,7 +307,7 @@
     </table>
 
     <div class="footer-note">
-        Samtech Helpdesk • System Generated Report • Confidential Internal Document
+        Samtech Helpdesk • System Generated Report
     </div>
 
 </div>
