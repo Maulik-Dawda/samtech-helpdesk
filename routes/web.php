@@ -64,6 +64,8 @@ $router->get('/admin/users', 'AdminUserController@index');
 $router->get('/admin/users/create', 'AdminUserController@create');
 $router->post('/admin/users/create', 'AdminUserController@store');
 
+$router->get('/admin/users/show/{id}', 'AdminUserController@show');
+
 $router->get('/admin/users/edit/{id}', 'AdminUserController@edit');
 $router->post('/admin/users/update/{id}', 'AdminUserController@update');
 

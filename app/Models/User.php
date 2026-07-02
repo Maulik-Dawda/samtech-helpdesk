@@ -454,4 +454,109 @@ class User extends Model
             $id
         ]);
     }
+    public function getProfile($id)
+    {
+        $stmt = $this->db->prepare("
+        SELECT
+            users.*,
+            organizations.name AS organization_name
+        FROM users
+        LEFT JOIN organizations
+            ON organizations.id = users.organization_id
+        WHERE users.id=?
+        LIMIT 1
+    ");
+
+        $stmt->execute([$id]);
+
+        return $stmt->fetch();
+    }
+    public function getTicketStatistics($userId)
+    {
+        $stmt = $this->db->prepare("
+        SELECT
+
+        COUNT(*) total,
+
+        SUM(status='open') open_count,
+
+        SUM(status='in_progress') in_progress_count,
+
+        SUM(status='pending') pending_count,
+
+        SUM(status='resolved') resolved_count,
+
+        SUM(status='closed') closed_count
+
+        FROM tickets
+
+        WHERE user_id=?
+
+    ");
+
+        $stmt->execute([$userId]);
+
+        return $stmt->fetch();
+    }
+    public function getRecentTickets($userId, $limit = 10)
+    {
+        $stmt = $this->db->prepare("
+        SELECT *
+
+        FROM tickets
+
+        WHERE user_id=?
+
+        ORDER BY created_at DESC
+
+        LIMIT $limit
+    ");
+
+        $stmt->execute([$userId]);
+
+        return $stmt->fetchAll();
+    }
+    public function getActivityLogs($userId, $limit = 30)
+    {
+        $stmt = $this->db->prepare("
+        SELECT *
+
+        FROM activity_logs
+
+        WHERE user_id=?
+
+        ORDER BY created_at DESC
+
+        LIMIT $limit
+    ");
+
+        $stmt->execute([$userId]);
+
+        return $stmt->fetchAll();
+    }
+    public function getAgentStatistics($agentId)
+    {
+        $stmt = $this->db->prepare("
+        SELECT
+
+        COUNT(*) total,
+
+        SUM(status='closed') closed_count,
+
+        SUM(status='resolved') resolved_count,
+
+        SUM(status='pending') pending_count,
+
+        SUM(status='in_progress') in_progress_count
+
+        FROM tickets
+
+        WHERE closed_by_agent_id=?
+
+    ");
+
+        $stmt->execute([$agentId]);
+
+        return $stmt->fetch();
+    }
 }

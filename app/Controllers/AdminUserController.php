@@ -168,6 +168,39 @@ class AdminUserController extends Controller
         exit;
     }
 
+    public function show($id)
+    {
+        $this->adminGuard();
+
+        $userModel = new User();
+
+        $user = $userModel->getProfile($id);
+
+        if (!$user) {
+            http_response_code(404);
+            echo "User not found.";
+            exit;
+        }
+
+        $statistics = $userModel->getTicketStatistics($id);
+
+        $recentTickets = $userModel->getRecentTickets($id);
+
+        $activityLogs = $userModel->getActivityLogs($id);
+
+        $this->view('admin/users/show', [
+
+            'user' => $user,
+
+            'statistics' => $statistics,
+
+            'recentTickets' => $recentTickets,
+
+            'activityLogs' => $activityLogs
+
+        ]);
+    }
+
     public function edit($id)
     {
         $this->adminGuard();
@@ -256,7 +289,7 @@ class AdminUserController extends Controller
                 $role == 'admin'
             ) {
                 $_SESSION['error'] = "You cannot create administrator accounts.";
-                header("Location: " . BASE_URL . "/admin/users/create");
+                header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
                 exit;
             }
             $_SESSION['error'] = "Invalid role selected.";
@@ -284,7 +317,7 @@ class AdminUserController extends Controller
             'full_name' => $fullName,
             'email' => $email,
             'role' => $role,
-            'is_admin_agent'=>$isAdminAgent,
+            'is_admin_agent' => $isAdminAgent,
             'is_organization_admin' => $isOrganizationAdmin,
             'is_active' => $isActive
         ]);
