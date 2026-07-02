@@ -390,7 +390,7 @@ $closedTickets = $statistics['closed_count'] ?? 0;
 
                                             <td>
                                                 <a
-                                                    href="<?= BASE_URL ?>/tickets/show/<?= $ticket['id']; ?>"
+                                                    href="<?= BASE_URL ?>agent/tickets/show/<?= $ticket['id']; ?>"
                                                     class="btn btn-sm btn-outline-primary">
                                                     View
                                                 </a>
