@@ -6,24 +6,31 @@ class TicketReply extends Model
 {
     public function create($data)
     {
-        $stmt = $this->db->prepare("
-        INSERT INTO ticket_replies
-        (ticket_id, user_id, message, attachment_path)
-        VALUES (?, ?, ?, ?)
-    ");
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO ticket_replies
+                (ticket_id, user_id, message, attachment_path)
+                VALUES (?, ?, ?, ?)
+            ");
 
-        $created = $stmt->execute([
-            $data['ticket_id'],
-            $data['user_id'],
-            $data['message'],
-            $data['attachment_path'] ?? null
-        ]);
+            $created = $stmt->execute([
+                $data['ticket_id'],
+                $data['user_id'],
+                $data['message'],
+                $data['attachment_path'] ?? null
+            ]);
 
-        if ($created) {
+            if (!$created) {
+                error_log("Ticket Reply Insert Failed: " . print_r($stmt->errorInfo(), true));
+                return false;
+            }
+
             return $this->db->lastInsertId();
-        }
 
-        return false;
+        } catch (Throwable $e) {
+            error_log("Ticket Reply Error: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getByTicketId($ticketId)

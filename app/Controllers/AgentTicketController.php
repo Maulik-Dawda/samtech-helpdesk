@@ -183,129 +183,155 @@ class AgentTicketController extends Controller
             exit;
         }
 
-        $ticketModel = new Ticket();
-        $ticket = $ticketModel->findForAgent($id);
-
-        if (!$ticket) {
-            http_response_code(404);
-            echo "Ticket not found.";
-            exit;
-        }
-
-        if ($ticket['status'] === 'closed') {
-            $_SESSION['error'] = "This ticket is already closed.";
-            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-            exit;
-        }
-
-        if ($ticket['status'] === $status) {
-            $_SESSION['error'] = "Ticket is already marked as " . ucwords(str_replace('_', ' ', $status)) . ".";
-            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-            exit;
-        }
-
         if ($status === 'closed' && empty($resolutionMessage)) {
             $_SESSION['error'] = "Resolution message is required before closing the ticket.";
             header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
             exit;
         }
 
-        if ($status === 'closed') {
-            $replyModel = new TicketReply();
+        try {
+            $ticketModel = new Ticket();
+            $ticket = $ticketModel->findForAgent($id);
 
-            $replyModel->create([
-                'ticket_id' => $ticket['id'],
-                'user_id' => $_SESSION['auth_user_id'],
-                'message' => "[Resolution] " . $resolutionMessage,
-                'attachment_path' => null
-            ]);
+            if (!$ticket) {
+                $_SESSION['error'] = "Ticket not found.";
+                header("Location: " . BASE_URL . "/agent/tickets");
+                exit;
+            }
+
+            if ($ticket['status'] === 'closed') {
+                $_SESSION['error'] = "This ticket is already closed.";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            if ($ticket['status'] === $status) {
+                $_SESSION['error'] = "Ticket is already marked as " . ucwords(str_replace('_', ' ', $status)) . ".";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            if ($status === 'closed') {
+                $replyModel = new TicketReply();
+
+                $replyId = $replyModel->create([
+                    'ticket_id' => $ticket['id'],
+                    'user_id' => $_SESSION['auth_user_id'],
+                    'message' => "[Resolution] " . $resolutionMessage,
+                    'attachment_path' => null
+                ]);
+
+                if (!$replyId) {
+                    $_SESSION['error'] = "Unable to save resolution message. Ticket was not closed.";
+                    header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                    exit;
+                }
+            }
+
+            $historyModel = new TicketStatusHistory();
+
+            $historyCreated = $historyModel->create(
+                $ticket['id'],
+                $ticket['status'],
+                $status,
+                $_SESSION['auth_user_id']
+            );
+
+            if (!$historyCreated) {
+                $_SESSION['error'] = "Unable to save status history.";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            $updated = $ticketModel->updateStatusByAgent(
+                $ticket['id'],
+                $status,
+                $_SESSION['auth_user_id']
+            );
+
+            if (!$updated) {
+                $_SESSION['error'] = "Unable to update ticket status.";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            $_SESSION['success'] = "Ticket status updated successfully.";
+
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        } catch (Throwable $e) {
+            error_log("Ticket Status Update Error: " . $e->getMessage());
+
+            $_SESSION['error'] = "Something went wrong while updating ticket status.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
         }
-
-        $historyModel = new TicketStatusHistory();
-
-        $historyModel->create(
-            $ticket['id'],
-            $ticket['status'],
-            $status,
-            $_SESSION['auth_user_id']
-        );
-
-        $ticketModel->updateStatusByAgent(
-            $ticket['id'],
-            $status,
-            $_SESSION['auth_user_id']
-        );
-
-        $_SESSION['success'] = "Ticket status updated successfully.";
-
-        header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-        exit;
     }
     public function create()
-{
-    AuthMiddleware::timeout();
-    AuthMiddleware::check('agent');
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
 
-    $organizationModel = new Organization();
+        $organizationModel = new Organization();
 
-    $organizations = $organizationModel->getAllActive();
+        $organizations = $organizationModel->getAllActive();
 
-    $this->view('agent/tickets/create', [
-        'organizations' => $organizations
-    ]);
-}
-public function store()
-{
-    Csrf::verify();
-
-    AuthMiddleware::timeout();
-    AuthMiddleware::check('agent');
-
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        $this->view('agent/tickets/create', [
+            'organizations' => $organizations
+        ]);
     }
+    public function store()
+    {
+        Csrf::verify();
 
-    $organizationId = (int)($_POST['organization_id'] ?? 0);
-    $subject = trim($_POST['subject'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $priority = $_POST['priority'] ?? 'medium';
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
 
-    if (
-        empty($organizationId) ||
-        empty($subject) ||
-        empty($description)
-    ) {
-        $_SESSION['error'] = 'All required fields must be completed.';
-        header("Location: " . BASE_URL . "/agent/tickets/create");
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $organizationId = (int)($_POST['organization_id'] ?? 0);
+        $subject = trim($_POST['subject'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $priority = $_POST['priority'] ?? 'medium';
+
+        if (
+            empty($organizationId) ||
+            empty($subject) ||
+            empty($description)
+        ) {
+            $_SESSION['error'] = 'All required fields must be completed.';
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
+
+        $ticketModel = new Ticket();
+
+        $ticketNo = $ticketModel->generateTicketNo();
+
+        $created = $ticketModel->create([
+            'ticket_no' => $ticketNo,
+            'user_id' => $_SESSION['auth_user_id'],
+            'organization_id' => $organizationId,
+            'created_by' => $_SESSION['auth_user_id'],
+            'created_by_role' => 'agent',
+            'subject' => $subject,
+            'description' => $description,
+            'priority' => $priority,
+            'status' => 'open'
+        ]);
+
+        if (!$created) {
+            $_SESSION['error'] = 'Unable to create ticket.';
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
+
+        $_SESSION['success'] =
+            'Ticket created successfully.';
+
+        header("Location: " . BASE_URL . "/agent/tickets");
         exit;
     }
-
-    $ticketModel = new Ticket();
-
-    $ticketNo = $ticketModel->generateTicketNo();
-
-    $created = $ticketModel->create([
-        'ticket_no' => $ticketNo,
-        'user_id' => $_SESSION['auth_user_id'],
-        'organization_id' => $organizationId,
-        'created_by' => $_SESSION['auth_user_id'],
-        'created_by_role' => 'agent',
-        'subject' => $subject,
-        'description' => $description,
-        'priority' => $priority,
-        'status' => 'open'
-    ]);
-
-    if (!$created) {
-        $_SESSION['error'] = 'Unable to create ticket.';
-        header("Location: " . BASE_URL . "/agent/tickets/create");
-        exit;
-    }
-
-    $_SESSION['success'] =
-        'Ticket created successfully.';
-
-    header("Location: " . BASE_URL . "/agent/tickets");
-    exit;
-}
 }
