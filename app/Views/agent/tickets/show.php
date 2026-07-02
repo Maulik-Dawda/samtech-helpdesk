@@ -320,7 +320,8 @@ $currentStatusClass = $statusClasses[$ticket['status']] ?? 'bg-secondary';
                         <form
                             method="POST"
                             action="<?= BASE_URL ?>/agent/tickets/status/<?= $ticket['id']; ?>"
-                            id="statusUpdateForm">
+                            id="statusUpdateForm"
+                            data-no-loader="true">
                             <?= Csrf::field(); ?>
 
                             <div class="mb-4">
@@ -485,6 +486,10 @@ $currentStatusClass = $statusClasses[$ticket['status']] ?? 'bg-secondary';
             if (statusSelect.value === 'closed') {
                 e.preventDefault();
 
+                if (typeof hideSamtechLoader === 'function') {
+                    hideSamtechLoader();
+                }
+
                 resolutionTextarea.value = '';
                 resolutionInput.value = '';
                 resolutionError.classList.add('d-none');
@@ -503,6 +508,11 @@ $currentStatusClass = $statusClasses[$ticket['status']] ?? 'bg-secondary';
 
             resolutionInput.value = message;
             resolutionModal.hide();
+
+            if (typeof showSamtechLoader === 'function') {
+                showSamtechLoader();
+            }
+
             statusForm.submit();
         });
     });
