@@ -484,37 +484,80 @@ class Ticket extends Model
         $search = '%' . $keyword . '%';
 
         $stmt = $this->db->prepare("
-        SELECT 
+        SELECT DISTINCT
             tickets.id,
             tickets.ticket_no,
             tickets.subject,
+            tickets.description,
             tickets.status,
             tickets.priority,
             tickets.created_at,
+
             users.full_name AS customer_name,
             users.email AS customer_email,
-            organizations.name AS organization_name
+
+            organizations.name AS organization_name,
+
+            closed_agent.full_name AS closed_by_agent_name
+
         FROM tickets
-        LEFT JOIN users 
+
+        LEFT JOIN users
             ON users.id = tickets.user_id
-        LEFT JOIN organizations 
+
+        LEFT JOIN organizations
             ON organizations.id = tickets.organization_id
-        WHERE 
+
+        LEFT JOIN users AS closed_agent
+            ON closed_agent.id = tickets.closed_by_agent_id
+
+        LEFT JOIN ticket_replies
+            ON ticket_replies.ticket_id = tickets.id
+
+        LEFT JOIN users AS reply_user
+            ON reply_user.id = ticket_replies.user_id
+
+        WHERE
+
             tickets.ticket_no LIKE ?
+
             OR tickets.subject LIKE ?
+
+            OR tickets.description LIKE ?
+
+            OR tickets.priority LIKE ?
+
+            OR tickets.status LIKE ?
+
             OR users.full_name LIKE ?
+
             OR users.email LIKE ?
+
             OR organizations.name LIKE ?
+
+            OR closed_agent.full_name LIKE ?
+
+            OR ticket_replies.message LIKE ?
+
+            OR reply_user.full_name LIKE ?
+
         ORDER BY tickets.created_at DESC
+
         LIMIT 20
     ");
 
         $stmt->execute([
-            $search,
-            $search,
-            $search,
-            $search,
-            $search
+            $search, // ticket no
+            $search, // subject
+            $search, // description
+            $search, // priority
+            $search, // status
+            $search, // customer
+            $search, // email
+            $search, // organization
+            $search, // closed by
+            $search, // reply message
+            $search  // reply author
         ]);
 
         return $stmt->fetchAll();
