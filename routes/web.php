@@ -10,6 +10,7 @@ $router->post('/admin-login', 'AuthController@processAdminLogin');
 
 $router->get('/admin-dashboard', 'DashboardController@admin');
 $router->get('/agent-dashboard', 'DashboardController@agent');
+$router->get('/admin-agent-dashboard', 'AdminAgentDashboardController@index');
 $router->get('/user-dashboard', 'DashboardController@user');
 
 $router->get('/logout', 'AuthController@logout');
@@ -111,3 +112,4 @@ $router->get('/agent/users/disable/{id}', 'AgentUserController@disable');
 
 $router->get('/reports/ticket-search', 'ReportController@searchTickets');
 $router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketDetail');
+

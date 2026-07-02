@@ -15,6 +15,12 @@ class DashboardController extends Controller
         }
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+
     public function admin()
     {
         AuthMiddleware::timeout();
@@ -25,14 +31,12 @@ class DashboardController extends Controller
         $ticketModel = new Ticket();
         $userModel = new User();
         $organizationModel = new Organization();
+        $activityModel = new ActivityLog();
 
         $ticketCounts = $ticketModel->getDashboardCounts();
         $recentTickets = $ticketModel->getRecentTickets(8);
         $userCounts = $userModel->getUserCounts();
         $organizationCount = $organizationModel->countAll();
-
-        $activityModel = new ActivityLog();
-
         $recentActivities = $activityModel->getRecent(8);
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
@@ -48,27 +52,76 @@ class DashboardController extends Controller
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN AGENT DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+
+    public function adminAgent()
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('admin_agent');
+
+        $this->startSession();
+
+        $ticketModel = new Ticket();
+        $userModel = new User();
+        $organizationModel = new Organization();
+        $activityModel = new ActivityLog();
+
+        $ticketCounts = $ticketModel->getDashboardCounts();
+        $recentTickets = $ticketModel->getRecentTickets(8);
+        $userCounts = $userModel->getUserCounts();
+        $organizationCount = $organizationModel->countAll();
+        $recentActivities = $activityModel->getRecent(8);
+        $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
+        $organizationTickets = $ticketModel->getOrganizationTicketCounts();
+
+        $this->view('dashboards/admin-agent', [
+            'ticketCounts' => $ticketCounts,
+            'recentTickets' => $recentTickets,
+            'userCounts' => $userCounts,
+            'organizationCount' => $organizationCount,
+            'recentActivities' => $recentActivities,
+            'monthlyTickets' => $monthlyTickets,
+            'organizationTickets' => $organizationTickets
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | AGENT DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+
     public function agent()
-{
-    AuthMiddleware::timeout();
-    AuthMiddleware::check('agent');
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
 
-    $this->startSession();
+        $this->startSession();
 
-    $ticketModel = new Ticket();
+        $ticketModel = new Ticket();
 
-    $ticketCounts = $ticketModel->getDashboardCounts();
-    $recentTickets = $ticketModel->getRecentTickets(8);
-    $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
-    $organizationTickets = $ticketModel->getOrganizationTicketCounts();
+        $ticketCounts = $ticketModel->getDashboardCounts();
+        $recentTickets = $ticketModel->getRecentTickets(8);
+        $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
+        $organizationTickets = $ticketModel->getOrganizationTicketCounts();
 
-    $this->view('dashboards/agent', [
-        'ticketCounts' => $ticketCounts,
-        'recentTickets' => $recentTickets,
-        'monthlyTickets' => $monthlyTickets,
-        'organizationTickets' => $organizationTickets
-    ]);
-}
+        $this->view('dashboards/agent', [
+            'ticketCounts' => $ticketCounts,
+            'recentTickets' => $recentTickets,
+            'monthlyTickets' => $monthlyTickets,
+            'organizationTickets' => $organizationTickets
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER DASHBOARD
+    |--------------------------------------------------------------------------
+    */
 
     public function user()
     {
@@ -85,6 +138,7 @@ class DashboardController extends Controller
         );
 
         if (!$user || empty($user['organization_id'])) {
+
             $ticketCounts = [
                 'total' => 0,
                 'open_count' => 0,
@@ -95,9 +149,10 @@ class DashboardController extends Controller
             ];
 
             $monthlyTickets = [];
-
             $recentTickets = [];
+
         } else {
+
             $ticketCounts = $ticketModel->getDashboardCounts(
                 $user['organization_id']
             );
@@ -106,6 +161,7 @@ class DashboardController extends Controller
                 8,
                 $user['organization_id']
             );
+
             $monthlyTickets = $ticketModel->getMonthlyTicketCounts(
                 $user['organization_id']
             );

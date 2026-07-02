@@ -9,10 +9,18 @@ class AdminUserController extends Controller
     private function adminGuard()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('admin');
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+
+        if (
+            !PermissionHelper::isAdmin() &&
+            !PermissionHelper::isAdminAgent()
+        ) {
+            http_response_code(403);
+            require ROOT_PATH . "/app/Views/errors/403.php";
+            exit;
         }
     }
 
@@ -54,12 +62,22 @@ class AdminUserController extends Controller
         $role = $_POST['role'] ?? '';
         $organizationId = $_POST['organization_id'] ?? null;
         $isOrganizationAdmin = isset($_POST['is_organization_admin']) ? 1 : 0;
+        $isAdminAgent = isset($_POST['is_admin_agent']) ? 1 : 0;
 
-        $allowedRoles = [
-            'admin',
-            'agent',
-            'user'
-        ];
+        if (PermissionHelper::isAdmin()) {
+
+            $allowedRoles = [
+                'admin',
+                'agent',
+                'user'
+            ];
+        } else {
+
+            $allowedRoles = [
+                'agent',
+                'user'
+            ];
+        }
 
         if (
             empty($fullName) ||
@@ -79,6 +97,15 @@ class AdminUserController extends Controller
         }
 
         if (!in_array($role, $allowedRoles)) {
+            if (
+                PermissionHelper::isAdminAgent()
+                &&
+                $role == 'admin'
+            ) {
+                $_SESSION['error'] = "You cannot create administrator accounts.";
+                header("Location: " . BASE_URL . "/admin/users/create");
+                exit;
+            }
             $_SESSION['error'] = "Invalid role selected.";
             header("Location: " . BASE_URL . "/admin/users/create");
             exit;
@@ -96,8 +123,12 @@ class AdminUserController extends Controller
         }
 
         if ($role === 'agent') {
+
             $organizationId = null;
             $isOrganizationAdmin = 0;
+        } else {
+
+            $isAdminAgent = 0;
         }
 
         if ($role === 'user' && empty($organizationId)) {
@@ -120,7 +151,9 @@ class AdminUserController extends Controller
             'email' => $email,
             'password' => $password,
             'role' => $role,
+            'is_admin_agent' => $isAdminAgent,
             'is_organization_admin' => $isOrganizationAdmin
+
         ]);
 
         if (!$created) {
@@ -191,6 +224,8 @@ class AdminUserController extends Controller
         $role = $_POST['role'] ?? '';
         $organizationId = $_POST['organization_id'] ?? null;
         $isOrganizationAdmin = isset($_POST['is_organization_admin']) ? 1 : 0;
+
+        $isAdminAgent = isset($_POST['is_admin_agent']) ? 1 : 0;
         $isActive = isset($_POST['is_active']) ? 1 : 0;
 
         $allowedRoles = [
@@ -215,14 +250,27 @@ class AdminUserController extends Controller
         }
 
         if (!in_array($role, $allowedRoles)) {
+            if (
+                PermissionHelper::isAdminAgent()
+                &&
+                $role == 'admin'
+            ) {
+                $_SESSION['error'] = "You cannot create administrator accounts.";
+                header("Location: " . BASE_URL . "/admin/users/create");
+                exit;
+            }
             $_SESSION['error'] = "Invalid role selected.";
             header("Location: " . BASE_URL . "/admin/users/edit/" . $id);
             exit;
         }
 
         if ($role === 'agent') {
+
             $organizationId = null;
             $isOrganizationAdmin = 0;
+        } else {
+
+            $isAdminAgent = 0;
         }
 
         if ($role === 'user' && empty($organizationId)) {
@@ -236,6 +284,7 @@ class AdminUserController extends Controller
             'full_name' => $fullName,
             'email' => $email,
             'role' => $role,
+            'is_admin_agent'=>$isAdminAgent,
             'is_organization_admin' => $isOrganizationAdmin,
             'is_active' => $isActive
         ]);

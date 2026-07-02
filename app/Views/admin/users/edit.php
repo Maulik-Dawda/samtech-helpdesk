@@ -22,9 +22,9 @@
 
                 <div class="card-body p-4">
 
-                    <?php if(session_status() === PHP_SESSION_NONE) session_start(); ?>
+                    <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 
-                    <?php if(isset($_SESSION['error'])): ?>
+                    <?php if (isset($_SESSION['error'])): ?>
 
                         <div class="alert alert-danger">
                             <?= htmlspecialchars($_SESSION['error']); ?>
@@ -35,8 +35,7 @@
 
                     <form
                         method="POST"
-                        action="<?= BASE_URL ?>/admin/users/update/<?= $user['id']; ?>"
-                    >
+                        action="<?= BASE_URL ?>/admin/users/update/<?= $user['id']; ?>">
 
                         <?= Csrf::field(); ?>
 
@@ -51,8 +50,7 @@
                                 name="full_name"
                                 class="form-control"
                                 value="<?= htmlspecialchars($user['full_name']); ?>"
-                                required
-                            >
+                                required>
 
                         </div>
 
@@ -67,8 +65,7 @@
                                 name="email"
                                 class="form-control"
                                 value="<?= htmlspecialchars($user['email']); ?>"
-                                required
-                            >
+                                required>
 
                         </div>
 
@@ -82,20 +79,17 @@
                                 name="role"
                                 class="form-select"
                                 id="roleSelect"
-                                required
-                            >
+                                required>
 
                                 <option
                                     value="user"
-                                    <?= $user['role'] === 'user' ? 'selected' : ''; ?>
-                                >
+                                    <?= $user['role'] === 'user' ? 'selected' : ''; ?>>
                                     User
                                 </option>
 
                                 <option
                                     value="agent"
-                                    <?= $user['role'] === 'agent' ? 'selected' : ''; ?>
-                                >
+                                    <?= $user['role'] === 'agent' ? 'selected' : ''; ?>>
                                     Agent
                                 </option>
 
@@ -113,21 +107,19 @@
 
                                 <select
                                     name="organization_id"
-                                    class="form-select"
-                                >
+                                    class="form-select">
 
                                     <option value="">
                                         Select Organization
                                     </option>
 
-                                    <?php foreach($organizations as $organization): ?>
+                                    <?php foreach ($organizations as $organization): ?>
 
                                         <option
                                             value="<?= $organization['id']; ?>"
                                             <?= $organization['id'] == $user['organization_id']
                                                 ? 'selected'
-                                                : ''; ?>
-                                        >
+                                                : ''; ?>>
                                             <?= htmlspecialchars(
                                                 $organization['name']
                                             ); ?>
@@ -148,11 +140,36 @@
                                     value="1"
                                     <?= (int)$user['is_organization_admin'] === 1
                                         ? 'checked'
-                                        : ''; ?>
-                                >
+                                        : ''; ?>>
 
                                 <label class="form-check-label">
                                     Organization Admin
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div id="adminAgentSection">
+
+                            <div class="form-check mb-4">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="is_admin_agent"
+                                    id="is_admin_agent"
+                                    value="1"
+                                    <?= ($user['is_admin_agent'] ?? 0) == 1 ? 'checked' : ''; ?>>
+
+                                <label class="form-check-label">
+
+                                    Admin Agent
+
+                                    <small class="text-muted d-block">
+                                        Agent with extended administration privileges.
+                                    </small>
+
                                 </label>
 
                             </div>
@@ -168,8 +185,7 @@
                                 value="1"
                                 <?= (int)$user['is_active'] === 1
                                     ? 'checked'
-                                    : ''; ?>
-                            >
+                                    : ''; ?>>
 
                             <label class="form-check-label">
                                 Active User
@@ -181,15 +197,13 @@
 
                             <a
                                 href="<?= BASE_URL ?>/admin/users"
-                                class="btn btn-outline-secondary"
-                            >
+                                class="btn btn-outline-secondary">
                                 Back
                             </a>
 
                             <button
                                 type="submit"
-                                class="btn btn-primary-custom"
-                            >
+                                class="btn btn-primary-custom">
                                 Update User
                             </button>
 
@@ -208,31 +222,27 @@
 </div>
 
 <script>
+    function toggleOrganizationSection() {
+        const role =
+            document.getElementById("roleSelect").value;
 
-function toggleOrganizationSection()
-{
-    let roleSelect =
-        document.getElementById('roleSelect');
+        const organization =
+            document.getElementById("organizationSection");
 
-    let organizationSection =
-        document.getElementById('organizationSection');
+        const adminAgent =
+            document.getElementById("adminAgentSection");
 
-    if(roleSelect.value === 'user')
-    {
-        organizationSection.style.display = 'block';
+        if (role === "user") {
+            organization.style.display = "block";
+            adminAgent.style.display = "none";
+        } else if (role === "agent") {
+            organization.style.display = "none";
+            adminAgent.style.display = "block";
+        } else {
+            organization.style.display = "none";
+            adminAgent.style.display = "none";
+        }
     }
-    else
-    {
-        organizationSection.style.display = 'none';
-    }
-}
-
-document
-    .getElementById('roleSelect')
-    .addEventListener('change', toggleOrganizationSection);
-
-toggleOrganizationSection();
-
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

@@ -13,12 +13,28 @@ class AuthMiddleware
             exit;
         }
 
-        if ($role !== null && $_SESSION['auth_user_role'] !== $role) {
-            http_response_code(403);
+        if ($role !== null) {
 
-            require_once ROOT_PATH . "/app/Views/errors/403.php";
+            $userRole = $_SESSION['auth_user_role'] ?? '';
 
-            exit;
+            // Multiple roles allowed
+            if (is_array($role)) {
+
+                if (!in_array($userRole, $role)) {
+                    http_response_code(403);
+                    require_once ROOT_PATH . "/app/Views/errors/403.php";
+                    exit;
+                }
+
+            } else {
+
+                // Single role
+                if ($userRole !== $role) {
+                    http_response_code(403);
+                    require_once ROOT_PATH . "/app/Views/errors/403.php";
+                    exit;
+                }
+            }
         }
     }
 
@@ -28,22 +44,11 @@ class AuthMiddleware
             session_start();
         }
 
-        if (isset($_SESSION['auth_user_id'])) {
-            $role = $_SESSION['auth_user_role'];
-
-            if ($role === 'admin') {
-                header("Location: " . BASE_URL . "/admin-dashboard");
-                exit;
-            }
-
-            if ($role === 'agent') {
-                header("Location: " . BASE_URL . "/agent-dashboard");
-                exit;
-            }
-
-            header("Location: " . BASE_URL . "/user-dashboard");
-            exit;
+        if (!isset($_SESSION['auth_user_id'])) {
+            return;
         }
+
+        self::redirectByRole($_SESSION['auth_user_role']);
     }
 
     public static function timeout()
@@ -52,9 +57,13 @@ class AuthMiddleware
             session_start();
         }
 
-        $timeout = 1800; // 30 minutes
+        $timeout = SESSION_TIMEOUT;
 
-        if (isset($_SESSION['last_activity']) && time() - $_SESSION['last_activity'] > $timeout) {
+        if (
+            isset($_SESSION['last_activity']) &&
+            (time() - $_SESSION['last_activity']) > $timeout
+        ) {
+
             session_unset();
             session_destroy();
 
@@ -63,5 +72,33 @@ class AuthMiddleware
         }
 
         $_SESSION['last_activity'] = time();
+    }
+
+    /**
+     * Redirect user based on role
+     */
+    public static function redirectByRole($role)
+    {
+        switch ($role) {
+
+            case 'admin':
+                header("Location: " . BASE_URL . "/admin-dashboard");
+                break;
+
+            case 'admin_agent':
+                header("Location: " . BASE_URL . "/admin-agent-dashboard");
+                break;
+
+            case 'agent':
+                header("Location: " . BASE_URL . "/agent-dashboard");
+                break;
+
+            case 'user':
+            default:
+                header("Location: " . BASE_URL . "/user-dashboard");
+                break;
+        }
+
+        exit;
     }
 }

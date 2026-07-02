@@ -6,6 +6,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $role = $_SESSION['auth_user_role'] ?? '';
+$isAdminAgent = PermissionHelper::isAdminAgent();
+$isAdmin = PermissionHelper::isAdmin();
+$isAgent = PermissionHelper::isAgent();
 $isOrgAdmin = $_SESSION['is_organization_admin'] ?? 0;
 $currentUri = $_SERVER['REQUEST_URI'] ?? '';
 
@@ -170,8 +173,10 @@ function activeMenu($path, $currentUri)
 
     <?php if ($role === 'admin'): ?>
         <a class="<?= activeMenu('/admin-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/admin-dashboard">Dashboard</a>
-    <?php elseif ($role === 'agent'): ?>
-        <a class="<?= activeMenu('/agent-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/agent-dashboard">Dashboard</a>
+    <?php elseif ($isAgent): ?>
+        <a class="<?= activeMenu('/agent-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/agent-dashboard">
+            Dashboard
+        </a>
     <?php else: ?>
         <a class="<?= activeMenu('/user-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/user-dashboard">Dashboard</a>
     <?php endif; ?>
@@ -183,7 +188,7 @@ function activeMenu($path, $currentUri)
         <a class="<?= activeMenu('/tickets/create', $currentUri); ?>" href="<?= BASE_URL ?>/tickets/create">Create Ticket</a>
     <?php endif; ?>
 
-    <?php if ($role === 'agent'): ?>
+    <?php if ($isAgent): ?>
 
         <a
             class="<?= activeMenu('/agent/tickets/create', $currentUri); ?>"
@@ -195,37 +200,43 @@ function activeMenu($path, $currentUri)
 
     <?php endif; ?>
 
-    <?php if ($role === 'agent' || $role === 'admin'): ?>
+    <?php if ($isAgent || $isAdmin): ?>
         <a class="<?= activeMenu('/agent/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/agent/tickets">All Tickets</a>
     <?php endif; ?>
 
-    <?php if ($role === 'agent'): ?>
+    <?php if ($isAdmin || $isAdminAgent): ?>
 
-        <div class="sidebar-title">Users</div>
+        <div class="sidebar-title">
+            Administration
+        </div>
 
-        <a href="<?= BASE_URL ?>/agent/users">
-            Manage Users
+        <a
+            class="<?= activeMenu('/admin/users', $currentUri); ?>"
+            href="<?= BASE_URL ?>/admin/users">
+
+            Users
+
         </a>
 
-        <a href="<?= BASE_URL ?>/agent/users/create">
-            Create User
+        <a
+            class="<?= activeMenu('/agent/users', $currentUri); ?>"
+            href="<?= BASE_URL ?>/agent/users">
+
+            Agents
+
         </a>
 
-    <?php endif; ?>
+        <a
+            class="<?= activeMenu('/admin/activity-logs', $currentUri); ?>"
+            href="<?= BASE_URL ?>/admin/activity-logs">
 
-
-
-    <?php if ($role === 'admin'): ?>
-
-        <div class="sidebar-title">Admin</div>
-
-        <a class="<?= activeMenu('/admin/users', $currentUri); ?>" href="<?= BASE_URL ?>/admin/users">User Management</a>
-        <a class="<?= activeMenu('/admin/activity-logs', $currentUri); ?>" href="<?= BASE_URL ?>/admin/activity-logs">
             Activity Logs
+
         </a>
 
     <?php endif; ?>
-    <?php if ($role === 'admin' || $role === 'agent'): ?>
+
+    <?php if ($isAdmin || $isAdminAgent): ?>
 
         <div class="sidebar-title">Organizations</div>
 
@@ -249,22 +260,34 @@ function activeMenu($path, $currentUri)
 
     <?php endif; ?>
 
-   <?php if ($role === 'admin' || $role === 'agent'): ?>
+    <?php if ($isAdmin || $isAgent): ?>
 
-    <div class="sidebar-title">Reports</div>
+        <div class="sidebar-title">Reports</div>
 
-    <a class="<?= activeMenu('/reports/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/reports/tickets">
-        Ticket Reports
-    </a>
+        <a class="<?= activeMenu('/reports/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/reports/tickets">
+            Ticket Reports
+        </a>
 
-    <a class="<?= activeMenu('/reports/ticket-detail', $currentUri); ?>" href="<?= BASE_URL ?>/reports/ticket-detail">
-        Ticket Detail Report
-    </a>
+        <a class="<?= activeMenu('/reports/ticket-detail', $currentUri); ?>" href="<?= BASE_URL ?>/reports/ticket-detail">
+            Ticket Detail Report
+        </a>
 
-<?php endif; ?>
+    <?php endif; ?>
 
     <div class="sidebar-title">Account</div>
 
-    <a href="<?= BASE_URL ?>/logout">Logout</a>
+    <a
+        class="<?= activeMenu('/profile', $currentUri); ?>"
+        href="<?= BASE_URL ?>/profile">
+
+        Profile
+
+    </a>
+
+    <a href="<?= BASE_URL ?>/logout">
+
+        Logout
+
+    </a>
 
 </div>

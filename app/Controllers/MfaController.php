@@ -21,6 +21,7 @@ class DummyQrProvider implements IQRCodeProvider
         return 'image/png';
     }
 }
+
 class MfaController extends Controller
 {
     private function startSession()
@@ -112,6 +113,7 @@ class MfaController extends Controller
         $_SESSION['auth_user_name'] = $_SESSION['mfa_setup_name'];
         $_SESSION['auth_user_email'] = $_SESSION['mfa_setup_email'];
         $_SESSION['auth_user_role'] = $_SESSION['mfa_setup_role'];
+        $_SESSION['is_admin_agent'] = $_SESSION['mfa_setup_is_admin_agent'] ?? 0;
         $_SESSION['organization_id'] = $_SESSION['mfa_setup_organization_id'] ?? null;
         $_SESSION['is_organization_admin'] = $_SESSION['mfa_setup_is_organization_admin'] ?? 0;
         $_SESSION['last_activity'] = time();
@@ -120,6 +122,7 @@ class MfaController extends Controller
         unset($_SESSION['mfa_setup_name']);
         unset($_SESSION['mfa_setup_email']);
         unset($_SESSION['mfa_setup_role']);
+        unset($_SESSION['mfa_setup_is_admin_agent']);
         unset($_SESSION['mfa_setup_organization_id']);
         unset($_SESSION['mfa_setup_is_organization_admin']);
 
@@ -181,6 +184,7 @@ class MfaController extends Controller
         $_SESSION['auth_user_name'] = $_SESSION['mfa_pending_name'];
         $_SESSION['auth_user_email'] = $_SESSION['mfa_pending_email'];
         $_SESSION['auth_user_role'] = $_SESSION['mfa_pending_role'];
+        $_SESSION['is_admin_agent'] = $_SESSION['mfa_pending_is_admin_agent'] ?? 0;
         $_SESSION['organization_id'] = $_SESSION['mfa_pending_organization_id'] ?? null;
         $_SESSION['is_organization_admin'] = $_SESSION['mfa_pending_is_organization_admin'] ?? 0;
         $_SESSION['last_activity'] = time();
@@ -240,6 +244,7 @@ class MfaController extends Controller
         $_SESSION['mfa_recovery_name'] = $user['full_name'];
         $_SESSION['mfa_recovery_email'] = $user['email'];
         $_SESSION['mfa_recovery_role'] = $user['role'];
+        $_SESSION['mfa_recovery_is_admin_agent'] = $user['is_admin_agent'] ?? 0;
         $_SESSION['mfa_recovery_organization_id'] = $user['organization_id'] ?? null;
         $_SESSION['mfa_recovery_is_organization_admin'] = $user['is_organization_admin'] ?? 0;
 
@@ -327,6 +332,7 @@ class MfaController extends Controller
             header("Location: " . BASE_URL . "/mfa-recovery-verify");
             exit;
         }
+
         $this->logActivity($userId, 'MFA recovery OTP verified');
 
         $tfa = $this->tfa();
@@ -345,6 +351,7 @@ class MfaController extends Controller
         $_SESSION['mfa_setup_name'] = $_SESSION['mfa_recovery_name'];
         $_SESSION['mfa_setup_email'] = $_SESSION['mfa_recovery_email'];
         $_SESSION['mfa_setup_role'] = $_SESSION['mfa_recovery_role'];
+        $_SESSION['mfa_setup_is_admin_agent'] = $_SESSION['mfa_recovery_is_admin_agent'] ?? 0;
         $_SESSION['mfa_setup_organization_id'] = $_SESSION['mfa_recovery_organization_id'] ?? null;
         $_SESSION['mfa_setup_is_organization_admin'] = $_SESSION['mfa_recovery_is_organization_admin'] ?? 0;
 
@@ -352,6 +359,7 @@ class MfaController extends Controller
         unset($_SESSION['mfa_recovery_name']);
         unset($_SESSION['mfa_recovery_email']);
         unset($_SESSION['mfa_recovery_role']);
+        unset($_SESSION['mfa_recovery_is_admin_agent']);
         unset($_SESSION['mfa_recovery_organization_id']);
         unset($_SESSION['mfa_recovery_is_organization_admin']);
 
@@ -362,20 +370,24 @@ class MfaController extends Controller
     }
 
     private function redirectByRole($role)
-    {
-        if ($role === 'admin') {
+{
+    switch ($role) {
+
+        case 'admin':
             header("Location: " . BASE_URL . "/admin-dashboard");
-            exit;
-        }
+            break;
 
-        if ($role === 'agent') {
+        case 'agent':
             header("Location: " . BASE_URL . "/agent-dashboard");
-            exit;
-        }
+            break;
 
-        header("Location: " . BASE_URL . "/user-dashboard");
-        exit;
+        default:
+            header("Location: " . BASE_URL . "/user-dashboard");
+            break;
     }
+
+    exit;
+}
 
     private function redirectIfAuthenticated()
     {

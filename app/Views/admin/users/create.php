@@ -45,11 +45,12 @@
                                 name="role"
                                 class="form-select"
                                 id="roleSelect"
-                                required
-                            >
+                                required>
                                 <option value="user">User</option>
                                 <option value="agent">Agent</option>
-                                <option value="admin">Admin</option>
+                                <?php if (PermissionHelper::isAdmin()): ?>
+                                    <option value="admin">Admin</option>
+                                <?php endif; ?>
                             </select>
 
                         </div>
@@ -62,18 +63,16 @@
 
                                 <select
                                     name="organization_id"
-                                    class="form-select"
-                                >
+                                    class="form-select">
 
                                     <option value="">
                                         Select Organization
                                     </option>
 
-                                    <?php foreach($organizations as $organization): ?>
+                                    <?php foreach ($organizations as $organization): ?>
 
                                         <option
-                                            value="<?= $organization['id']; ?>"
-                                        >
+                                            value="<?= $organization['id']; ?>">
                                             <?= htmlspecialchars(
                                                 $organization['name']
                                             ); ?>
@@ -91,8 +90,7 @@
                                     type="checkbox"
                                     class="form-check-input"
                                     name="is_organization_admin"
-                                    value="1"
-                                >
+                                    value="1">
 
                                 <label class="form-check-label">
                                     Organization Admin
@@ -102,10 +100,34 @@
 
                         </div>
 
+                        <div id="adminAgentSection" style="display:none;">
+
+                            <div class="form-check mb-4">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="is_admin_agent"
+                                    id="is_admin_agent"
+                                    value="1">
+
+                                <label class="form-check-label" for="is_admin_agent">
+
+                                    Admin Agent
+
+                                    <small class="text-muted d-block">
+                                        Agent with extended administration privileges.
+                                    </small>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
                         <button
                             type="submit"
-                            class="btn btn-primary-custom"
-                        >
+                            class="btn btn-primary-custom">
                             Create User
                         </button>
 
@@ -122,18 +144,32 @@
 </div>
 
 <script>
-document.getElementById('roleSelect').addEventListener('change', function(){
+    function toggleSections() {
+        const role = document.getElementById('roleSelect').value;
 
-    let orgSection =
-        document.getElementById('organizationSection');
+        const organization =
+            document.getElementById('organizationSection');
 
-    if(this.value === 'user'){
-        orgSection.style.display = 'block';
-    }else{
-        orgSection.style.display = 'none';
+        const adminAgent =
+            document.getElementById('adminAgentSection');
+
+        if (role === "user") {
+            organization.style.display = "block";
+            adminAgent.style.display = "none";
+        } else if (role === "agent") {
+            organization.style.display = "none";
+            adminAgent.style.display = "block";
+        } else {
+            organization.style.display = "none";
+            adminAgent.style.display = "none";
+        }
     }
 
-});
+    document
+        .getElementById("roleSelect")
+        .addEventListener("change", toggleSections);
+
+    toggleSections();
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

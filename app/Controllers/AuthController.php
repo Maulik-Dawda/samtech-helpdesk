@@ -37,10 +37,7 @@ class AuthController extends Controller
         }
 
         if ($this->isTooManyAttempts($email)) {
-            $this->redirectWithError(
-                '/user-login',
-                'Account temporarily locked due to too many failed attempts. Please try again after 15 minutes.'
-            );
+            $this->redirectWithError('/user-login', 'Account temporarily locked due to too many failed attempts. Please try again after 15 minutes.');
         }
 
         if (!in_array($loginType, ['user', 'agent'])) {
@@ -51,16 +48,24 @@ class AuthController extends Controller
         $userModel = new User();
         $user = $userModel->findByEmail($email);
 
-        if (!$user || $user['role'] !== $loginType) {
+        if (!$user) {
+            $this->recordLoginAttempt($email, false);
+            $this->redirectWithError('/user-login', 'Invalid email, password, or login type.');
+        }
+
+        if ($loginType === 'user' && $user['role'] !== 'user') {
+            $this->recordLoginAttempt($email, false);
+            $this->redirectWithError('/user-login', 'Invalid email, password, or login type.');
+        }
+
+        if ($loginType === 'agent' && $user['role'] !== 'agent') {
             $this->recordLoginAttempt($email, false);
             $this->redirectWithError('/user-login', 'Invalid email, password, or login type.');
         }
 
         if (!$this->isValidUser($user, $password)) {
             $this->recordLoginAttempt($email, false);
-            if ($user) {
-                $this->logActivity($user['id'], 'Failed login attempt');
-            }
+            $this->logActivity($user['id'], 'Failed login attempt');
             $this->redirectWithError('/user-login', 'Invalid email, password, or login type.');
         }
 
@@ -90,10 +95,7 @@ class AuthController extends Controller
         }
 
         if ($this->isTooManyAttempts($email)) {
-            $this->redirectWithError(
-                '/admin-login',
-                'Admin login temporarily locked due to too many failed attempts. Please try again after 15 minutes.'
-            );
+            $this->redirectWithError('/admin-login', 'Admin login temporarily locked due to too many failed attempts. Please try again after 15 minutes.');
         }
 
         $userModel = new User();
@@ -101,17 +103,17 @@ class AuthController extends Controller
 
         if (!$user || $user['role'] !== 'admin') {
             $this->recordLoginAttempt($email, false);
+
             if ($user) {
                 $this->logActivity($user['id'], 'Failed login attempt');
             }
+
             $this->redirectWithError('/admin-login', 'Invalid admin credentials.');
         }
 
         if (!$this->isValidUser($user, $password)) {
             $this->recordLoginAttempt($email, false);
-            if ($user) {
-                $this->logActivity($user['id'], 'Failed login attempt');
-            }
+            $this->logActivity($user['id'], 'Failed login attempt');
             $this->redirectWithError('/admin-login', 'Invalid admin credentials.');
         }
 
@@ -126,7 +128,6 @@ class AuthController extends Controller
         $this->startSession();
 
         $role = $_SESSION['auth_user_role'] ?? 'user';
-
         $userId = $_SESSION['auth_user_id'] ?? null;
 
         if ($userId) {
@@ -157,6 +158,7 @@ class AuthController extends Controller
             $_SESSION['mfa_pending_name'] = $user['full_name'];
             $_SESSION['mfa_pending_email'] = $user['email'];
             $_SESSION['mfa_pending_role'] = $user['role'];
+            $_SESSION['mfa_pending_is_admin_agent'] = $user['is_admin_agent'] ?? 0;
 
             header("Location: " . BASE_URL . "/mfa-verify");
             exit;
@@ -166,6 +168,7 @@ class AuthController extends Controller
         $_SESSION['mfa_setup_name'] = $user['full_name'];
         $_SESSION['mfa_setup_email'] = $user['email'];
         $_SESSION['mfa_setup_role'] = $user['role'];
+        $_SESSION['mfa_setup_is_admin_agent'] = $user['is_admin_agent'] ?? 0;
 
         header("Location: " . BASE_URL . "/mfa-setup");
         exit;
@@ -179,6 +182,9 @@ class AuthController extends Controller
         $_SESSION['auth_user_name'] = $user['full_name'];
         $_SESSION['auth_user_email'] = $user['email'];
         $_SESSION['auth_user_role'] = $user['role'];
+        $_SESSION['is_admin_agent'] = $user['is_admin_agent'] ?? 0;
+        $_SESSION['organization_id'] = $user['organization_id'] ?? null;
+        $_SESSION['is_organization_admin'] = $user['is_organization_admin'] ?? 0;
         $_SESSION['last_activity'] = time();
 
         $userModel = new User();
@@ -263,7 +269,6 @@ class AuthController extends Controller
     public function verifyUserOtp()
     {
         Csrf::verify();
-
         $this->startSession();
 
         if (!isset($_SESSION['user_login_otp_user_id'])) {
@@ -367,7 +372,6 @@ class AuthController extends Controller
     public function sendForgotPasswordOtp()
     {
         Csrf::verify();
-
         $this->startSession();
 
         $email = trim($_POST['email'] ?? '');
@@ -427,6 +431,7 @@ class AuthController extends Controller
         header("Location: " . BASE_URL . "/forgot-password-verify");
         exit;
     }
+
     public function forgotPasswordVerifyPage()
     {
         AuthMiddleware::guest();
@@ -444,7 +449,6 @@ class AuthController extends Controller
     public function verifyForgotPasswordOtp()
     {
         Csrf::verify();
-
         $this->startSession();
 
         if (!isset($_SESSION['forgot_password_user_id'])) {
@@ -477,10 +481,12 @@ class AuthController extends Controller
         header("Location: " . BASE_URL . "/reset-password");
         exit;
     }
+
     private function validateStrongPassword($password)
     {
         return preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password);
     }
+
     public function resetPasswordPage()
     {
         AuthMiddleware::guest();
@@ -501,7 +507,6 @@ class AuthController extends Controller
     public function resetPassword()
     {
         Csrf::verify();
-
         $this->startSession();
 
         if (
@@ -546,10 +551,10 @@ class AuthController extends Controller
             $user['email'],
             'Password Changed Successfully',
             '
-    <h2>Samtech Helpdesk</h2>
-    <p>Your account password has been changed successfully.</p>
-    <p>If you did not perform this action, contact support immediately.</p>
-    '
+            <h2>Samtech Helpdesk</h2>
+            <p>Your account password has been changed successfully.</p>
+            <p>If you did not perform this action, contact support immediately.</p>
+            '
         );
 
         unset($_SESSION['forgot_password_user_id']);
@@ -561,6 +566,7 @@ class AuthController extends Controller
         header("Location: " . BASE_URL . "/user-login");
         exit;
     }
+
     private function getUserAgent()
     {
         return $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
