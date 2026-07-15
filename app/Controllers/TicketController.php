@@ -7,7 +7,7 @@ require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Attachment.php";
 require_once ROOT_PATH . "/app/Services/UploadService.php";
-require_once ROOT_PATH . "/app/Services/MailService.php";
+require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
 
 class TicketController extends Controller
 {
@@ -120,111 +120,13 @@ class TicketController extends Controller
             header("Location: " . BASE_URL . "/tickets/show/" . $ticket['id']);
             exit;
         }
-        /*
-|--------------------------------------------------------------------------
-| Send Ticket Created Notifications
-|--------------------------------------------------------------------------
-|
-| 1. Confirmation email to the user who created the ticket.
-| 2. Notification email to every active agent.
-| 3. Ticket creation remains successful even if any email fails.
-|
-*/
-
-        $ticketViewUrl = BASE_URL . "/tickets/show/" . $ticket['id'];
-        $agentTicketUrl = BASE_URL . "/agent/tickets/show/" . $ticket['id'];
-
-        $userMailSubject = "Ticket Created: " . $ticketNo;
-
-        $userMailMessage =
-            "Hello " . $user['full_name'] . ",\n\n" .
-            "Your support ticket has been created successfully.\n\n" .
-            "Ticket Number: " . $ticketNo . "\n" .
-            "Subject: " . $subject . "\n" .
-            "Priority: " . ucfirst($priority) . "\n" .
-            "Status: Open\n" .
-            "Created On: " . date('d M Y, h:i A') . "\n\n" .
-            "You can view and track your ticket here:\n" .
-            $ticketViewUrl . "\n\n" .
-            "You will receive another notification when an agent replies or changes the ticket status.";
-
-        $userMailSent = MailService::sendTicketMail(
-            $user['email'],
-            $userMailSubject,
-            $userMailMessage
+        TicketNotificationService::ticketCreated(
+            $ticket,
+            $user
         );
 
-        if (!$userMailSent) {
-            error_log(
-                "Ticket-created user email failed. Ticket ID: " .
-                    $ticket['id'] .
-                    ", Recipient: " .
-                    $user['email']
-            );
-        }
-
-        /*
-|--------------------------------------------------------------------------
-| Notify All Active Agents
-|--------------------------------------------------------------------------
-*/
-
-        $agents = $userModel->getAgents();
-
-        $agentMailSubject =
-            "New Support Ticket: " . $ticketNo . " - " . $subject;
-
-        $agentMailFailures = 0;
-
-        foreach ($agents as $agent) {
-
-            if (empty($agent['email'])) {
-                continue;
-            }
-
-            $agentMailMessage =
-                "Hello " . $agent['full_name'] . ",\n\n" .
-                "A new support ticket has been created and requires attention.\n\n" .
-                "Ticket Number: " . $ticketNo . "\n" .
-                "Created By: " . $user['full_name'] . "\n" .
-                "Organization: " . ($user['organization_name'] ?? '-') . "\n" .
-                "Subject: " . $subject . "\n" .
-                "Priority: " . ucfirst($priority) . "\n" .
-                "Status: Open\n" .
-                "Created On: " . date('d M Y, h:i A') . "\n\n" .
-                "Open the ticket here:\n" .
-                $agentTicketUrl;
-
-            $agentMailSent = MailService::sendTicketMail(
-                $agent['email'],
-                $agentMailSubject,
-                $agentMailMessage
-            );
-
-            if (!$agentMailSent) {
-                $agentMailFailures++;
-
-                error_log(
-                    "New-ticket agent email failed. Ticket ID: " .
-                        $ticket['id'] .
-                        ", Agent ID: " .
-                        $agent['id'] .
-                        ", Recipient: " .
-                        $agent['email']
-                );
-            }
-        }
-
-        if ($userMailSent && $agentMailFailures === 0) {
-            $_SESSION['success'] =
-                "Ticket created successfully. Confirmation and agent notifications were sent.";
-        } elseif ($userMailSent) {
-            $_SESSION['success'] =
-                "Ticket created successfully. Your confirmation email was sent, but some agent notifications failed.";
-        } else {
-            $_SESSION['success'] =
-                "Ticket created successfully, but one or more email notifications could not be sent.";
-        }
+        $_SESSION['success'] =
+            "Ticket created successfully.";
 
         header("Location: " . BASE_URL . "/tickets");
         exit;
@@ -351,7 +253,9 @@ class TicketController extends Controller
         }
 
         $userModel = new User();
-        $user = $userModel->findById($_SESSION['auth_user_id']);
+        $user = $userModel->findWithOrganization(
+            $_SESSION['auth_user_id']
+        );
 
         if (!$user || empty($user['organization_id'])) {
             http_response_code(403);
@@ -421,7 +325,14 @@ class TicketController extends Controller
             exit;
         }
 
-        $_SESSION['success'] = "Reply added successfully.";
+        TicketNotificationService::userReplied(
+            $ticket,
+            $user,
+            $message
+        );
+
+        $_SESSION['success'] =
+            "Reply added successfully.";
 
         header("Location: " . BASE_URL . "/tickets/show/" . $id);
         exit;

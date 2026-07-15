@@ -6,6 +6,8 @@ require_once ROOT_PATH . "/app/Models/TicketReply.php";
 require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
 require_once ROOT_PATH . "/app/Models/Attachment.php";
 require_once ROOT_PATH . "/app/Services/UploadService.php";
+require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
+require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
 
 class AgentTicketController extends Controller
@@ -149,7 +151,20 @@ class AgentTicketController extends Controller
             exit;
         }
 
-        $_SESSION['success'] = "Reply sent successfully.";
+        $userModel = new User();
+
+        $agent = $userModel->findById(
+            $_SESSION['auth_user_id']
+        );
+
+        TicketNotificationService::agentReplied(
+            $ticket,
+            $agent,
+            $message
+        );
+
+        $_SESSION['success'] =
+            "Reply sent successfully.";
 
         header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
         exit;
@@ -254,6 +269,19 @@ class AgentTicketController extends Controller
                 header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
                 exit;
             }
+            $userModel = new User();
+
+            $updatedBy = $userModel->findById(
+                $_SESSION['auth_user_id']
+            );
+
+            TicketNotificationService::statusUpdated(
+                $ticket,
+                $ticket['status'],
+                $status,
+                $updatedBy,
+                $resolutionMessage
+            );
 
             $_SESSION['success'] = "Ticket status updated successfully.";
 
