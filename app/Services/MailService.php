@@ -8,6 +8,7 @@ class MailService
     private static function baseMailer(string $type = 'security'): PHPMailer
     {
         $mail = new PHPMailer(true);
+        $mail->XMailer = 'Samtech Mail System';
 
         $mail->isSMTP();
 
