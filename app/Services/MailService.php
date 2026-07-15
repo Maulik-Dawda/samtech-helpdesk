@@ -11,9 +11,10 @@ class MailService
 
         $mail->isSMTP();
 
-        $mail->SMTPDebug = defined('MAIL_DEBUG')
-            ? (int) MAIL_DEBUG
-            : 0;
+        $mail->SMTPDebug = 2;
+        $mail->Debugoutput = function ($str, $level) {
+            error_log("SMTP: $str");
+        };
 
         $mail->Debugoutput = static function ($message, $level) {
             error_log("SMTP Debug Level {$level}: {$message}");
@@ -103,7 +104,6 @@ class MailService
             }
 
             return $sent;
-
         } catch (Throwable $e) {
             $mailerError = '';
 
@@ -113,10 +113,17 @@ class MailService
 
             error_log(
                 "MailService Error | Recipient: {$to} | Subject: {$subject} | " .
-                "PHPMailer: {$mailerError} | Exception: {$e->getMessage()}"
+                    "PHPMailer: {$mailerError} | Exception: {$e->getMessage()}"
             );
 
-            return false;
+            echo "<pre>";
+            echo "PHPMailer Error:\n";
+            echo $mail->ErrorInfo . "\n\n";
+
+            echo "Exception:\n";
+            echo $e->getMessage();
+            echo "</pre>";
+            exit;
         }
     }
 
