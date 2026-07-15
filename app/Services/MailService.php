@@ -861,21 +861,18 @@ class MailService
                                                 valign="middle"
                                             >
 
-                                                <div
-                                                    style="
-                                                        width:50px;
-                                                        height:50px;
-                                                        line-height:50px;
-                                                        border-radius:13px;
-                                                        background:#b1e96f;
-                                                        color:#111827;
-                                                        font-size:22px;
-                                                        font-weight:900;
-                                                        text-align:center;
-                                                    "
-                                                >
-                                                    S
-                                                </div>
+                                                <img
+    src="' . htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') . '/assets/images/samtech-icon.png"
+    alt="Samtech"
+    width="52"
+    height="52"
+    style="
+        display:block;
+        width:52px;
+        height:52px;
+        border-radius:12px;
+    "
+>
 
                                             </td>
 
