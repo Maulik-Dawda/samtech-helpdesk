@@ -1,4 +1,5 @@
 <?php
+
 require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -9,285 +10,497 @@ $role = $_SESSION['auth_user_role'] ?? '';
 $isAdminAgent = PermissionHelper::isAdminAgent();
 $isAdmin = PermissionHelper::isAdmin();
 $isAgent = PermissionHelper::isAgent();
-$isOrgAdmin = $_SESSION['is_organization_admin'] ?? 0;
+$isOrgAdmin = (int)($_SESSION['is_organization_admin'] ?? 0) === 1;
 $currentUri = $_SERVER['REQUEST_URI'] ?? '';
 
-function activeMenu($path, $currentUri)
-{
-    return str_contains($currentUri, $path) ? 'active' : '';
+$fullName = $_SESSION['auth_user_name'] ?? 'User';
+
+$roleLabel = match ($role) {
+    'admin' => 'Administrator',
+    'agent' => $isAdminAgent ? 'Admin Agent' : 'Support Agent',
+    'user' => $isOrgAdmin ? 'Organization Admin' : 'User',
+    default => 'User'
+};
+
+$nameParts = preg_split(
+    '/\s+/',
+    trim($fullName),
+    -1,
+    PREG_SPLIT_NO_EMPTY
+);
+
+$initials = '';
+
+if (!empty($nameParts[0])) {
+    $initials .= strtoupper(
+        substr($nameParts[0], 0, 1)
+    );
+}
+
+if (!empty($nameParts[1])) {
+    $initials .= strtoupper(
+        substr($nameParts[1], 0, 1)
+    );
+}
+
+if ($initials === '') {
+    $initials = 'U';
+}
+
+/*
+|--------------------------------------------------------------------------
+| Active Menu Helpers
+|--------------------------------------------------------------------------
+*/
+
+if (!function_exists('sidebarPathMatches')) {
+    function sidebarPathMatches(
+        string $path,
+        string $currentUri,
+        bool $exact = false
+    ): bool {
+        $currentPath = parse_url(
+            $currentUri,
+            PHP_URL_PATH
+        ) ?? '';
+
+        $basePath = parse_url(
+            BASE_URL,
+            PHP_URL_PATH
+        ) ?? '';
+
+        if (
+            $basePath !== '' &&
+            str_starts_with($currentPath, $basePath)
+        ) {
+            $currentPath = substr(
+                $currentPath,
+                strlen($basePath)
+            );
+        }
+
+        $currentPath = '/' . ltrim(
+            $currentPath,
+            '/'
+        );
+
+        $path = '/' . ltrim(
+            $path,
+            '/'
+        );
+
+        if ($exact) {
+            return rtrim($currentPath, '/') === rtrim($path, '/');
+        }
+
+        return str_starts_with(
+            $currentPath,
+            $path
+        );
+    }
+}
+
+if (!function_exists('sidebarActive')) {
+    function sidebarActive(
+        string $path,
+        string $currentUri,
+        bool $exact = false
+    ): string {
+        return sidebarPathMatches(
+            $path,
+            $currentUri,
+            $exact
+        ) ? 'active' : '';
+    }
 }
 ?>
 
-<style>
-    html,
-    body {
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-        background: #f8fafc;
-    }
+<aside
+    class="sidebar"
+    id="appSidebar"
+    aria-label="Main navigation">
 
-    .sidebar {
-        width: 260px;
-        height: 100vh;
-        background: #111827;
-        position: fixed;
-        left: 0;
-        top: 0;
-        color: #fff;
-        z-index: 1000;
+    <div class="sidebar-header">
 
-        overflow-y: auto;
-        overflow-x: hidden;
+        <a
+            class="sidebar-logo"
+            href="<?=
+                    $isAdmin
+                        ? BASE_URL . '/admin-dashboard'
+                        : (
+                            $isAgent
+                            ? BASE_URL . '/agent-dashboard'
+                            : BASE_URL . '/user-dashboard'
+                        );
+                    ?>"
+            aria-label="Samtech Helpdesk dashboard">
+            <img
+                src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
+                alt="Samtech Solutions">
+        </a>
 
-        padding: 20px 16px;
+        <button
+            type="button"
+            class="sidebar-close-btn"
+            id="sidebarClose"
+            aria-label="Close navigation menu">
+            <i class="bi bi-x-lg"></i>
+        </button>
 
-        box-shadow:
-            4px 0 20px rgba(0, 0, 0, .12);
-    }
-
-    .sidebar::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-        background: #1f2937;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-        background: #4b5563;
-        border-radius: 20px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb:hover {
-        background: #6b7280;
-    }
-
-    .sidebar-logo {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 25px;
-    }
-
-    .sidebar-logo img {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
-
-    .sidebar-title {
-        font-size: 11px;
-        font-weight: 700;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        margin: 18px 10px 8px;
-    }
-
-    .sidebar a {
-        display: flex;
-        align-items: center;
-
-        text-decoration: none;
-
-        color: #d1d5db;
-
-        padding: 11px 14px;
-
-        border-radius: 10px;
-
-        margin-bottom: 5px;
-
-        font-size: 14px;
-        font-weight: 500;
-
-        transition: all .2s ease;
-    }
-
-    .sidebar a:hover {
-        background: #1f2937;
-        color: #ffffff;
-    }
-
-    .sidebar a.active {
-        background: #b1e96f;
-        color: #111827;
-        font-weight: 600;
-    }
-
-    .main-content {
-        margin-left: 260px;
-
-        height: 100vh;
-
-        overflow-y: auto;
-        overflow-x: hidden;
-
-        background: #f8fafc;
-
-        padding: 25px;
-    }
-
-    .main-content::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .main-content::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 20px;
-    }
-
-    .main-content::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-
-    @media (max-width:768px) {
-
-        html,
-        body {
-            overflow: auto;
-        }
-
-        .sidebar {
-            position: relative;
-            width: 100%;
-            height: auto;
-            overflow: visible;
-        }
-
-        .main-content {
-            margin-left: 0;
-            height: auto;
-            overflow: visible;
-        }
-    }
-</style>
-<div class="sidebar">
-
-    <div class="sidebar-logo">
-        <img src="<?= BASE_URL ?>/assets/images/samtech-logo.png" alt="Samtech Solutions">
     </div>
 
-    <div class="sidebar-title">Main</div>
+    <nav class="sidebar-nav">
 
-    <?php if ($role === 'admin'): ?>
-        <a class="<?= activeMenu('/admin-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/admin-dashboard">Dashboard</a>
-    <?php elseif ($isAgent): ?>
-        <a class="<?= activeMenu('/agent-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/agent-dashboard">
-            Dashboard
-        </a>
-    <?php else: ?>
-        <a class="<?= activeMenu('/user-dashboard', $currentUri); ?>" href="<?= BASE_URL ?>/user-dashboard">Dashboard</a>
-    <?php endif; ?>
+        <section class="sidebar-section">
 
-    <div class="sidebar-title">Tickets</div>
+            <div class="sidebar-title">
+                Main
+            </div>
 
-    <?php if ($role === 'user' || $role === 'admin'): ?>
-        <a class="<?= activeMenu('/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/tickets">My Tickets</a>
-        <a class="<?= activeMenu('/tickets/create', $currentUri); ?>" href="<?= BASE_URL ?>/tickets/create">Create Ticket</a>
-    <?php endif; ?>
+            <?php if ($isAdmin): ?>
 
-    <?php if ($isAgent): ?>
+                <a
+                    class="sidebar-link <?= sidebarActive('/admin-dashboard', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/admin-dashboard">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                    </span>
 
-        <a
-            class="<?= activeMenu('/agent/tickets/create', $currentUri); ?>"
-            href="<?= BASE_URL ?>/agent/tickets/create">
+                    <span class="sidebar-link-text">
+                        Dashboard
+                    </span>
+                </a>
 
-            Create Ticket
+            <?php elseif ($isAgent): ?>
 
-        </a>
+                <a
+                    class="sidebar-link <?= sidebarActive('/agent-dashboard', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/agent-dashboard">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                    </span>
 
-    <?php endif; ?>
+                    <span class="sidebar-link-text">
+                        Dashboard
+                    </span>
+                </a>
 
-    <?php if ($isAgent || $isAdmin): ?>
-        <a class="<?= activeMenu('/agent/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/agent/tickets">All Tickets</a>
-    <?php endif; ?>
+            <?php else: ?>
 
-    <?php if ($isAdmin || $isAdminAgent): ?>
+                <a
+                    class="sidebar-link <?= sidebarActive('/user-dashboard', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/user-dashboard">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                    </span>
 
-        <div class="sidebar-title">
-            Administration
+                    <span class="sidebar-link-text">
+                        Dashboard
+                    </span>
+                </a>
+
+            <?php endif; ?>
+
+        </section>
+
+        <section class="sidebar-section">
+
+            <div class="sidebar-title">
+                Tickets
+            </div>
+
+            <?php if ($role === 'user'): ?>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/tickets', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/tickets">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        My Tickets
+                    </span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/tickets/create', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/tickets/create">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Create Ticket
+                    </span>
+                </a>
+
+            <?php endif; ?>
+
+            <?php if ($isAgent): ?>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/agent/tickets/create', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/agent/tickets/create">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Create Ticket
+                    </span>
+                </a>
+
+            <?php endif; ?>
+
+            <?php if ($isAgent || $isAdmin): ?>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/agent/tickets', $currentUri); ?>"
+                    href="<?= BASE_URL ?>/agent/tickets">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-ticket-detailed-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        All Tickets
+                    </span>
+                </a>
+
+            <?php endif; ?>
+
+            <?php if ($isAdmin): ?>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/tickets', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/tickets">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-person-lines-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        My Tickets
+                    </span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/tickets/create', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/tickets/create">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Create Ticket
+                    </span>
+                </a>
+
+            <?php endif; ?>
+
+        </section>
+
+        <?php if ($isAdmin || $isAdminAgent): ?>
+
+            <section class="sidebar-section">
+
+                <div class="sidebar-title">
+                    Administration
+                </div>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/admin/users', $currentUri); ?>"
+                    href="<?= BASE_URL ?>/admin/users">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Users &amp; Agents
+                    </span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/admin/activity-logs', $currentUri); ?>"
+                    href="<?= BASE_URL ?>/admin/activity-logs">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Activity Logs
+                    </span>
+                </a>
+
+                <?php if ($isAdmin): ?>
+
+                    <a
+                        class="sidebar-link <?= sidebarActive('/admin/permissions', $currentUri); ?>"
+                        href="<?= BASE_URL ?>/admin/permissions">
+                        <span class="sidebar-link-icon">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </span>
+
+                        <span class="sidebar-link-text">
+                            Permissions
+                        </span>
+                    </a>
+
+                <?php endif; ?>
+
+            </section>
+
+        <?php endif; ?>
+
+        <?php if ($isAdmin || $isAdminAgent): ?>
+
+            <section class="sidebar-section">
+
+                <div class="sidebar-title">
+                    Organizations
+                </div>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/organizations', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/organizations">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-buildings-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        View Organizations
+                    </span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/organizations/create', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/organizations/create">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-building-add"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Create Organization
+                    </span>
+                </a>
+
+            </section>
+
+        <?php endif; ?>
+
+        <?php if ($role === 'user' && $isOrgAdmin): ?>
+
+            <section class="sidebar-section">
+
+                <div class="sidebar-title">
+                    Organization
+                </div>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/organization-users', $currentUri); ?>"
+                    href="<?= BASE_URL ?>/organization-users">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-person-vcard-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Organization Users
+                    </span>
+                </a>
+
+            </section>
+
+        <?php endif; ?>
+
+        <?php if ($isAdmin || $isAgent): ?>
+
+            <section class="sidebar-section">
+
+                <div class="sidebar-title">
+                    Reports
+                </div>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/reports/tickets', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/reports/tickets">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Ticket Reports
+                    </span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/reports/ticket-detail', $currentUri, true); ?>"
+                    href="<?= BASE_URL ?>/reports/ticket-detail">
+                    <span class="sidebar-link-icon">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                    </span>
+
+                    <span class="sidebar-link-text">
+                        Ticket Detail Report
+                    </span>
+                </a>
+
+            </section>
+
+        <?php endif; ?>
+
+        <section class="sidebar-section">
+
+            <div class="sidebar-title">
+                Account
+            </div>
+
+            <a
+                class="sidebar-link <?= sidebarActive('/profile', $currentUri, true); ?>"
+                href="<?= BASE_URL ?>/profile">
+                <span class="sidebar-link-icon">
+                    <i class="bi bi-person-circle"></i>
+                </span>
+
+                <span class="sidebar-link-text">
+                    My Profile
+                </span>
+            </a>
+
+        </section>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <div class="sidebar-account">
+
+            <div class="sidebar-account-avatar">
+                <?= htmlspecialchars($initials); ?>
+            </div>
+
+            <div class="sidebar-account-info">
+
+                <div class="sidebar-account-name">
+                    <?= htmlspecialchars($fullName); ?>
+                </div>
+
+                <div class="sidebar-account-role">
+                    <?= htmlspecialchars($roleLabel); ?>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="sidebar-account-logout"
+                data-bs-toggle="modal"
+                data-bs-target="#logoutModal"
+                aria-label="Logout"
+                title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+
         </div>
 
-        <a
-            class="<?= activeMenu('/admin/users', $currentUri); ?>"
-            href="<?= BASE_URL ?>/admin/users">
+    </div>
 
-            Users
-
-        </a>
-
-        <a
-            class="<?= activeMenu('/agent/users', $currentUri); ?>"
-            href="<?= BASE_URL ?>/agent/users">
-
-            Agents
-
-        </a>
-
-        <a
-            class="<?= activeMenu('/admin/activity-logs', $currentUri); ?>"
-            href="<?= BASE_URL ?>/admin/activity-logs">
-
-            Activity Logs
-
-        </a>
-
-    <?php endif; ?>
-
-    <?php if ($isAdmin || $isAdminAgent): ?>
-
-        <div class="sidebar-title">Organizations</div>
-
-        <a class="<?= activeMenu('/organizations', $currentUri); ?>" href="<?= BASE_URL ?>/organizations">
-            <i class="bi bi-building me-2"></i>
-            View Organizations
-        </a>
-
-        <a class="<?= activeMenu('/organizations/create', $currentUri); ?>" href="<?= BASE_URL ?>/organizations/create">
-            <i class="bi bi-plus-circle me-2"></i>
-            Create Organization
-        </a>
-
-    <?php endif; ?>
-
-    <?php if ($role === 'user' && $isOrgAdmin == 1): ?>
-
-        <div class="sidebar-title">Organization</div>
-
-        <a class="<?= activeMenu('/organization-users', $currentUri); ?>" href="<?= BASE_URL ?>/organization-users">Organization Users</a>
-
-    <?php endif; ?>
-
-    <?php if ($isAdmin || $isAgent): ?>
-
-        <div class="sidebar-title">Reports</div>
-
-        <a class="<?= activeMenu('/reports/tickets', $currentUri); ?>" href="<?= BASE_URL ?>/reports/tickets">
-            Ticket Reports
-        </a>
-
-        <a class="<?= activeMenu('/reports/ticket-detail', $currentUri); ?>" href="<?= BASE_URL ?>/reports/ticket-detail">
-            Ticket Detail Report
-        </a>
-
-    <?php endif; ?>
-
-    <div class="sidebar-title">Account</div>
-
-    <a
-        class="<?= activeMenu('/profile', $currentUri); ?>"
-        href="<?= BASE_URL ?>/profile">
-
-        Profile
-
-    </a>
-
-    <a href="<?= BASE_URL ?>/logout">
-
-        Logout
-
-    </a>
-
-</div>
+</aside>
