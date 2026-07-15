@@ -488,22 +488,19 @@ class MailService
                                     "
                                 >
 
-                                    <div
-                                        style="
-                                            width:54px;
-                                            height:54px;
-                                            line-height:54px;
-                                            border-radius:14px;
-                                            background:#b1e96f;
-                                            color:#111827;
-                                            font-size:24px;
-                                            font-weight:900;
-                                            text-align:center;
-                                            margin:0 auto 14px;
-                                        "
-                                    >
-                                        S
-                                    </div>
+                                    <img
+    src="' . htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') . '/assets/images/samtech-icon.png"
+    alt="Samtech"
+    width="52"
+    height="52"
+    style="
+        display:block;
+        width:52px;
+        height:52px;
+        border-radius:12px;
+    "
+>
+
 
                                     <div
                                         style="
