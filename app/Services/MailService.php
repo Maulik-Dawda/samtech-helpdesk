@@ -5,21 +5,19 @@ use PHPMailer\PHPMailer\Exception;
 
 class MailService
 {
-    private static function baseMailer($type = 'security')
+    private static function baseMailer(string $type = 'security'): PHPMailer
     {
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();
 
-        /*
-        |--------------------------------------------------------------------------
-        | SMTP DEBUG
-        |--------------------------------------------------------------------------
-        | Keep 0 in production.
-        | Use 2 only while testing SMTP errors.
-        */
-        $mail->SMTPDebug = (int)(defined('MAIL_DEBUG') ? MAIL_DEBUG : 0);
-        $mail->Debugoutput = 'html';
+        $mail->SMTPDebug = defined('MAIL_DEBUG')
+            ? (int) MAIL_DEBUG
+            : 0;
+
+        $mail->Debugoutput = static function ($message, $level) {
+            error_log("SMTP Debug Level {$level}: {$message}");
+        };
 
         $mail->Host = MAIL_HOST;
         $mail->SMTPAuth = true;
@@ -40,173 +38,386 @@ class MailService
 
         /*
         |--------------------------------------------------------------------------
-        | TMDHosting Recommended SMTP
+        | Namecheap Private Email SMTP
         |--------------------------------------------------------------------------
-        | Host: mail.samtech.ae
+        |
+        | Host: mail.privateemail.com
         | Port: 465
-        | Encryption: SSL
+        | Encryption: SSL / SMTPS
+        |
         */
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port = MAIL_PORT;
 
-        $mail->CharSet = 'UTF-8';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = (int) MAIL_PORT;
+
+        $mail->CharSet = PHPMailer::CHARSET_UTF8;
         $mail->Encoding = 'base64';
 
         $mail->setFrom($fromEmail, $fromName);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reply-To
+        |--------------------------------------------------------------------------
+        */
+
+        if ($type === 'ticket') {
+            $mail->addReplyTo(
+                TICKET_FROM_EMAIL,
+                TICKET_FROM_NAME
+            );
+        }
 
         $mail->isHTML(true);
 
         return $mail;
     }
 
-    public static function send($to, $subject, $body, $type = 'security')
-    {
+    public static function send(
+        string $to,
+        string $subject,
+        string $body,
+        string $type = 'security'
+    ): bool {
+        $mail = null;
+
         try {
+            if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                error_log("MailService: Invalid recipient email: {$to}");
+                return false;
+            }
+
             $mail = self::baseMailer($type);
 
             $mail->addAddress($to);
-
             $mail->Subject = $subject;
             $mail->Body = $body;
-            $mail->AltBody = strip_tags(
-                str_replace(['<br>', '<br/>', '<br />'], "\n", $body)
+            $mail->AltBody = self::htmlToPlainText($body);
+
+            $sent = $mail->send();
+
+            if ($sent) {
+                error_log(
+                    "MailService: Email sent successfully to {$to}. Subject: {$subject}"
+                );
+            }
+
+            return $sent;
+
+        } catch (Throwable $e) {
+            $mailerError = '';
+
+            if ($mail instanceof PHPMailer) {
+                $mailerError = $mail->ErrorInfo;
+            }
+
+            error_log(
+                "MailService Error | Recipient: {$to} | Subject: {$subject} | " .
+                "PHPMailer: {$mailerError} | Exception: {$e->getMessage()}"
             );
-
-            return $mail->send();
-        } catch (Exception $e) {
-
-            echo "<pre>";
-            echo "PHPMailer Error: " . $mail->ErrorInfo . PHP_EOL;
-            echo "Exception: " . $e->getMessage() . PHP_EOL;
-            echo "</pre>";
-            exit;
 
             return false;
         }
     }
 
-    public static function sendLoginOtp($to, $otp)
+    public static function sendLoginOtp(string $to, $otp): bool
     {
-        $subject = "Your Samtech Helpdesk Login OTP";
+        $subject = "Your Samtech Helpdesk Login Verification Code";
 
         $body = self::otpTemplate(
             "Login Verification",
-            "Use this OTP to complete your login.",
+            "Use the verification code below to complete your login.",
             $otp
         );
 
-        return self::send($to, $subject, $body, 'security');
+        return self::send(
+            $to,
+            $subject,
+            $body,
+            'security'
+        );
     }
 
-    public static function sendForgotPasswordOtp($to, $otp)
+    public static function sendForgotPasswordOtp(string $to, $otp): bool
     {
         $subject = "Reset Your Samtech Helpdesk Password";
 
         $body = self::otpTemplate(
             "Password Reset Verification",
-            "Use this OTP to reset your password.",
+            "Use the verification code below to reset your password.",
             $otp
         );
 
-        return self::send($to, $subject, $body, 'security');
+        return self::send(
+            $to,
+            $subject,
+            $body,
+            'security'
+        );
     }
 
-    public static function sendMfaRecoveryOtp($to, $otp)
+    public static function sendMfaRecoveryOtp(string $to, $otp): bool
     {
-        $subject = "Samtech Helpdesk MFA Recovery OTP";
+        $subject = "Samtech Helpdesk Authenticator Recovery Code";
 
         $body = self::otpTemplate(
-            "MFA Recovery Verification",
-            "Use this OTP to recover your authenticator setup.",
+            "Authenticator Recovery",
+            "Use the verification code below to recover your authenticator setup.",
             $otp
         );
 
-        return self::send($to, $subject, $body, 'security');
+        return self::send(
+            $to,
+            $subject,
+            $body,
+            'security'
+        );
     }
 
-    public static function sendTicketMail($to, $subject, $message)
-    {
-        $body = self::ticketTemplate($subject, $message);
+    public static function sendTicketMail(
+        string $to,
+        string $subject,
+        string $message
+    ): bool {
+        $body = self::ticketTemplate(
+            $subject,
+            $message
+        );
 
-        return self::send($to, $subject, $body, 'ticket');
+        return self::send(
+            $to,
+            $subject,
+            $body,
+            'ticket'
+        );
     }
 
-    private static function otpTemplate($title, $message, $otp)
+    private static function htmlToPlainText(string $html): string
     {
+        $html = preg_replace(
+            '/<\s*br\s*\/?>/i',
+            "\n",
+            $html
+        );
+
+        $html = preg_replace(
+            '/<\/p>/i',
+            "\n\n",
+            $html
+        );
+
+        $text = strip_tags($html);
+        $text = html_entity_decode(
+            $text,
+            ENT_QUOTES | ENT_HTML5,
+            'UTF-8'
+        );
+
+        $text = preg_replace("/[ \t]+/", " ", $text);
+        $text = preg_replace("/\n{3,}/", "\n\n", $text);
+
+        return trim($text);
+    }
+
+    private static function otpTemplate(
+        string $title,
+        string $message,
+        $otp
+    ): string {
+        $safeTitle = htmlspecialchars(
+            $title,
+            ENT_QUOTES,
+            'UTF-8'
+        );
+
+        $safeMessage = htmlspecialchars(
+            $message,
+            ENT_QUOTES,
+            'UTF-8'
+        );
+
+        $safeOtp = htmlspecialchars(
+            (string) $otp,
+            ENT_QUOTES,
+            'UTF-8'
+        );
+
+        $expiryMinutes = defined('OTP_EXPIRY_MINUTES')
+            ? (int) OTP_EXPIRY_MINUTES
+            : 5;
+
         return '
-        <div style="margin:0;padding:0;background:#f4f7f4;font-family:Arial,sans-serif;">
-            <div style="max-width:560px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>' . $safeTitle . '</title>
+        </head>
 
-                <div style="background:#111827;padding:22px;text-align:center;">
-                    <h2 style="margin:0;color:#ffffff;font-size:22px;">
-                        Samtech Helpdesk
-                    </h2>
-                </div>
+        <body style="margin:0;padding:0;background:#f4f7f4;font-family:Arial,sans-serif;color:#111827;">
 
-                <div style="padding:30px;text-align:center;">
-                    <h3 style="margin:0 0 12px;color:#111827;">
-                        ' . htmlspecialchars($title) . '
-                    </h3>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                   style="background:#f4f7f4;padding:24px 12px;">
 
-                    <p style="color:#4b5563;font-size:15px;margin:0 0 24px;">
-                        ' . htmlspecialchars($message) . '
-                    </p>
+                <tr>
+                    <td align="center">
 
-                    <div style="display:inline-block;background:#b1e96f;color:#111827;font-size:32px;font-weight:800;letter-spacing:8px;padding:14px 24px;border-radius:12px;">
-                        ' . htmlspecialchars($otp) . '
-                    </div>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                               style="max-width:560px;background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;">
 
-                    <p style="color:#6b7280;font-size:14px;margin-top:24px;">
-                        This OTP is valid for 10 minutes.
-                    </p>
+                            <tr>
+                                <td style="background:#111827;padding:24px;text-align:center;">
+                                    <div style="font-size:22px;font-weight:800;color:#ffffff;">
+                                        Samtech Helpdesk
+                                    </div>
 
-                    <p style="color:#991b1b;font-size:13px;margin-top:10px;">
-                        Do not share this code with anyone.
-                    </p>
-                </div>
+                                    <div style="font-size:12px;color:#d1d5db;margin-top:6px;">
+                                        Secure Account Verification
+                                    </div>
+                                </td>
+                            </tr>
 
-                <div style="background:#f9fafb;padding:16px;text-align:center;color:#6b7280;font-size:12px;">
-                    © ' . date('Y') . ' Samtech Solutions. All rights reserved.
-                </div>
+                            <tr>
+                                <td style="padding:32px 28px;text-align:center;">
 
-            </div>
-        </div>';
+                                    <h2 style="margin:0 0 12px;font-size:22px;color:#111827;">
+                                        ' . $safeTitle . '
+                                    </h2>
+
+                                    <p style="margin:0 0 26px;color:#4b5563;font-size:15px;line-height:1.6;">
+                                        ' . $safeMessage . '
+                                    </p>
+
+                                    <div style="display:inline-block;background:#b1e96f;color:#111827;
+                                                font-size:30px;font-weight:800;letter-spacing:8px;
+                                                padding:16px 24px;border-radius:12px;">
+                                        ' . $safeOtp . '
+                                    </div>
+
+                                    <p style="margin:24px 0 0;color:#6b7280;font-size:14px;">
+                                        This code expires in ' . $expiryMinutes . ' minutes.
+                                    </p>
+
+                                    <p style="margin:12px 0 0;color:#991b1b;font-size:13px;">
+                                        Never share this verification code with anyone.
+                                    </p>
+
+                                    <p style="margin:24px 0 0;color:#6b7280;font-size:12px;line-height:1.6;">
+                                        If you did not request this code, you can safely ignore this email.
+                                    </p>
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="background:#f9fafb;padding:16px;text-align:center;
+                                           color:#6b7280;font-size:12px;">
+                                    © ' . date('Y') . ' Samtech Solutions. All rights reserved.
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+
+            </table>
+
+        </body>
+        </html>';
     }
 
-    private static function ticketTemplate($title, $message)
-    {
+    private static function ticketTemplate(
+        string $title,
+        string $message
+    ): string {
+        $safeTitle = htmlspecialchars(
+            $title,
+            ENT_QUOTES,
+            'UTF-8'
+        );
+
+        $safeMessage = nl2br(
+            htmlspecialchars(
+                $message,
+                ENT_QUOTES,
+                'UTF-8'
+            )
+        );
+
         return '
-        <div style="margin:0;padding:0;background:#f4f7f4;font-family:Arial,sans-serif;">
-            <div style="max-width:560px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>' . $safeTitle . '</title>
+        </head>
 
-                <div style="background:#111827;padding:22px;text-align:center;">
-                    <h2 style="margin:0;color:#ffffff;font-size:22px;">
-                        Samtech Helpdesk
-                    </h2>
-                </div>
+        <body style="margin:0;padding:0;background:#f4f7f4;font-family:Arial,sans-serif;color:#111827;">
 
-                <div style="padding:30px;">
-                    <h3 style="margin:0 0 12px;color:#111827;">
-                        ' . htmlspecialchars($title) . '
-                    </h3>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                   style="background:#f4f7f4;padding:24px 12px;">
 
-                    <p style="color:#4b5563;font-size:15px;line-height:1.6;">
-                        ' . nl2br(htmlspecialchars($message)) . '
-                    </p>
+                <tr>
+                    <td align="center">
 
-                    <div style="margin-top:24px;text-align:center;">
-                        <a href="' . BASE_URL . '"
-                           style="background:#b1e96f;color:#111827;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:700;display:inline-block;">
-                            Open Helpdesk
-                        </a>
-                    </div>
-                </div>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                               style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;
+                                      border-radius:16px;overflow:hidden;">
 
-                <div style="background:#f9fafb;padding:16px;text-align:center;color:#6b7280;font-size:12px;">
-                    © ' . date('Y') . ' Samtech Solutions. All rights reserved.
-                </div>
+                            <tr>
+                                <td style="background:#111827;padding:24px;text-align:center;">
+                                    <div style="font-size:22px;font-weight:800;color:#ffffff;">
+                                        Samtech Helpdesk
+                                    </div>
 
-            </div>
-        </div>';
+                                    <div style="font-size:12px;color:#d1d5db;margin-top:6px;">
+                                        Ticket Notification
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:32px 28px;">
+
+                                    <h2 style="margin:0 0 16px;font-size:21px;color:#111827;">
+                                        ' . $safeTitle . '
+                                    </h2>
+
+                                    <div style="color:#4b5563;font-size:15px;line-height:1.7;">
+                                        ' . $safeMessage . '
+                                    </div>
+
+                                    <div style="margin-top:28px;text-align:center;">
+                                        <a href="' . htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') . '"
+                                           style="background:#b1e96f;color:#111827;text-decoration:none;
+                                                  padding:12px 22px;border-radius:10px;font-weight:700;
+                                                  display:inline-block;">
+                                            Open Samtech Helpdesk
+                                        </a>
+                                    </div>
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="background:#f9fafb;padding:16px;text-align:center;
+                                           color:#6b7280;font-size:12px;">
+                                    This is an automated notification from Samtech Helpdesk.<br>
+                                    © ' . date('Y') . ' Samtech Solutions. All rights reserved.
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+
+            </table>
+
+        </body>
+        </html>';
     }
 }

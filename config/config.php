@@ -60,15 +60,67 @@ define('SESSION_TIMEOUT', (int)($env['SESSION_TIMEOUT'] ?? 2700));
 
 /*
 |--------------------------------------------------------------------------
-| Mail
+| Mail Configuration
 |--------------------------------------------------------------------------
+|
+| Verification Mailbox
+|
 */
 
 define('MAIL_HOST', $env['MAIL_HOST'] ?? '');
-define('MAIL_PORT', $env['MAIL_PORT'] ?? '');
-define('MAIL_USERNAME', $env['MAIL_USERNAME'] ?? '');
-define('MAIL_PASSWORD', $env['MAIL_PASSWORD'] ?? '');
+
+define('MAIL_PORT', (int)($env['MAIL_PORT'] ?? 465));
+
 define('MAIL_ENCRYPTION', $env['MAIL_ENCRYPTION'] ?? 'ssl');
+
+define('MAIL_USERNAME', $env['MAIL_USERNAME'] ?? '');
+
+define('MAIL_PASSWORD', $env['MAIL_PASSWORD'] ?? '');
+
+define('MAIL_FROM_EMAIL', $env['MAIL_FROM_EMAIL'] ?? '');
+
+define('MAIL_FROM_NAME', $env['MAIL_FROM_NAME'] ?? 'Samtech Verification');
+
+/*
+|--------------------------------------------------------------------------
+| Ticket Mailbox
+|--------------------------------------------------------------------------
+*/
+
+define(
+    'TICKET_MAIL_USERNAME',
+    $env['TICKET_MAIL_USERNAME'] ?? ''
+);
+
+define(
+    'TICKET_MAIL_PASSWORD',
+    $env['TICKET_MAIL_PASSWORD'] ?? ''
+);
+
+define(
+    'TICKET_FROM_EMAIL',
+    $env['TICKET_FROM_EMAIL'] ?? ''
+);
+
+define(
+    'TICKET_FROM_NAME',
+    $env['TICKET_FROM_NAME'] ?? 'Samtech Helpdesk'
+);
+
+/*
+|--------------------------------------------------------------------------
+| SMTP Debug
+|--------------------------------------------------------------------------
+|
+| 0 = Production
+| 2 = Full SMTP Debug
+|
+*/
+
+define(
+    'MAIL_DEBUG',
+    (int)($env['MAIL_DEBUG'] ?? 0)
+);
 
 /*
 |--------------------------------------------------------------------------
