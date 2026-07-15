@@ -66,4 +66,14 @@ class LoginOtp extends Model
 
         return $stmt->fetch();
     }
+    public function deleteUnusedOtpByUserId($userId)
+    {
+        $stmt = $this->db->prepare("
+        DELETE FROM login_otps
+        WHERE user_id = ?
+        AND is_used = 0
+    ");
+
+        return $stmt->execute([$userId]);
+    }
 }

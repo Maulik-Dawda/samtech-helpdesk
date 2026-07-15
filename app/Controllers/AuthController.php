@@ -351,7 +351,12 @@ class AuthController extends Controller
         );
 
         if (!$mailSent) {
-            $_SESSION['error'] = "Unable to send OTP email. Please try again later.";
+
+            $otpModel->deleteUnusedOtpByUserId($user['id']);
+
+            $_SESSION['error'] =
+                "Unable to send OTP email. Please try again later.";
+
             header("Location: " . BASE_URL . "/user-login");
             exit;
         }
