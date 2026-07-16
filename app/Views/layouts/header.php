@@ -113,10 +113,10 @@ if ($initials === '') {
     >
 
     <!-- Keep existing application styles temporarily -->
-    <link
+    <!-- <link
         rel="stylesheet"
         href="<?= BASE_URL ?>/assets/css/app.css"
-    >
+    > -->
 
     <!-- Favicon -->
     <link
