@@ -69,10 +69,10 @@ function assetVersion(string $relativePath): string
 function cssAsset(string $filename): string
 {
     return BASE_URL .
-        '/assets/css/' .
+        'public/assets/css/' .
         $filename .
         '?v=' .
-        assetVersion('assets/css/' . $filename);
+        assetVersion('public/assets/css/' . $filename);
 }
 ?>
 
