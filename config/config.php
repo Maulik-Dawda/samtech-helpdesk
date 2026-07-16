@@ -1,7 +1,5 @@
 <?php
 
-date_default_timezone_set($env['APP_TIMEZONE'] ?? 'Asia/Dubai');
-
 define('ROOT_PATH', dirname(__DIR__));
 
 /*
@@ -34,6 +32,23 @@ foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line)
 
     $env[trim($key)] = trim($value);
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Application Timezone
+|--------------------------------------------------------------------------
+*/
+
+$appTimezone = $env['APP_TIMEZONE'] ?? 'Asia/Dubai';
+
+if (!in_array($appTimezone, timezone_identifiers_list(), true)) {
+    $appTimezone = 'Asia/Dubai';
+}
+
+date_default_timezone_set($appTimezone);
+
+define('APP_TIMEZONE', $appTimezone);
 
 /*
 |--------------------------------------------------------------------------
