@@ -477,3 +477,18 @@ body.sidebar-open .sidebar-overlay {
         flex: 1 1 auto;
     }
 }
+html,
+body,
+.app-shell,
+.main-content {
+    background: #f8fafc !important;
+}
+
+.app-shell {
+    width: auto;
+}
+
+.main-content {
+    margin-left: 0 !important;
+    color: #334155;
+}

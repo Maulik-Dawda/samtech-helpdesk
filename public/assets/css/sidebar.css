@@ -385,3 +385,23 @@
         min-height: 43px;
     }
 }
+
+.sidebar .sidebar-header .sidebar-logo {
+    width: auto;
+    height: 74px;
+    min-height: 74px;
+    padding: 10px 14px;
+    margin: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar .sidebar-header .sidebar-logo img {
+    display: block;
+    width: auto !important;
+    height: auto !important;
+    max-width: 165px !important;
+    max-height: 48px !important;
+    margin: auto;
+    object-fit: contain;
+}
