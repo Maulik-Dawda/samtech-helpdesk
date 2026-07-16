@@ -947,3 +947,45 @@
         height: 34px;
     }
 }
+
+.date-pill {
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding: 8px 14px;
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+
+    background: var(--color-surface);
+    color: var(--color-dark);
+}
+
+.date-pill > i {
+    color: var(--color-primary-deep);
+    font-size: 19px;
+}
+
+.dashboard-date {
+    color: var(--color-dark);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.dashboard-time {
+    margin-top: 3px;
+
+    color: var(--color-muted);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.dashboard-time span {
+    margin-left: 4px;
+    color: var(--color-primary-deep);
+    font-weight: 700;
+}

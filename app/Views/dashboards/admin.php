@@ -1,802 +1,1278 @@
-<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
+<?php
 
-<style>
-    body {
-        background: #f8fafc;
+require_once ROOT_PATH . "/app/Views/layouts/header.php";
+require_once ROOT_PATH . "/app/Helpers/DateTimeHelper.php";
+
+/*
+|--------------------------------------------------------------------------
+| Safe Dashboard Data
+|--------------------------------------------------------------------------
+*/
+
+$ticketCounts = array_merge([
+    'total' => 0,
+    'open_count' => 0,
+    'in_progress_count' => 0,
+    'pending_count' => 0,
+    'resolved_count' => 0,
+    'closed_count' => 0
+], $ticketCounts ?? []);
+
+$userCounts = array_merge([
+    'admins' => 0,
+    'agents' => 0,
+    'users' => 0
+], $userCounts ?? []);
+
+$organizationCount = (int)($organizationCount ?? 0);
+
+$recentTickets = is_array($recentTickets ?? null)
+    ? array_slice($recentTickets, 0, 5)
+    : [];
+
+$recentActivities = is_array($recentActivities ?? null)
+    ? array_slice($recentActivities, 0, 8)
+    : [];
+
+$monthlyTickets = is_array($monthlyTickets ?? null)
+    ? $monthlyTickets
+    : [];
+
+$organizationTickets = is_array($organizationTickets ?? null)
+    ? $organizationTickets
+    : [];
+
+$adminName = $_SESSION['auth_user_name'] ?? 'Admin';
+
+$greeting = DateTimeHelper::greeting();
+$dubaiNow = DateTimeHelper::now();
+
+$currentDate = $dubaiNow->format('l, d F Y');
+$currentTime = $dubaiNow->format('h:i A');
+
+/*
+|--------------------------------------------------------------------------
+| Status Helpers
+|--------------------------------------------------------------------------
+*/
+
+function dashboardStatusClass(string $status): string
+{
+    return match ($status) {
+        'open' => 'status-open',
+        'in_progress' => 'status-in-progress',
+        'pending' => 'status-pending',
+        'resolved' => 'status-resolved',
+        'closed' => 'status-closed',
+        default => 'status-open'
+    };
+}
+
+function dashboardPriorityClass(string $priority): string
+{
+    return match ($priority) {
+        'low' => 'priority-low',
+        'medium' => 'priority-medium',
+        'high' => 'priority-high',
+        'urgent' => 'priority-urgent',
+        default => 'priority-medium'
+    };
+}
+
+function dashboardActivityIcon(string $action): string
+{
+    $action = strtolower($action);
+
+    if (str_contains($action, 'login')) {
+        return 'bi-box-arrow-in-right';
     }
 
-    .dashboard-wrapper {
-        padding: 18px 10px 30px;
+    if (
+        str_contains($action, 'ticket') &&
+        str_contains($action, 'create')
+    ) {
+        return 'bi-ticket-perforated-fill';
     }
 
-    .dashboard-hero {
-        background: #ffffff;
-        border: 1px solid #eef2f7;
-        border-radius: 18px;
-        padding: 22px 24px;
-        box-shadow: 0 14px 40px rgba(15, 23, 42, .06);
-        margin-bottom: 22px;
+    if (
+        str_contains($action, 'reply') ||
+        str_contains($action, 'message')
+    ) {
+        return 'bi-chat-left-text-fill';
     }
 
-    .welcome-title {
-        font-size: 24px;
-        font-weight: 800;
-        color: #111827;
-        margin-bottom: 5px;
+    if (
+        str_contains($action, 'status') ||
+        str_contains($action, 'closed') ||
+        str_contains($action, 'resolved')
+    ) {
+        return 'bi-arrow-repeat';
     }
 
-    .welcome-subtitle {
-        color: #64748b;
-        font-size: 14px;
-        margin: 0;
+    if (
+        str_contains($action, 'user') ||
+        str_contains($action, 'agent')
+    ) {
+        return 'bi-person-fill';
     }
 
-    .date-pill {
-        height: 42px;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 0 14px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #111827;
-        font-size: 14px;
-        background: #fff;
-        font-weight: 600;
+    if (str_contains($action, 'organization')) {
+        return 'bi-buildings-fill';
     }
 
-    .stat-card {
-        background: #ffffff;
-        border: 1px solid #eef2f7;
-        border-radius: 18px;
-        padding: 18px;
-        min-height: 132px;
-        box-shadow: 0 12px 35px rgba(15, 23, 42, .05);
-        transition: .2s ease;
-        position: relative;
-        overflow: hidden;
-    }
+    return 'bi-activity';
+}
+?>
 
-    .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
-    }
+<div class="container-fluid px-0">
 
-    .stat-card::after {
-        content: "";
-        position: absolute;
-        right: -35px;
-        top: -35px;
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        opacity: .12;
-    }
+    <!-- Dashboard Hero -->
+    <section class="ui-panel mb-4">
 
-    .stat-total::after {
-        background: #3b82f6;
-    }
+        <div class="ui-panel-body">
 
-    .stat-open::after {
-        background: #22c55e;
-    }
+            <div class="page-header mb-0">
 
-    .stat-progress::after {
-        background: #8b5cf6;
-    }
+                <div class="page-header-content">
 
-    .stat-pending::after {
-        background: #f97316;
-    }
+                    <div class="app-badge app-badge-primary mb-3">
+                        <i class="bi bi-speedometer2"></i>
+                        Administrator Dashboard
+                    </div>
 
-    .stat-resolved::after {
-        background: #14b8a6;
-    }
+                    <h1 class="page-title">
+                        <?= htmlspecialchars($greeting); ?>,
+                        <?= htmlspecialchars($adminName); ?>! 👋
+                    </h1>
 
-    .stat-closed::after {
-        background: #ef4444;
-    }
+                    <p class="page-description">
+                        Monitor tickets, users, organizations and recent
+                        helpdesk activity from one place.
+                    </p>
 
-    .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        margin-bottom: 13px;
-    }
+                </div>
 
-    .icon-total {
-        background: #eff6ff;
-        color: #2563eb;
-        border: 1px solid #bfdbfe;
-    }
+                <div class="page-actions">
 
-    .icon-open {
-        background: #f0fdf4;
-        color: #16a34a;
-        border: 1px solid #bbf7d0;
-    }
+                    <div class="date-pill">
 
-    .icon-progress {
-        background: #f5f3ff;
-        color: #6d28d9;
-        border: 1px solid #ddd6fe;
-    }
+                        <i class="bi bi-calendar3"></i>
 
-    .icon-pending {
-        background: #fff7ed;
-        color: #ea580c;
-        border: 1px solid #fed7aa;
-    }
+                        <div>
 
-    .icon-resolved {
-        background: #f0fdfa;
-        color: #0f766e;
-        border: 1px solid #99f6e4;
-    }
+                            <div class="dashboard-date">
+                                <?= htmlspecialchars($currentDate); ?>
+                            </div>
 
-    .icon-closed {
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-    }
+                            <div class="dashboard-time">
+                                <?= htmlspecialchars($currentTime); ?>
+                                <span>Dubai Time</span>
+                            </div>
 
-    .stat-number {
-        font-size: 27px;
-        font-weight: 800;
-        color: #111827;
-        line-height: 1;
-    }
+                        </div>
 
-    .stat-label {
-        font-size: 13px;
-        color: #64748b;
-        margin-top: 6px;
-        font-weight: 600;
-    }
+                    </div>
 
-    .stat-trend {
-        margin-top: 14px;
-        font-size: 12px;
-        color: #16a34a;
-        font-weight: 700;
-    }
+                </div>
 
-    .dashboard-card {
-        background: #ffffff;
-        border: 1px solid #eef2f7;
-        border-radius: 18px;
-        box-shadow: 0 12px 35px rgba(15, 23, 42, .05);
-        overflow: hidden;
-    }
+            </div>
 
-    .dashboard-card-header {
-        padding: 18px 20px;
-        border-bottom: 1px solid #eef2f7;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+            <div class="quick-actions-grid mt-4">
 
-    .dashboard-card-title {
-        font-weight: 800;
-        color: #111827;
-        margin: 0;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+                <a
+                    href="<?= BASE_URL ?>/agent/tickets/create"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
 
-    .dashboard-card-title i {
-        color: #475569;
-    }
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Create Ticket
+                        </span>
 
-    .dashboard-card-body {
-        padding: 20px;
-    }
+                        <span class="quick-action-description">
+                            Open a ticket for any organization.
+                        </span>
+                    </span>
 
-    .view-all-btn {
-        border: 1px solid #d6dde8;
-        color: #111827;
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 7px 13px;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-    }
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
 
-    .view-all-btn:hover {
-        background: #f8fafc;
-        color: #111827;
-    }
+                <a
+                    href="<?= BASE_URL ?>/admin/users/create"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </span>
 
-    .modern-table {
-        margin: 0;
-    }
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Create User or Agent
+                        </span>
 
-    .modern-table thead th {
-        font-size: 11px;
-        text-transform: uppercase;
-        color: #64748b;
-        letter-spacing: .05em;
-        border-bottom: 1px solid #eef2f7;
-        padding: 13px 14px;
-        font-weight: 800;
-    }
+                        <span class="quick-action-description">
+                            Add users, agents or administrators.
+                        </span>
+                    </span>
 
-    .modern-table tbody td {
-        padding: 13px 14px;
-        vertical-align: middle;
-        font-size: 13px;
-        color: #111827;
-        border-bottom: 1px solid #f1f5f9;
-    }
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
 
-    .modern-table tbody tr:last-child td {
-        border-bottom: 0;
-    }
+                <a
+                    href="<?= BASE_URL ?>/organizations/create"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-building-add"></i>
+                    </span>
 
-    .badge-soft {
-        padding: 5px 10px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-    }
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Create Organization
+                        </span>
 
-    .status-open {
-        background: #dcfce7;
-        color: #15803d;
-    }
+                        <span class="quick-action-description">
+                            Add a new customer organization.
+                        </span>
+                    </span>
 
-    .status-in-progress {
-        background: #ede9fe;
-        color: #6d28d9;
-    }
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
 
-    .status-pending {
-        background: #ffedd5;
-        color: #c2410c;
-    }
+                <a
+                    href="<?= BASE_URL ?>/reports/tickets"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </span>
 
-    .status-resolved {
-        background: #ccfbf1;
-        color: #0f766e;
-    }
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Open Reports
+                        </span>
 
-    .status-closed {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
+                        <span class="quick-action-description">
+                            Review, filter and print ticket reports.
+                        </span>
+                    </span>
 
-    .summary-tile {
-        background: #f8fafc;
-        border: 1px solid #eef2f7;
-        border-radius: 14px;
-        padding: 14px;
-    }
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
 
-    .summary-value {
-        font-size: 22px;
-        font-weight: 800;
-        color: #111827;
-    }
+            </div>
 
-    .summary-label {
-        font-size: 12px;
-        color: #64748b;
-        font-weight: 700;
-    }
+        </div>
 
-    .activity-item {
-        display: flex;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid #f1f5f9;
-    }
+    </section>
 
-    .activity-item:last-child {
-        border-bottom: 0;
-    }
+    <!-- Ticket Metrics -->
+    <section class="content-section">
 
-    .activity-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #6cb33f;
-        margin-top: 6px;
-        box-shadow: 0 0 0 4px rgba(177, 233, 111, .25);
-        flex-shrink: 0;
-    }
+        <div class="metric-grid">
 
-    .activity-action {
-        font-size: 13px;
-        font-weight: 800;
-        color: #111827;
-    }
+            <a
+                href="<?= BASE_URL ?>/agent/tickets"
+                class="metric-card text-decoration-none">
 
-    .activity-meta {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 2px;
-    }
+                <div class="metric-card-header">
 
-    .chart-box {
-        height: 260px;
-        position: relative;
-    }
+                    <div class="metric-card-icon">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </div>
 
-    @media(max-width: 768px) {
-        .dashboard-hero {
-            padding: 18px;
-        }
+                    <i class="bi bi-arrow-up-right text-muted"></i>
 
-        .welcome-title {
-            font-size: 20px;
-        }
+                </div>
 
-        .date-pill {
-            margin-top: 14px;
-            justify-content: center;
-        }
-    }
-</style>
+                <div class="metric-card-label">
+                    Total Tickets
+                </div>
 
-<div class="container-fluid dashboard-wrapper">
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['total']; ?>
+                </div>
 
-    <div class="dashboard-hero">
-        <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div class="metric-card-meta">
+                    <i class="bi bi-collection"></i>
+                    All helpdesk tickets
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=open"
+                class="metric-card metric-card-info text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Open Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['open_count']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Waiting for attention
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=in_progress"
+                class="metric-card text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    In Progress
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['in_progress_count']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-person-workspace"></i>
+                    Currently being handled
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=pending"
+                class="metric-card metric-card-warning text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Pending Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['pending_count']; ?>
+                </div>
+
+                <div class="metric-card-meta warning">
+                    <i class="bi bi-hourglass"></i>
+                    Awaiting further action
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=resolved"
+                class="metric-card metric-card-success text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Resolved Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['resolved_count']; ?>
+                </div>
+
+                <div class="metric-card-meta positive">
+                    <i class="bi bi-check-circle"></i>
+                    Resolution completed
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=closed"
+                class="metric-card metric-card-danger text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-archive-fill"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Closed Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['closed_count']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-lock-fill"></i>
+                    Completed and archived
+                </div>
+
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Account Summary -->
+    <section class="content-section">
+
+        <div class="metric-grid">
+
+            <a
+                href="<?= BASE_URL ?>/organizations"
+                class="metric-card text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-buildings-fill"></i>
+                    </div>
+
+                    <i class="bi bi-chevron-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Organizations
+                </div>
+
+                <div class="metric-card-value">
+                    <?= $organizationCount; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    Customer organizations
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/admin/users"
+                class="metric-card metric-card-info text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-shield-fill-check"></i>
+                    </div>
+
+                    <i class="bi bi-chevron-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Administrators
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$userCounts['admins']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    Full system administrators
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/admin/users?role=agent"
+                class="metric-card metric-card-warning text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-headset"></i>
+                    </div>
+
+                    <i class="bi bi-chevron-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Agents
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$userCounts['agents']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    Support and admin agents
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/admin/users?role=user"
+                class="metric-card metric-card-success text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+
+                    <i class="bi bi-chevron-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Users
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$userCounts['users']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    Organization users
+                </div>
+
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Recent Tickets -->
+    <section class="table-card content-section">
+
+        <div class="table-card-header">
+
             <div>
-                <h3 class="welcome-title">
-                    Welcome back, <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'Admin'); ?>! 👋
-                </h3>
 
-                <p class="welcome-subtitle">
-                    Here’s what’s happening with your helpdesk today.
-                </p>
+                <div class="table-card-title">
+                    Recent Tickets
+                </div>
+
+                <div class="table-card-subtitle">
+                    Showing the five most recently created tickets.
+                </div>
+
             </div>
 
-            <div class="date-pill">
-                <i class="bi bi-calendar3"></i>
-                <?= date('M d, Y'); ?>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-3 mb-4">
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="stat-card stat-total">
-                <div class="stat-icon icon-total">
-                    <i class="bi bi-ticket-perforated"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['total']; ?></div>
-                <div class="stat-label">Total Tickets</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Overall
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="stat-card stat-open">
-                <div class="stat-icon icon-open">
-                    <i class="bi bi-folder2-open"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['open_count']; ?></div>
-                <div class="stat-label">Open</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Active queue
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="stat-card stat-progress">
-                <div class="stat-icon icon-progress">
-                    <i class="bi bi-clock-history"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['in_progress_count']; ?></div>
-                <div class="stat-label">In Progress</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Being handled
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="stat-card stat-pending">
-                <div class="stat-icon icon-pending">
-                    <i class="bi bi-hourglass-split"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['pending_count']; ?></div>
-                <div class="stat-label">Pending</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Awaiting action
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="stat-card stat-resolved">
-                <div class="stat-icon icon-resolved">
-                    <i class="bi bi-check2-circle"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['resolved_count']; ?></div>
-                <div class="stat-label">Resolved</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Completed
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="stat-card stat-closed">
-                <div class="stat-icon icon-closed">
-                    <i class="bi bi-x-octagon"></i>
-                </div>
-                <div class="stat-number"><?= (int)$ticketCounts['closed_count']; ?></div>
-                <div class="stat-label">Closed</div>
-                <div class="stat-trend">
-                    <i class="bi bi-arrow-up-right"></i> Archived
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="dashboard-card mb-4">
-        <div class="dashboard-card-header">
-            <h5 class="dashboard-card-title">
-                <i class="bi bi-list-task"></i>
-                Recent Tickets
-            </h5>
-
-            <a href="<?= BASE_URL ?>/agent/tickets" class="view-all-btn">
+            <a
+                href="<?= BASE_URL ?>/agent/tickets"
+                class="btn btn-light btn-sm">
                 View All Tickets
-                <i class="bi bi-chevron-right ms-1"></i>
+                <i class="bi bi-arrow-right ms-1"></i>
             </a>
+
         </div>
 
-        <div class="table-responsive">
-            <table class="table modern-table">
-                <thead>
-                    <tr>
-                        <th>Ticket ID</th>
-                        <th>Organization</th>
-                        <th>Customer</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                    </tr>
-                </thead>
+        <div class="table-card-body">
 
-                <tbody>
-                    <?php if (empty($recentTickets)): ?>
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                No recent tickets found.
-                            </td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($recentTickets as $ticket): ?>
+            <?php if (empty($recentTickets)): ?>
 
-                            <?php
-                            $statusClass = match ($ticket['status']) {
-                                'open' => 'status-open',
-                                'in_progress' => 'status-in-progress',
-                                'pending' => 'status-pending',
-                                'resolved' => 'status-resolved',
-                                'closed' => 'status-closed',
-                                default => 'status-open'
-                            };
-                            ?>
+                <div class="empty-state">
 
-                            <tr>
-                                <td class="fw-bold">
-                                    <?= htmlspecialchars($ticket['ticket_no']); ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?>
-                                </td>
-
-                                <td>
-                                    <span class="badge-soft <?= $statusClass; ?>">
-                                        <?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?>
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($ticket['created_at']); ?>
-                                </td>
-                            </tr>
-
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="row g-3 mb-4">
-
-        <div class="col-xl-3 col-md-6">
-            <div class="summary-tile">
-                <div class="summary-value"><?= (int)$organizationCount; ?></div>
-                <div class="summary-label">Organizations</div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <div class="summary-tile">
-                <div class="summary-value"><?= (int)$userCounts['admins']; ?></div>
-                <div class="summary-label">Admins</div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <div class="summary-tile">
-                <div class="summary-value"><?= (int)$userCounts['agents']; ?></div>
-                <div class="summary-label">Agents</div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <div class="summary-tile">
-                <div class="summary-value"><?= (int)$userCounts['users']; ?></div>
-                <div class="summary-label">Users</div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row g-3 mb-4">
-
-        <div class="col-xl-4 col-lg-6">
-            <div class="dashboard-card h-100">
-                <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">
-                        <i class="bi bi-pie-chart"></i>
-                        Tickets by Status
-                    </h5>
-                </div>
-
-                <div class="dashboard-card-body">
-                    <div class="chart-box">
-                        <canvas id="statusChart"></canvas>
+                    <div class="empty-state-icon">
+                        <i class="bi bi-ticket-perforated"></i>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-xl-4 col-lg-6">
-            <div class="dashboard-card h-100">
-                <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">
-                        <i class="bi bi-graph-up-arrow"></i>
-                        Tickets Over Time
-                    </h5>
-                </div>
+                    <h3 class="empty-state-title">
+                        No tickets found
+                    </h3>
 
-                <div class="dashboard-card-body">
-                    <div class="chart-box">
-                        <canvas id="monthlyChart"></canvas>
+                    <p class="empty-state-description">
+                        New helpdesk tickets will appear here.
+                    </p>
+
+                    <div class="empty-state-action">
+
+                        <a
+                            href="<?= BASE_URL ?>/agent/tickets/create"
+                            class="btn btn-primary-custom">
+                            Create Ticket
+                        </a>
+
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-xl-4 col-lg-12">
-            <div class="dashboard-card h-100">
-                <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">
-                        <i class="bi bi-building"></i>
-                        Tickets by Organization
-                    </h5>
-                </div>
-
-                <div class="dashboard-card-body">
-                    <div class="chart-box">
-                        <canvas id="organizationChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="dashboard-card">
-        <div class="dashboard-card-header">
-            <h5 class="dashboard-card-title">
-                <i class="bi bi-activity"></i>
-                Recent Activity
-            </h5>
-
-            <a href="<?= BASE_URL ?>/admin/activity-logs" class="view-all-btn">
-                View Logs
-                <i class="bi bi-chevron-right ms-1"></i>
-            </a>
-        </div>
-
-        <div class="dashboard-card-body">
-            <?php if (empty($recentActivities)): ?>
-
-                <div class="text-muted">
-                    No recent activity found.
                 </div>
 
             <?php else: ?>
 
-                <?php foreach ($recentActivities as $activity): ?>
+                <div class="table-responsive">
 
-                    <div class="activity-item">
-                        <div class="activity-dot"></div>
+                    <table class="table">
 
-                        <div>
-                            <div class="activity-action">
-                                <?= htmlspecialchars($activity['action']); ?>
-                            </div>
+                        <thead>
 
-                            <div class="activity-meta">
-                                <?= htmlspecialchars($activity['full_name'] ?? 'System'); ?>
-                                —
-                                <?= htmlspecialchars($activity['created_at']); ?>
-                            </div>
-                        </div>
+                            <tr>
+                                <th>Ticket</th>
+                                <th>Organization</th>
+                                <th>Customer</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <?php foreach ($recentTickets as $ticket): ?>
+
+                                <?php
+                                $ticketStatus =
+                                    $ticket['status'] ?? 'open';
+
+                                $ticketPriority =
+                                    $ticket['priority'] ?? 'medium';
+                                ?>
+
+                                <tr>
+
+                                    <td data-label="Ticket">
+
+                                        <div>
+
+                                            <a
+                                                href="<?= BASE_URL ?>/agent/tickets/show/<?= (int)$ticket['id']; ?>"
+                                                class="fw-bold text-decoration-none">
+                                                <?= htmlspecialchars(
+                                                    $ticket['ticket_no'] ?? '-'
+                                                ); ?>
+                                            </a>
+
+                                            <?php if (!empty($ticket['subject'])): ?>
+
+                                                <div class="text-muted small mt-1">
+                                                    <?= htmlspecialchars(
+                                                        mb_strimwidth(
+                                                            $ticket['subject'],
+                                                            0,
+                                                            45,
+                                                            '...'
+                                                        )
+                                                    ); ?>
+                                                </div>
+
+                                            <?php endif; ?>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td data-label="Organization">
+                                        <?= htmlspecialchars(
+                                            $ticket['organization_name'] ?? '-'
+                                        ); ?>
+                                    </td>
+
+                                    <td data-label="Customer">
+                                        <?= htmlspecialchars(
+                                            $ticket['customer_name'] ?? '-'
+                                        ); ?>
+                                    </td>
+
+                                    <td data-label="Priority">
+
+                                        <span class="priority-badge <?= dashboardPriorityClass($ticketPriority); ?>">
+                                            <?= htmlspecialchars(
+                                                ucfirst($ticketPriority)
+                                            ); ?>
+                                        </span>
+
+                                    </td>
+
+                                    <td data-label="Status">
+
+                                        <span class="status-badge <?= dashboardStatusClass($ticketStatus); ?>">
+                                            <?= htmlspecialchars(
+                                                ucwords(
+                                                    str_replace(
+                                                        '_',
+                                                        ' ',
+                                                        $ticketStatus
+                                                    )
+                                                )
+                                            ); ?>
+                                        </span>
+
+                                    </td>
+
+                                    <td data-label="Created">
+
+                                        <div class="fw-semibold">
+                                            <?= htmlspecialchars(
+                                                DateTimeHelper::format(
+                                                    $ticket['created_at'] ?? null,
+                                                    'd M Y'
+                                                )
+                                            ); ?>
+                                        </div>
+
+                                        <div class="text-muted small mt-1">
+                                            <?= htmlspecialchars(
+                                                DateTimeHelper::format(
+                                                    $ticket['created_at'] ?? null,
+                                                    'h:i A'
+                                                )
+                                            ); ?>
+                                            Dubai
+                                        </div>
+
+                                    </td>
+
+                                    <td
+                                        data-label="Action"
+                                        class="text-end">
+
+                                        <a
+                                            href="<?= BASE_URL ?>/agent/tickets/show/<?= (int)$ticket['id']; ?>"
+                                            class="table-action-btn table-action-view ms-auto"
+                                            title="View ticket"
+                                            aria-label="View ticket">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            <?php endforeach; ?>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="pagination-wrapper">
+
+                    <div class="pagination-info">
+                        Showing latest
+                        <?= count($recentTickets); ?>
+                        tickets
                     </div>
 
-                <?php endforeach; ?>
+                    <a
+                        href="<?= BASE_URL ?>/agent/tickets"
+                        class="view-all-link">
+                        View complete ticket list
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                </div>
 
             <?php endif; ?>
+
         </div>
-    </div>
+
+    </section>
+
+    <!-- Charts -->
+    <section class="content-section">
+
+        <div class="row g-3">
+
+            <div class="col-xl-4 col-lg-6">
+
+                <div class="chart-card h-100">
+
+                    <div class="chart-card-header">
+
+                        <div>
+
+                            <h2 class="chart-card-title">
+                                Tickets by Status
+                            </h2>
+
+                            <div class="chart-card-subtitle">
+                                Current distribution of ticket statuses.
+                            </div>
+
+                        </div>
+
+                        <div class="app-badge app-badge-primary">
+                            All Time
+                        </div>
+
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-xl-4 col-lg-6">
+
+                <div class="chart-card h-100">
+
+                    <div class="chart-card-header">
+
+                        <div>
+
+                            <h2 class="chart-card-title">
+                                Tickets Over Time
+                            </h2>
+
+                            <div class="chart-card-subtitle">
+                                Monthly ticket creation trends.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+
+                <div class="chart-card h-100">
+
+                    <div class="chart-card-header">
+
+                        <div>
+
+                            <h2 class="chart-card-title">
+                                Tickets by Organization
+                            </h2>
+
+                            <div class="chart-card-subtitle">
+                                Organizations generating the most tickets.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="organizationChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="ui-panel content-section">
+
+        <div class="ui-panel-header">
+
+            <div class="ui-panel-title-wrap">
+
+                <h2 class="ui-panel-title">
+                    Recent Activity
+                </h2>
+
+                <p class="ui-panel-subtitle">
+                    Latest user, ticket and system actions.
+                </p>
+
+            </div>
+
+            <div class="ui-panel-actions">
+
+                <a
+                    href="<?= BASE_URL ?>/admin/activity-logs"
+                    class="btn btn-light btn-sm">
+                    View Activity Logs
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="ui-panel-body">
+
+            <?php if (empty($recentActivities)): ?>
+
+                <div class="empty-state py-4">
+
+                    <div class="empty-state-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+
+                    <h3 class="empty-state-title">
+                        No recent activity
+                    </h3>
+
+                    <p class="empty-state-description">
+                        User and system activities will appear here.
+                    </p>
+
+                </div>
+
+            <?php else: ?>
+
+                <div class="activity-list">
+
+                    <?php foreach ($recentActivities as $activity): ?>
+
+                        <div class="activity-item">
+
+                            <div class="activity-icon">
+                                <i class="bi <?= dashboardActivityIcon(
+                                                    $activity['action'] ?? ''
+                                                ); ?>"></i>
+                            </div>
+
+                            <div class="activity-content">
+
+                                <div class="activity-title">
+                                    <?= htmlspecialchars(
+                                        $activity['action'] ??
+                                            'System activity'
+                                    ); ?>
+                                </div>
+
+                                <div class="activity-meta">
+
+                                    <span>
+                                        <?= htmlspecialchars(
+                                            $activity['full_name'] ??
+                                                'System'
+                                        ); ?>
+                                    </span>
+
+                                    <span class="mx-1">•</span>
+
+                                    <span>
+                                        <?= htmlspecialchars(
+                                            DateTimeHelper::format(
+                                                $activity['created_at'] ?? null,
+                                                'd M Y, h:i A'
+                                            )
+                                        ); ?>
+                                        Dubai Time
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+            <?php endif; ?>
+
+        </div>
+
+        <?php if (!empty($recentActivities)): ?>
+
+            <div class="ui-panel-footer">
+
+                <span class="list-limit-note">
+                    Showing the latest
+                    <?= count($recentActivities); ?>
+                    activities.
+                </span>
+
+                <a
+                    href="<?= BASE_URL ?>/admin/activity-logs"
+                    class="view-all-link">
+                    View all activity
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        <?php endif; ?>
+
+    </section>
 
 </div>
 
 <script>
-    const chartFont = {
-        family: "'Inter', 'Arial', sans-serif",
-        size: 12
-    };
-
-    new Chart(document.getElementById('statusChart'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Open', 'In Progress', 'Pending', 'Resolved', 'Closed'],
-            datasets: [{
-                data: [
-                    <?= (int)$ticketCounts['open_count']; ?>,
-                    <?= (int)$ticketCounts['in_progress_count']; ?>,
-                    <?= (int)$ticketCounts['pending_count']; ?>,
-                    <?= (int)$ticketCounts['resolved_count']; ?>,
-                    <?= (int)$ticketCounts['closed_count']; ?>
-                ],
-                backgroundColor: [
-                    '#22c55e',
-                    '#8b5cf6',
-                    '#f97316',
-                    '#14b8a6',
-                    '#ef4444'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '68%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        boxWidth: 8,
-                        font: chartFont
-                    }
-                }
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded.');
+            return;
         }
-    });
 
-    new Chart(document.getElementById('monthlyChart'), {
-        type: 'line',
-        data: {
-            labels: <?= json_encode(array_column($monthlyTickets, 'month')); ?>,
-            datasets: [{
-                label: 'Tickets',
-                data: <?= json_encode(array_column($monthlyTickets, 'total')); ?>,
-                borderColor: '#3b941f',
-                backgroundColor: 'rgba(177,233,111,.25)',
-                tension: .4,
-                fill: true,
-                pointBackgroundColor: '#3b941f',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2,
-                pointRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: chartFont
-                    }
+        const chartFont = {
+            family: "'Inter', Arial, sans-serif",
+            size: 11
+        };
+
+        const statusCanvas =
+            document.getElementById('statusChart');
+
+        if (statusCanvas) {
+            new Chart(statusCanvas, {
+                type: 'doughnut',
+
+                data: {
+                    labels: [
+                        'Open',
+                        'In Progress',
+                        'Pending',
+                        'Resolved',
+                        'Closed'
+                    ],
+
+                    datasets: [{
+                        data: [
+                            <?= (int)$ticketCounts['open_count']; ?>,
+                            <?= (int)$ticketCounts['in_progress_count']; ?>,
+                            <?= (int)$ticketCounts['pending_count']; ?>,
+                            <?= (int)$ticketCounts['resolved_count']; ?>,
+                            <?= (int)$ticketCounts['closed_count']; ?>
+                        ],
+
+                        backgroundColor: [
+                            '#2563eb',
+                            '#7c3aed',
+                            '#d97706',
+                            '#16a34a',
+                            '#dc2626'
+                        ],
+
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 5
+                    }]
                 },
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#eef2f7'
-                    },
-                    ticks: {
-                        font: chartFont
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 8,
+                                padding: 14,
+                                font: chartFont
+                            }
+                        },
+
+                        tooltip: {
+                            displayColors: true
+                        }
                     }
                 }
-            }
+            });
         }
-    });
 
-    new Chart(document.getElementById('organizationChart'), {
-        type: 'bar',
-        data: {
-            labels: <?= json_encode(array_column($organizationTickets, 'name')); ?>,
-            datasets: [{
-                label: 'Tickets',
-                data: <?= json_encode(array_column($organizationTickets, 'total')); ?>,
-                backgroundColor: '#6cb33f',
-                borderRadius: 8,
-                barThickness: 18
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#eef2f7'
-                    },
-                    ticks: {
-                        font: chartFont
-                    }
+        const monthlyCanvas =
+            document.getElementById('monthlyChart');
+
+        if (monthlyCanvas) {
+            new Chart(monthlyCanvas, {
+                type: 'line',
+
+                data: {
+                    labels: <?= json_encode(
+                                array_column(
+                                    $monthlyTickets,
+                                    'month'
+                                ),
+                                JSON_UNESCAPED_UNICODE |
+                                    JSON_UNESCAPED_SLASHES
+                            ); ?>,
+
+                    datasets: [{
+                        label: 'Tickets',
+
+                        data: <?= json_encode(
+                                    array_map(
+                                        'intval',
+                                        array_column(
+                                            $monthlyTickets,
+                                            'total'
+                                        )
+                                    )
+                                ); ?>,
+
+                        borderColor: '#3b941f',
+                        backgroundColor: 'rgba(177, 233, 111, .22)',
+
+                        borderWidth: 2,
+                        tension: .4,
+                        fill: true,
+
+                        pointBackgroundColor: '#3b941f',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
                 },
-                y: {
-                    grid: {
-                        display: false
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
                     },
-                    ticks: {
-                        font: chartFont
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+
+                            ticks: {
+                                font: chartFont
+                            }
+                        },
+
+                        y: {
+                            beginAtZero: true,
+
+                            grid: {
+                                color: '#eef2f7'
+                            },
+
+                            ticks: {
+                                precision: 0,
+                                font: chartFont
+                            }
+                        }
                     }
                 }
-            }
+            });
+        }
+
+        const organizationCanvas =
+            document.getElementById('organizationChart');
+
+        if (organizationCanvas) {
+            new Chart(organizationCanvas, {
+                type: 'bar',
+
+                data: {
+                    labels: <?= json_encode(
+                                array_column(
+                                    $organizationTickets,
+                                    'name'
+                                ),
+                                JSON_UNESCAPED_UNICODE |
+                                    JSON_UNESCAPED_SLASHES
+                            ); ?>,
+
+                    datasets: [{
+                        label: 'Tickets',
+
+                        data: <?= json_encode(
+                                    array_map(
+                                        'intval',
+                                        array_column(
+                                            $organizationTickets,
+                                            'total'
+                                        )
+                                    )
+                                ); ?>,
+
+                        backgroundColor: '#6cb33f',
+                        borderRadius: 7,
+                        borderSkipped: false,
+                        maxBarThickness: 24
+                    }]
+                },
+
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+
+                            grid: {
+                                color: '#eef2f7'
+                            },
+
+                            ticks: {
+                                precision: 0,
+                                font: chartFont
+                            }
+                        },
+
+                        y: {
+                            grid: {
+                                display: false
+                            },
+
+                            ticks: {
+                                autoSkip: false,
+                                font: chartFont
+                            }
+                        }
+                    }
+                }
+            });
         }
     });
 </script>
 
-<?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
+<?php
+require_once ROOT_PATH .
+    "/app/Views/layouts/footer.php";
+?>
