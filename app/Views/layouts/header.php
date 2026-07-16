@@ -66,14 +66,6 @@ function assetVersion(string $relativePath): string
     return (string)time();
 }
 
-function cssAsset(string $filename): string
-{
-    return BASE_URL .
-        'public/assets/css/' .
-        $filename .
-        '?v=' .
-        assetVersion('public/assets/css/' . $filename);
-}
 ?>
 
 <!DOCTYPE html>
@@ -85,13 +77,11 @@ function cssAsset(string $filename): string
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover"
-    >
+        content="width=device-width, initial-scale=1, viewport-fit=cover">
 
     <meta
         name="theme-color"
-        content="#111827"
-    >
+        content="#111827">
 
     <title>
         <?= htmlspecialchars(
@@ -103,54 +93,44 @@ function cssAsset(string $filename): string
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('theme.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/theme.css?v=<?= time(); ?>">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('layout.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/layout.css?v=<?= time(); ?>">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('sidebar.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/sidebar.css?v=<?= time(); ?>">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('components.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/components.css?v=<?= time(); ?>">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('tables.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/tables.css?v=<?= time(); ?>">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('forms.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/forms.css?v=<?= time(); ?>">
 
     <link
         rel="stylesheet"
-        href="<?= cssAsset('responsive.css'); ?>"
-    >
+        href="<?= BASE_URL ?>/assets/css/responsive.css?v=<?= time(); ?>">
 
     <link
         rel="icon"
         type="image/png"
-        href="<?= BASE_URL ?>/assets/images/samtech-icon.png"
-    >
+        href="<?= BASE_URL ?>/assets/images/samtech-icon.png">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -158,252 +138,237 @@ function cssAsset(string $filename): string
 
 <body>
 
-<div
-    class="sidebar-overlay"
-    id="sidebarOverlay"
-    aria-hidden="true"
-></div>
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+        aria-hidden="true"></div>
 
-<?php
-require_once ROOT_PATH .
-    "/app/Views/layouts/sidebar.php";
-?>
+    <?php
+    require_once ROOT_PATH .
+        "/app/Views/layouts/sidebar.php";
+    ?>
 
-<div
-    class="app-shell"
-    id="appShell"
->
+    <div
+        class="app-shell"
+        id="appShell">
 
-    <main
-        class="main-content"
-        id="mainContent"
-    >
+        <main
+            class="main-content"
+            id="mainContent">
 
-        <nav class="top-navbar">
+            <nav class="top-navbar">
 
-            <div class="top-navbar-left">
+                <div class="top-navbar-left">
 
-                <button
-                    type="button"
-                    class="sidebar-toggle-btn"
-                    id="sidebarToggle"
-                    aria-label="Open navigation menu"
-                    aria-controls="appSidebar"
-                    aria-expanded="false"
-                >
-                    <i class="bi bi-list"></i>
-                </button>
+                    <button
+                        type="button"
+                        class="sidebar-toggle-btn"
+                        id="sidebarToggle"
+                        aria-label="Open navigation menu"
+                        aria-controls="appSidebar"
+                        aria-expanded="false">
+                        <i class="bi bi-list"></i>
+                    </button>
 
-                <div class="top-navbar-brand">
+                    <div class="top-navbar-brand">
 
-                    <img
-                        src="<?= BASE_URL ?>/assets/images/samtech-icon.png"
-                        alt="Samtech"
-                        class="top-navbar-icon"
-                        width="40"
-                        height="40"
-                    >
+                        <img
+                            src="<?= BASE_URL ?>/assets/images/samtech-icon.png"
+                            alt="Samtech"
+                            class="top-navbar-icon"
+                            width="40"
+                            height="40">
 
-                    <div class="top-navbar-brand-text">
+                        <div class="top-navbar-brand-text">
 
-                        <div class="top-navbar-title">
-                            Samtech Helpdesk
-                        </div>
+                            <div class="top-navbar-title">
+                                Samtech Helpdesk
+                            </div>
 
-                        <div class="top-navbar-subtitle">
-                            Support Management System
+                            <div class="top-navbar-subtitle">
+                                Support Management System
+                            </div>
+
                         </div>
 
                     </div>
 
                 </div>
 
-            </div>
+                <?php if (isset($_SESSION['auth_user_id'])): ?>
 
-            <?php if (isset($_SESSION['auth_user_id'])): ?>
-
-                <div class="top-navbar-actions">
-
-                    <button
-                        type="button"
-                        class="topbar-icon-btn"
-                        aria-label="Notifications"
-                        title="Notifications"
-                    >
-                        <i class="bi bi-bell"></i>
-                    </button>
-
-                    <div class="dropdown">
+                    <div class="top-navbar-actions">
 
                         <button
-                            class="user-card-btn dropdown-toggle"
                             type="button"
-                            id="profileDropdown"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-
-                            <span class="avatar-circle">
-                                <?= htmlspecialchars($initials); ?>
-                            </span>
-
-                            <span class="user-info">
-
-                                <span class="user-name">
-                                    <?= htmlspecialchars($fullName); ?>
-                                </span>
-
-                                <span class="user-role">
-                                    <?= htmlspecialchars($roleLabel); ?>
-                                </span>
-
-                            </span>
-
-                            <i class="bi bi-chevron-down user-menu-arrow"></i>
-
+                            class="topbar-icon-btn"
+                            aria-label="Notifications"
+                            title="Notifications">
+                            <i class="bi bi-bell"></i>
                         </button>
 
-                        <ul
-                            class="dropdown-menu dropdown-menu-end profile-dropdown-menu"
-                            aria-labelledby="profileDropdown"
-                        >
+                        <div class="dropdown">
 
-                            <li class="profile-dropdown-header">
+                            <button
+                                class="user-card-btn dropdown-toggle"
+                                type="button"
+                                id="profileDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
 
-                                <span class="avatar-circle avatar-circle-large">
+                                <span class="avatar-circle">
                                     <?= htmlspecialchars($initials); ?>
                                 </span>
 
-                                <span class="profile-dropdown-user">
+                                <span class="user-info">
 
-                                    <span class="profile-dropdown-name">
+                                    <span class="user-name">
                                         <?= htmlspecialchars($fullName); ?>
                                     </span>
 
-                                    <span class="profile-dropdown-role">
+                                    <span class="user-role">
                                         <?= htmlspecialchars($roleLabel); ?>
                                     </span>
 
                                 </span>
 
-                            </li>
+                                <i class="bi bi-chevron-down user-menu-arrow"></i>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            </button>
 
-                            <li>
+                            <ul
+                                class="dropdown-menu dropdown-menu-end profile-dropdown-menu"
+                                aria-labelledby="profileDropdown">
 
-                                <a
-                                    class="dropdown-item"
-                                    href="<?= BASE_URL ?>/profile"
-                                >
-                                    <i class="bi bi-person-circle"></i>
-                                    View Profile
-                                </a>
+                                <li class="profile-dropdown-header">
 
-                            </li>
+                                    <span class="avatar-circle avatar-circle-large">
+                                        <?= htmlspecialchars($initials); ?>
+                                    </span>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                                    <span class="profile-dropdown-user">
 
-                            <li>
+                                        <span class="profile-dropdown-name">
+                                            <?= htmlspecialchars($fullName); ?>
+                                        </span>
+
+                                        <span class="profile-dropdown-role">
+                                            <?= htmlspecialchars($roleLabel); ?>
+                                        </span>
+
+                                    </span>
+
+                                </li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item"
+                                        href="<?= BASE_URL ?>/profile">
+                                        <i class="bi bi-person-circle"></i>
+                                        View Profile
+                                    </a>
+
+                                </li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+
+                                    <button
+                                        type="button"
+                                        class="dropdown-item text-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#logoutModal">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        Logout
+                                    </button>
+
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                <?php endif; ?>
+
+            </nav>
+
+            <?php if (isset($_SESSION['auth_user_id'])): ?>
+
+                <div
+                    class="modal fade"
+                    id="logoutModal"
+                    tabindex="-1"
+                    aria-labelledby="logoutModalLabel"
+                    aria-hidden="true">
+
+                    <div class="modal-dialog modal-dialog-centered modal-sm">
+
+                        <div class="modal-content logout-modal-content">
+
+                            <div class="modal-header">
+
+                                <h5
+                                    class="modal-title"
+                                    id="logoutModalLabel">
+                                    Confirm Logout
+                                </h5>
 
                                 <button
                                     type="button"
-                                    class="dropdown-item text-danger"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#logoutModal"
-                                >
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+
+                            </div>
+
+                            <div class="modal-body text-center">
+
+                                <div class="logout-modal-icon">
                                     <i class="bi bi-box-arrow-right"></i>
-                                    Logout
+                                </div>
+
+                                <h6 class="logout-modal-title">
+                                    Sign out of your account?
+                                </h6>
+
+                                <p class="logout-modal-description">
+                                    You will need to sign in again to access
+                                    Samtech Helpdesk.
+                                </p>
+
+                            </div>
+
+                            <div class="modal-footer logout-modal-actions">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-light flex-fill"
+                                    data-bs-dismiss="modal">
+                                    Cancel
                                 </button>
 
-                            </li>
+                                <a
+                                    href="<?= BASE_URL ?>/logout"
+                                    class="btn btn-danger flex-fill">
+                                    Logout
+                                </a>
 
-                        </ul>
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
 
             <?php endif; ?>
-
-        </nav>
-
-        <?php if (isset($_SESSION['auth_user_id'])): ?>
-
-            <div
-                class="modal fade"
-                id="logoutModal"
-                tabindex="-1"
-                aria-labelledby="logoutModalLabel"
-                aria-hidden="true"
-            >
-
-                <div class="modal-dialog modal-dialog-centered modal-sm">
-
-                    <div class="modal-content logout-modal-content">
-
-                        <div class="modal-header">
-
-                            <h5
-                                class="modal-title"
-                                id="logoutModalLabel"
-                            >
-                                Confirm Logout
-                            </h5>
-
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            ></button>
-
-                        </div>
-
-                        <div class="modal-body text-center">
-
-                            <div class="logout-modal-icon">
-                                <i class="bi bi-box-arrow-right"></i>
-                            </div>
-
-                            <h6 class="logout-modal-title">
-                                Sign out of your account?
-                            </h6>
-
-                            <p class="logout-modal-description">
-                                You will need to sign in again to access
-                                Samtech Helpdesk.
-                            </p>
-
-                        </div>
-
-                        <div class="modal-footer logout-modal-actions">
-
-                            <button
-                                type="button"
-                                class="btn btn-light flex-fill"
-                                data-bs-dismiss="modal"
-                            >
-                                Cancel
-                            </button>
-
-                            <a
-                                href="<?= BASE_URL ?>/logout"
-                                class="btn btn-danger flex-fill"
-                            >
-                                Logout
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        <?php endif; ?>
