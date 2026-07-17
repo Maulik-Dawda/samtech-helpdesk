@@ -1,106 +1,339 @@
-<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
+<?php
 
-<div class="container mt-5">
-    <div class="card p-4 shadow-sm border-0">
+require_once ROOT_PATH . "/app/Views/layouts/header.php";
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">Create New Ticket</h4>
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-            <a href="<?= BASE_URL ?>/tickets" class="btn btn-sm btn-outline-secondary">
-                My Tickets
-            </a>
+$organizations = is_array($organizations ?? null)
+    ? $organizations
+    : [];
+
+?>
+
+<div class="container-fluid px-0">
+
+    <!-- =========================================================
+         PAGE HEADER
+    ========================================================== -->
+
+    <section class="ui-panel mb-4">
+
+        <div class="ui-panel-body">
+
+            <div class="page-header mb-0">
+
+                <div class="page-header-content">
+
+                    <div class="app-badge app-badge-primary mb-3">
+
+                        <i class="bi bi-ticket-perforated-fill"></i>
+
+                        Ticket Management
+
+                    </div>
+
+                    <h1 class="page-title">
+                        Create New Ticket
+                    </h1>
+
+                    <p class="page-description">
+                        Create a support ticket on behalf of an organization and
+                        attach supporting files if required.
+                    </p>
+
+                </div>
+
+                <div class="page-actions">
+
+                    <a
+                        href="<?= BASE_URL ?>/tickets"
+                        class="btn btn-light">
+
+                        <i class="bi bi-arrow-left me-2"></i>
+
+                        My Tickets
+
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+    </section>
 
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?= htmlspecialchars($_SESSION['error']); ?>
-                <?php unset($_SESSION['error']); ?>
+
+
+    <!-- =========================================================
+         FORM
+    ========================================================== -->
+
+    <section class="ui-panel">
+
+        <div class="ui-panel-header">
+
+            <div class="ui-panel-title-wrap">
+
+                <h2 class="ui-panel-title">
+
+                    Ticket Information
+
+                </h2>
+
+                <p class="ui-panel-subtitle">
+
+                    Complete the information below to create a new support ticket.
+
+                </p>
+
             </div>
-        <?php endif; ?>
 
-        <form method="POST" action="<?= BASE_URL ?>/agent/tickets/store" enctype="multipart/form-data">
-            <?= Csrf::field(); ?>
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label">
-                    Organization
-                </label>
+        <div class="ui-panel-body">
 
-                <select
-                    name="organization_id"
-                    class="form-select"
-                    required>
+            <?php if (isset($_SESSION['error'])): ?>
 
-                    <option value="">
-                        Select Organization
-                    </option>
+                <div class="alert alert-danger">
 
-                    <?php foreach ($organizations as $organization): ?>
+                    <i class="bi bi-exclamation-circle me-2"></i>
 
-                        <option
-                            value="<?= $organization['id']; ?>">
+                    <?= htmlspecialchars($_SESSION['error']); ?>
 
-                            <?= htmlspecialchars($organization['name']); ?>
+                </div>
+
+                <?php unset($_SESSION['error']); ?>
+
+            <?php endif; ?>
+
+
+            <form
+                method="POST"
+                action="<?= BASE_URL ?>/agent/tickets/store"
+                enctype="multipart/form-data"
+                class="row g-4">
+
+                <?= Csrf::field(); ?>
+
+
+                <!-- Organization -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Organization
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <select
+                        name="organization_id"
+                        class="form-select"
+                        required>
+
+                        <option value="">
+                            Select Organization
+                        </option>
+
+                        <?php foreach ($organizations as $organization): ?>
+
+                            <option
+                                value="<?= $organization['id']; ?>">
+
+                                <?= htmlspecialchars($organization['name']); ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Priority -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Priority
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <select
+                        name="priority"
+                        class="form-select"
+                        required>
+
+                        <option value="low">
+
+                            Low
 
                         </option>
 
-                    <?php endforeach; ?>
+                        <option
+                            value="medium"
+                            selected>
 
-                </select>
-            </div>
+                            Medium
 
-            <div class="mb-3">
-                <label class="form-label">Subject</label>
-                <input
-                    type="text"
-                    name="subject"
-                    class="form-control"
-                    maxlength="255"
-                    required>
-            </div>
+                        </option>
 
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea
-                    name="description"
-                    class="form-control"
-                    rows="6"
-                    required></textarea>
-            </div>
+                        <option value="high">
 
-            <div class="mb-3">
-                <label class="form-label">Attachments</label>
+                            High
 
-                <input
-                    type="file"
-                    name="attachments[]"
-                    class="form-control"
-                    multiple
-                    accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+                        </option>
 
-                <small class="text-muted">
-                    Allowed files: JPG, PNG, PDF, Word, Excel, TXT, ZIP, RAR. Maximum 3 files, 5MB per file.
-                </small>
-            </div>
+                        <option value="urgent">
 
-            <div class="mb-4">
-                <label class="form-label">Priority</label>
-                <select name="priority" class="form-select" required>
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
-                </select>
-            </div>
+                            Urgent
 
-            <button type="submit" class="btn btn-primary-custom px-4">
-                Create Ticket
-            </button>
-        </form>
+                        </option>
 
-    </div>
+                    </select>
+
+                    <div class="form-text">
+
+                        Choose the urgency level of this ticket.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Subject -->
+
+                <div class="col-12">
+
+                    <label class="form-label">
+
+                        Subject
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="subject"
+                        class="form-control"
+                        maxlength="255"
+                        placeholder="Enter ticket subject"
+                        required>
+
+                </div>
+
+
+
+                <!-- Description -->
+
+                <div class="col-12">
+
+                    <label class="form-label">
+
+                        Description
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <textarea
+                        name="description"
+                        rows="8"
+                        class="form-control"
+                        placeholder="Describe the issue in detail..."
+                        required></textarea>
+
+                </div>
+
+
+
+                <!-- Attachments -->
+
+                <div class="col-12">
+
+                    <label class="form-label">
+
+                        Attachments
+
+                    </label>
+
+                    <input
+                        type="file"
+                        name="attachments[]"
+                        class="form-control"
+                        multiple
+                        accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+
+                    <div class="form-text mt-2">
+
+                        <strong>Supported formats:</strong>
+
+                        JPG, JPEG, PNG, GIF, WEBP,
+                        PDF, DOC, DOCX,
+                        XLS, XLSX,
+                        TXT,
+                        ZIP,
+                        RAR
+
+                        <br>
+
+                        Maximum:
+                        <strong>3 files</strong>,
+                        <strong>5 MB</strong> each.
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-12">
+
+                    <hr>
+
+                </div>
+
+
+
+                <div class="col-12 d-flex justify-content-end gap-2">
+
+                    <a
+                        href="<?= BASE_URL ?>/tickets"
+                        class="btn btn-light">
+
+                        Cancel
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary-custom">
+
+                        <i class="bi bi-plus-circle-fill me-2"></i>
+
+                        Create Ticket
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
 </div>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
