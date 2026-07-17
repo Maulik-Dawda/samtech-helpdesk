@@ -1,108 +1,288 @@
-<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
+<?php
 
-<div class="container-fluid mt-4">
+require_once ROOT_PATH . "/app/Views/layouts/header.php";
 
-    <div class="row justify-content-center">
+?>
 
-        <div class="col-lg-8">
+<div class="container-fluid px-0">
 
-            <div class="card border-0 shadow-sm" style="border-radius:18px;">
+    <!-- =========================================================
+         PAGE HEADER
+    ========================================================== -->
 
-                <div class="card-header bg-white p-4">
+    <section class="ui-panel mb-4">
 
-                    <h4 class="fw-bold">
+        <div class="ui-panel-body">
+
+            <div class="page-header mb-0">
+
+                <div class="page-header-content">
+
+                    <div class="app-badge app-badge-primary mb-3">
+
+                        <i class="bi bi-person-plus-fill"></i>
+
+                        User Management
+
+                    </div>
+
+                    <h1 class="page-title">
                         Create User
-                    </h4>
+                    </h1>
+
+                    <p class="page-description">
+                        Create users, agents, administrators and organization administrators.
+                    </p>
 
                 </div>
 
-                <div class="card-body p-4">
+                <div class="page-actions">
 
-                    <form method="POST" action="<?= BASE_URL ?>/admin/users/create">
+                    <a
+                        href="<?= BASE_URL ?>/admin/users"
+                        class="btn btn-light">
 
-                        <?= Csrf::field(); ?>
+                        <i class="bi bi-arrow-left me-1"></i>
 
-                        <div class="mb-3">
-                            <label>Full Name</label>
-                            <input type="text" name="full_name" class="form-control" required>
-                        </div>
+                        Back to Users
 
-                        <div class="mb-3">
-                            <label>Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
+                    </a>
 
-                        <div class="mb-3">
-                            <label>Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
+                </div>
 
-                        <div class="mb-3">
+            </div>
 
-                            <label>Role</label>
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         FORM
+    ========================================================== -->
+
+    <section class="ui-panel">
+
+        <div class="ui-panel-header">
+
+            <div class="ui-panel-title-wrap">
+
+                <h2 class="ui-panel-title">
+                    User Information
+                </h2>
+
+                <p class="ui-panel-subtitle">
+                    Complete the information below to create a new account.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="ui-panel-body">
+
+            <form
+                method="POST"
+                action="<?= BASE_URL ?>/admin/users/create"
+                class="row g-4">
+
+                <?= Csrf::field(); ?>
+
+
+                <!-- Full Name -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Full Name
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="full_name"
+                        class="form-control"
+                        placeholder="Enter full name"
+                        required>
+
+                </div>
+
+
+                <!-- Email -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Email Address
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        class="form-control"
+                        placeholder="user@example.com"
+                        required>
+
+                </div>
+
+
+                <!-- Password -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Password
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        required>
+
+                    <div class="form-text">
+                        Password must meet your configured security policy.
+                    </div>
+
+                </div>
+
+
+                <!-- Role -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        User Role
+
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <select
+                        id="roleSelect"
+                        name="role"
+                        class="form-select"
+                        required>
+
+                        <option value="user">
+                            User
+                        </option>
+
+                        <option value="agent">
+                            Agent
+                        </option>
+
+                        <?php if (PermissionHelper::isAdmin()): ?>
+
+                            <option value="admin">
+                                Administrator
+                            </option>
+
+                        <?php endif; ?>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- ORGANIZATION -->
+
+                <div
+                    id="organizationSection"
+                    class="col-12">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-8">
+
+                            <label class="form-label">
+
+                                Organization
+
+                            </label>
 
                             <select
-                                name="role"
-                                class="form-select"
-                                id="roleSelect"
-                                required>
-                                <option value="user">User</option>
-                                <option value="agent">Agent</option>
-                                <?php if (PermissionHelper::isAdmin()): ?>
-                                    <option value="admin">Admin</option>
-                                <?php endif; ?>
+                                name="organization_id"
+                                class="form-select">
+
+                                <option value="">
+                                    Select Organization
+                                </option>
+
+                                <?php foreach ($organizations as $organization): ?>
+
+                                    <option value="<?= $organization['id']; ?>">
+
+                                        <?= htmlspecialchars($organization['name']); ?>
+
+                                    </option>
+
+                                <?php endforeach; ?>
+
                             </select>
 
                         </div>
 
-                        <div id="organizationSection">
+                        <div class="col-md-4">
 
-                            <div class="mb-3">
+                            <label class="form-label d-block">
 
-                                <label>Organization</label>
+                                Organization Role
 
-                                <select
-                                    name="organization_id"
-                                    class="form-select">
+                            </label>
 
-                                    <option value="">
-                                        Select Organization
-                                    </option>
-
-                                    <?php foreach ($organizations as $organization): ?>
-
-                                        <option
-                                            value="<?= $organization['id']; ?>">
-                                            <?= htmlspecialchars(
-                                                $organization['name']
-                                            ); ?>
-                                        </option>
-
-                                    <?php endforeach; ?>
-
-                                </select>
-
-                            </div>
-
-                            <div class="form-check mb-4">
+                            <div class="form-check mt-2">
 
                                 <input
-                                    type="checkbox"
                                     class="form-check-input"
+                                    type="checkbox"
                                     name="is_organization_admin"
-                                    value="1">
+                                    value="1"
+                                    id="organizationAdmin">
 
-                                <label class="form-check-label">
-                                    Organization Admin
+                                <label
+                                    class="form-check-label"
+                                    for="organizationAdmin">
+
+                                    Organization Administrator
+
                                 </label>
 
                             </div>
 
                         </div>
 
-                        <div id="adminAgentSection" style="display:none;">
+                    </div>
 
-                            <div class="form-check mb-4">
+                </div>
+
+
+
+                <!-- ADMIN AGENT -->
+
+                <div
+                    id="adminAgentSection"
+                    class="col-12"
+                    style="display:none;">
+
+                    <div class="ui-panel bg-light">
+
+                        <div class="ui-panel-body">
+
+                            <div class="form-check">
 
                                 <input
                                     class="form-check-input"
@@ -111,13 +291,23 @@
                                     id="is_admin_agent"
                                     value="1">
 
-                                <label class="form-check-label" for="is_admin_agent">
+                                <label
+                                    class="form-check-label"
+                                    for="is_admin_agent">
 
-                                    Admin Agent
+                                    <strong>
 
-                                    <small class="text-muted d-block">
-                                        Agent with extended administration privileges.
-                                    </small>
+                                        Admin Agent
+
+                                    </strong>
+
+                                    <div class="text-muted small mt-1">
+
+                                        Agent with additional administrative
+                                        permissions while still using the Agent
+                                        portal.
+
+                                    </div>
 
                                 </label>
 
@@ -125,51 +315,95 @@
 
                         </div>
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary-custom">
-                            Create User
-                        </button>
-
-                    </form>
+                    </div>
 
                 </div>
 
-            </div>
+
+
+                <div class="col-12">
+
+                    <hr>
+
+                </div>
+
+
+
+                <div class="col-12 d-flex justify-content-end gap-2">
+
+                    <a
+                        href="<?= BASE_URL ?>/admin/users"
+                        class="btn btn-light">
+
+                        Cancel
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary-custom">
+
+                        <i class="bi bi-person-plus-fill me-2"></i>
+
+                        Create User
+
+                    </button>
+
+                </div>
+
+            </form>
 
         </div>
 
-    </div>
+    </section>
 
 </div>
 
 <script>
-    function toggleSections() {
-        const role = document.getElementById('roleSelect').value;
 
-        const organization =
-            document.getElementById('organizationSection');
+function toggleSections() {
 
-        const adminAgent =
-            document.getElementById('adminAgentSection');
+    const role =
+        document.getElementById('roleSelect').value;
 
-        if (role === "user") {
-            organization.style.display = "block";
-            adminAgent.style.display = "none";
-        } else if (role === "agent") {
-            organization.style.display = "none";
-            adminAgent.style.display = "block";
-        } else {
-            organization.style.display = "none";
-            adminAgent.style.display = "none";
-        }
+    const organization =
+        document.getElementById('organizationSection');
+
+    const adminAgent =
+        document.getElementById('adminAgentSection');
+
+    if (role === 'user') {
+
+        organization.style.display = '';
+
+        adminAgent.style.display = 'none';
+
     }
 
-    document
-        .getElementById("roleSelect")
-        .addEventListener("change", toggleSections);
+    else if (role === 'agent') {
 
-    toggleSections();
+        organization.style.display = 'none';
+
+        adminAgent.style.display = '';
+
+    }
+
+    else {
+
+        organization.style.display = 'none';
+
+        adminAgent.style.display = 'none';
+
+    }
+
+}
+
+document
+    .getElementById('roleSelect')
+    .addEventListener('change', toggleSections);
+
+toggleSections();
+
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
