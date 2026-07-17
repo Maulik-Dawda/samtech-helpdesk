@@ -1,6 +1,6 @@
 <?php
 
-require_once "../vendor/autoload.php";
+require_once "./../vendor/autoload.php";
 
 require_once "../app/Services/MailService.php";
 require_once "../app/Services/UploadService.php";
@@ -21,7 +21,7 @@ require_once "../app/Core/Router.php";
 
 require_once "../app/Middleware/AuthMiddleware.php";
 require_once "../app/Helpers/Csrf.php";
-require_once '../app/Helpers/DateTimeHelper.php';
+require_once ROOT_PATH . '/app/Helpers/DateTimeHelper.php';
 
 $router = new Router();
 
