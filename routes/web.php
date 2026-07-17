@@ -89,6 +89,9 @@ $router->get('/reports/tickets/filter', 'ReportController@filterTickets');
 $router->get('/reports/ticket-detail', 'ReportController@ticketDetail');
 
 $router->get('/profile', 'ProfileController@index');
+$router->get('/profile/change-password','ProfileController@changePassword');
+
+$router->post('/profile/change-password','ProfileController@updatePassword');
 
 $router->get('/admin/activity-logs', 'ActivityLogController@index');
 
