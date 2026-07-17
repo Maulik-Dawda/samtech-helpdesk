@@ -173,22 +173,63 @@ $hasError = isset($_SESSION['error']);
 </div>
 
 <style>
+    /* Keep the logo controlled on this page */
+    .auth-card .auth-logo {
+        display: block;
+        width: auto !important;
+        height: 85px !important;
+        max-width: 100% !important;
+        object-fit: contain;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-.password-toggle{
-    position:absolute;
-    right:14px;
-    top:50%;
-    transform:translateY(-50%);
-    border:none;
-    background:none;
-    color:#64748b;
-    cursor:pointer;
-}
+    .password-toggle {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
+    }
 
-.form-control{
-    padding-right:45px !important;
-}
+    .password-toggle:hover {
+        color: #3b941f;
+        background: #f0f9eb;
+    }
 
+    .password-toggle:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.18rem rgba(108, 179, 63, 0.14);
+    }
+
+    /* Scope this rule only to this authentication card */
+    .auth-card .form-control {
+        padding-right: 50px !important;
+    }
+
+    @media (max-width: 576px) {
+        .auth-card .auth-logo {
+            height: 70px !important;
+            max-width: 260px !important;
+        }
+    }
+
+    @media (max-height: 760px) {
+        .auth-card .auth-logo {
+            height: 68px !important;
+        }
+    }
 </style>
 
 <script>
