@@ -94,8 +94,14 @@ $hasError = isset($_SESSION['error']);
                     </div>
 
                     <small class="text-muted d-block mt-2">
-                        Enter the 6-digit OTP sent to your registered email address.
+                        Enter the 6-digit recovery code sent to your registered email address.
                     </small>
+
+                    <div class="alert alert-warning mt-3 mb-0 py-2 px-3 small">
+                        <i class="bi bi-envelope-exclamation me-2"></i>
+                        <strong>Didn't receive the OTP?</strong>
+                        Please check your <strong>Spam</strong> or <strong>Junk</strong> folder.
+                    </div>
 
                 </div>
 
@@ -134,177 +140,217 @@ $hasError = isset($_SESSION['error']);
 </div>
 
 <style>
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+    }
 
-html,
-body {
-    height: 100%;
-    overflow: hidden;
-}
+    .auth-page {
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 15% 22%, rgba(177, 233, 111, .14), transparent 28%),
+            radial-gradient(circle at 85% 70%, rgba(76, 175, 80, .13), transparent 30%),
+            linear-gradient(135deg, #f8fafc 0%, #ffffff 58%, #f1f8ee 100%);
+    }
 
-.auth-page {
-    min-height: 100vh;
-    position: relative;
-    overflow: hidden;
-    background:
-        radial-gradient(circle at 15% 22%, rgba(177,233,111,.14), transparent 28%),
-        radial-gradient(circle at 85% 70%, rgba(76,175,80,.13), transparent 30%),
-        linear-gradient(135deg,#f8fafc 0%,#ffffff 58%,#f1f8ee 100%);
-}
+    .auth-card {
+        position: relative;
+        z-index: 2;
+        background: rgba(255, 255, 255, .94);
+        border-radius: 20px;
+        padding: 26px 30px;
+        box-shadow: 0 18px 55px rgba(15, 23, 42, .10);
+        border-top: 4px solid #6cb33f;
+        backdrop-filter: blur(14px);
+    }
 
-.auth-card {
-    position: relative;
-    z-index: 2;
-    background: rgba(255,255,255,.94);
-    border-radius: 20px;
-    padding: 26px 30px;
-    box-shadow: 0 18px 55px rgba(15,23,42,.10);
-    border-top: 4px solid #6cb33f;
-    backdrop-filter: blur(14px);
-}
+    .auth-logo {
+        height: 85px;
+        max-width: 320px;
+        width: auto;
+        object-fit: contain;
+    }
 
-.auth-logo {
-    height: 85px;
-    max-width: 320px;
-    width: auto;
-    object-fit: contain;
-}
+    .login-subtitle {
+        font-size: 16px;
+        color: #64748b;
+    }
 
-.login-subtitle {
-    font-size: 16px;
-    color: #64748b;
-}
+    .form-label {
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
 
-.form-label {
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 6px;
-    font-size: 14px;
-}
+    .input-wrap {
+        position: relative;
+    }
 
-.input-wrap {
-    position: relative;
-}
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #475569;
+        font-size: 16px;
+        z-index: 2;
+    }
 
-.input-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #475569;
-    font-size: 16px;
-    z-index: 2;
-}
+    .auth-card .form-control {
+        height: 48px;
+        border-radius: 10px;
+        border: 1px solid #d6dde8;
+        padding-left: 48px;
+        font-size: 14px;
+        color: #111827;
+        box-shadow: none;
+    }
 
-.auth-card .form-control {
-    height: 48px;
-    border-radius: 10px;
-    border: 1px solid #d6dde8;
-    padding-left: 48px;
-    font-size: 14px;
-    color: #111827;
-    box-shadow: none;
-}
+    .auth-card .form-control:focus {
+        border-color: #6cb33f;
+        box-shadow: 0 0 0 .18rem rgba(108, 179, 63, .14);
+    }
 
-.auth-card .form-control:focus {
-    border-color: #6cb33f;
-    box-shadow: 0 0 0 .18rem rgba(108,179,63,.14);
-}
+    .otp-input {
+        text-align: center;
+        font-size: 20px !important;
+        font-weight: 800;
+        letter-spacing: 6px;
+    }
 
-.otp-input {
-    text-align: center;
-    font-size: 20px !important;
-    font-weight: 800;
-    letter-spacing: 6px;
-}
+    .btn-login {
+        height: 48px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #6cb33f, #3b941f);
+        border: 0;
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 12px 22px rgba(67, 160, 38, .22);
+    }
 
-.btn-login {
-    height: 48px;
-    border-radius: 10px;
-    background: linear-gradient(135deg,#6cb33f,#3b941f);
-    border: 0;
-    color: #fff;
-    font-weight: 800;
-    box-shadow: 0 12px 22px rgba(67,160,38,.22);
-}
+    .btn-login:hover {
+        color: #fff;
+        background: linear-gradient(135deg, #5aa231, #2f8318);
+    }
 
-.btn-login:hover {
-    color: #fff;
-    background: linear-gradient(135deg,#5aa231,#2f8318);
-}
+    .back-link {
+        font-weight: 600;
+        font-size: 14px;
+        color: #3b941f;
+    }
 
-.back-link {
-    font-weight: 600;
-    font-size: 14px;
-    color: #3b941f;
-}
+    .back-link:hover {
+        color: #2f8318;
+    }
 
-.back-link:hover {
-    color: #2f8318;
-}
+    .alert-custom {
+        border: 0;
+        border-radius: 12px;
+        padding: 11px 14px;
+        font-size: 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-.alert-custom {
-    border: 0;
-    border-radius: 12px;
-    padding: 11px 14px;
-    font-size: 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-}
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
 
-.alert-error {
-    background: #fee2e2;
-    color: #991b1b;
-}
+    .alert-success-custom {
+        background: #dcfce7;
+        color: #166534;
+    }
 
-.alert-success-custom {
-    background: #dcfce7;
-    color: #166534;
-}
+    .alert-custom i {
+        font-size: 18px;
+        margin-top: 1px;
+    }
 
-.alert-custom i {
-    font-size: 18px;
-    margin-top: 1px;
-}
+    .shake {
+        animation: shake .45s ease-in-out;
+    }
 
-.shake {
-    animation: shake .45s ease-in-out;
-}
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
 
-@keyframes shake {
-    0% {transform:translateX(0);}
-    20% {transform:translateX(-8px);}
-    40% {transform:translateX(8px);}
-    60% {transform:translateX(-6px);}
-    80% {transform:translateX(6px);}
-    100% {transform:translateX(0);}
-}
+        20% {
+            transform: translateX(-8px);
+        }
 
-.security-icon {
-    position: absolute;
-    color: rgba(76,175,80,.13);
-    font-size: 34px;
-    z-index: 1;
-    animation: floatIcon 7s ease-in-out infinite;
-}
+        40% {
+            transform: translateX(8px);
+        }
 
-.icon-1 { left:13%; top:28%; }
-.icon-2 { right:13%; top:52%; animation-delay:1.2s; }
-.icon-3 { left:22%; bottom:17%; animation-delay:2s; }
-.icon-4 { right:24%; top:13%; animation-delay:.6s; }
+        60% {
+            transform: translateX(-6px);
+        }
 
-@keyframes floatIcon {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-14px); }
-}
+        80% {
+            transform: translateX(6px);
+        }
 
-.footer-text {
-    position: relative;
-    z-index: 2;
-    color: #64748b;
-    font-size: 13px;
-}
+        100% {
+            transform: translateX(0);
+        }
+    }
 
+    .security-icon {
+        position: absolute;
+        color: rgba(76, 175, 80, .13);
+        font-size: 34px;
+        z-index: 1;
+        animation: floatIcon 7s ease-in-out infinite;
+    }
+
+    .icon-1 {
+        left: 13%;
+        top: 28%;
+    }
+
+    .icon-2 {
+        right: 13%;
+        top: 52%;
+        animation-delay: 1.2s;
+    }
+
+    .icon-3 {
+        left: 22%;
+        bottom: 17%;
+        animation-delay: 2s;
+    }
+
+    .icon-4 {
+        right: 24%;
+        top: 13%;
+        animation-delay: .6s;
+    }
+
+    @keyframes floatIcon {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-14px);
+        }
+    }
+
+    .footer-text {
+        position: relative;
+        z-index: 2;
+        color: #64748b;
+        font-size: 13px;
+    }
 </style>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/auth-footer.php"; ?>

@@ -180,6 +180,7 @@ $hasError = isset($_SESSION['error']);
     }
 
     @keyframes floatIcon {
+
         0%,
         100% {
             transform: translateY(0);
@@ -318,6 +319,12 @@ $hasError = isset($_SESSION['error']);
                     <small class="text-muted d-block mt-2">
                         OTP expires in 10 minutes. Do not share it with anyone.
                     </small>
+
+                    <div class="alert alert-warning mt-3 mb-0 py-2 px-3 small">
+                        <i class="bi bi-envelope-exclamation me-2"></i>
+                        <strong>Didn't receive the OTP?</strong>
+                        Please check your <strong>Spam</strong> or <strong>Junk</strong> folder before requesting a new code.
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-login w-100">
