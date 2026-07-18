@@ -295,11 +295,31 @@ function getAgentTicketPriorityClass(string $priority): string
 
             </div>
 
-            <div class="app-badge app-badge-primary">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                <i class="bi bi-ticket-detailed"></i>
+                <div class="ticket-search-wrapper">
 
-                Showing <?= $currentPageCount; ?> of <?= $totalRecords; ?>
+                    <i class="bi bi-search ticket-search-icon"></i>
+
+                    <input
+                        type="search"
+                        id="ticketSearch"
+                        class="form-control ticket-search-input"
+                        placeholder="Search tickets..."
+                        autocomplete="off"
+                        aria-label="Search tickets">
+
+                </div>
+
+                <div class="app-badge app-badge-primary">
+
+                    <i class="bi bi-ticket-detailed"></i>
+
+                    <span id="ticketResultCount">
+                        Showing <?= $currentPageCount; ?> of <?= $totalRecords; ?>
+                    </span>
+
+                </div>
 
             </div>
 
@@ -342,7 +362,7 @@ function getAgentTicketPriorityClass(string $priority): string
 
                 <div class="table-responsive">
 
-                    <table class="table">
+                    <table class="table" id="ticketTable">
 
                         <thead>
 
@@ -359,7 +379,7 @@ function getAgentTicketPriorityClass(string $priority): string
 
                         </thead>
 
-                        <tbody>
+                        <tbody id="ticketTableBody">
 
                             <?php foreach ($tickets as $ticket): ?>
 
@@ -541,6 +561,34 @@ function getAgentTicketPriorityClass(string $priority): string
                         </tbody>
 
                     </table>
+                    <div
+                        id="noSearchResults"
+                        class="empty-state d-none">
+
+                        <div class="empty-state-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+
+                        <h3 class="empty-state-title">
+                            No matching tickets
+                        </h3>
+
+                        <p class="empty-state-description">
+                            Try searching with a different ticket number, customer, subject,
+                            priority or status.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="btn btn-light"
+                            id="clearTicketSearch">
+
+                            <i class="bi bi-x-circle me-2"></i>
+                            Clear Search
+
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -556,5 +604,88 @@ function getAgentTicketPriorityClass(string $priority): string
     </section>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const searchInput = document.getElementById('ticketSearch');
+    const table = document.getElementById('ticketTable');
+    const tableBody = document.getElementById('ticketTableBody');
+    const noResults = document.getElementById('noSearchResults');
+    const clearButton = document.getElementById('clearTicketSearch');
+    const resultCount = document.getElementById('ticketResultCount');
+
+    if (!searchInput || !table || !tableBody) {
+        return;
+    }
+
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+    const totalRows = rows.length;
+
+    function filterTickets() {
+
+        const searchValue = searchInput.value
+            .trim()
+            .toLowerCase();
+
+        let visibleRows = 0;
+
+        rows.forEach(function (row) {
+
+            const rowText = row.textContent
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
+
+            const isVisible =
+                searchValue === '' ||
+                rowText.includes(searchValue);
+
+            row.classList.toggle('ticket-row-hidden', !isVisible);
+
+            if (isVisible) {
+                visibleRows++;
+            }
+
+        });
+
+        table.closest('.table-responsive')
+            .classList.toggle('d-none', visibleRows === 0);
+
+        if (noResults) {
+            noResults.classList.toggle('d-none', visibleRows !== 0);
+        }
+
+        if (resultCount) {
+
+            if (searchValue === '') {
+                resultCount.textContent =
+                    'Showing ' + totalRows + ' of <?= $totalRecords; ?>';
+            } else {
+                resultCount.textContent =
+                    visibleRows + ' matching ticket' +
+                    (visibleRows === 1 ? '' : 's');
+            }
+
+        }
+
+    }
+
+    searchInput.addEventListener('input', filterTickets);
+
+    if (clearButton) {
+
+        clearButton.addEventListener('click', function () {
+
+            searchInput.value = '';
+            filterTickets();
+            searchInput.focus();
+
+        });
+
+    }
+
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
