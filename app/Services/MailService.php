@@ -264,6 +264,37 @@ class MailService
 
     /*
     |--------------------------------------------------------------------------
+    | Password Change Notification
+    |--------------------------------------------------------------------------
+    */
+
+
+
+    public static function sendPasswordChangedNotification(
+        string $to,
+        string $fullName,
+        string $ipAddress = '',
+        string $userAgent = ''
+    ): bool {
+
+        $subject = "Your Samtech Helpdesk Password Has Been Changed";
+
+        $body = self::passwordChangedTemplate(
+            $fullName,
+            $ipAddress,
+            $userAgent
+        );
+
+        return self::send(
+            $to,
+            $subject,
+            $body,
+            'security'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Ticket Notification
     |--------------------------------------------------------------------------
     */
@@ -1097,5 +1128,116 @@ class MailService
 
         </body>
         </html>';
+    }
+    private static function passwordChangedTemplate(
+        string $fullName,
+        string $ipAddress,
+        string $userAgent
+    ): string {
+
+        $safeName = htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8');
+        $safeIp = htmlspecialchars($ipAddress, ENT_QUOTES, 'UTF-8');
+        $safeAgent = htmlspecialchars($userAgent, ENT_QUOTES, 'UTF-8');
+
+        return '
+    <!DOCTYPE html>
+    <html>
+    <body style="margin:0;padding:0;background:#f3f6f1;font-family:Arial,sans-serif;">
+
+        <table width="100%" cellpadding="0" cellspacing="0" style="padding:30px;background:#f3f6f1;">
+            <tr>
+                <td align="center">
+
+                    <table width="600" cellpadding="0" cellspacing="0"
+                        style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;overflow:hidden;">
+
+                        <tr>
+                            <td style="background:#111827;padding:30px;text-align:center;">
+
+                                <img
+                                    src="' . BASE_URL . '/assets/images/samtech-icon.png"
+                                    width="54"
+                                    alt="Samtech">
+
+                                <h2 style="color:#fff;margin:15px 0 0;">
+                                    Password Changed Successfully
+                                </h2>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+
+                            <td style="padding:35px;">
+
+                                <p>Hello <strong>' . $safeName . '</strong>,</p>
+
+                                <p>
+                                    This email confirms that the password for your
+                                    <strong>Samtech Helpdesk</strong> account
+                                    has been changed successfully.
+                                </p>
+
+                                <table
+                                    width="100%"
+                                    cellpadding="10"
+                                    style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;">
+
+                                    <tr>
+                                        <td><strong>Date & Time</strong></td>
+                                        <td>' . date('d M Y h:i A') . '</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><strong>IP Address</strong></td>
+                                        <td>' . $safeIp . '</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><strong>Browser</strong></td>
+                                        <td>' . $safeAgent . '</td>
+                                    </tr>
+
+                                </table>
+
+                                <p style="margin-top:30px;">
+
+                                    If you made this change, you can safely ignore this email.
+
+                                </p>
+
+                                <p style="color:#dc2626;font-weight:bold;">
+
+                                    If you did NOT change your password,
+                                    please contact your system administrator
+                                    immediately.
+
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td
+                                style="padding:20px;text-align:center;background:#f8fafc;border-top:1px solid #e5e7eb;">
+
+                                © ' . date('Y') . ' Samtech Solutions
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </body>
+    </html>';
     }
 }
