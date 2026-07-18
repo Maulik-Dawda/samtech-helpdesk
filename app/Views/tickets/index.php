@@ -1,206 +1,400 @@
-<?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
+<?php
 
-<style>
-    .badge-soft {
-        padding: 3px 12px;
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: 600;
-    }
+require_once ROOT_PATH . "/app/Views/layouts/header.php";
 
-    .priority-low {
-        background: #e5e7eb;
-        color: #374151;
-    }
+$tickets = is_array($tickets ?? null)
+    ? $tickets
+    : [];
 
-    .priority-medium {
-        background: #dbeafe;
-        color: #1d4ed8;
-    }
+$totalRecords = (int) ($totalRecords ?? count($tickets));
+$currentPageCount = count($tickets);
 
-    .priority-high {
-        background: #fef3c7;
-        color: #92400e;
-    }
+/**
+ * Return the shared priority badge class.
+ */
+function getUserTicketPriorityClass(string $priority): string
+{
+    return match (strtolower($priority)) {
+        'low' => 'status-open',
+        'medium' => 'status-progress',
+        'high' => 'status-pending',
+        'urgent' => 'status-closed',
+        default => 'status-open',
+    };
+}
 
-    .priority-urgent {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
+/**
+ * Return the shared status badge class.
+ */
+function getUserTicketStatusClass(string $status): string
+{
+    return match (strtolower($status)) {
+        'open' => 'status-open',
+        'in_progress', 'in progress' => 'status-progress',
+        'pending' => 'status-pending',
+        'resolved' => 'status-resolved',
+        'closed' => 'status-closed',
+        default => 'status-open',
+    };
+}
 
-    .status-open {
-        background: #dcfce7;
-        color: #15803d;
-    }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-    .status-in-progress {
-        background: #ede9fe;
-        color: #6d28d9;
-    }
+?>
 
-    .status-pending {
-        background: #fce7f3;
-        color: #be185d;
-    }
+<div class="container-fluid px-0">
 
-    .status-resolved {
-        background: #ffedd5;
-        color: #c2410c;
-    }
+    <!-- =========================================================
+         PAGE HEADER
+    ========================================================== -->
+    <section class="ui-panel mb-4">
 
-    .status-closed {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
+        <div class="ui-panel-body">
 
-    .view-link {
-        color: #111827;
-        border: 1px solid #d1d5db;
-        background: transparent;
-        border-radius: 8px;
-        padding: 5px 12px;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 600;
-    }
+            <div class="page-header mb-0">
 
-    .view-link:hover {
-        background: #f3f4f6;
-        color: #111827;
-    }
+                <div class="page-header-content">
 
-    .tickets-card {
-        border-radius: 18px;
-    }
+                    <div class="app-badge app-badge-primary mb-3">
 
-    .tickets-table th {
-        color: #6b7280;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-    }
+                        <i class="bi bi-ticket-perforated-fill"></i>
 
-    .tickets-table td {
-        vertical-align: middle;
-        font-size: 14px;
-    }
-</style>
+                        Support Tickets
 
-<div class="container-fluid mt-4">
+                    </div>
 
-    <div class="card border-0 shadow-sm tickets-card">
+                    <h1 class="page-title">
+                        My Tickets
+                    </h1>
 
-        <div class="card-header bg-white d-flex justify-content-between align-items-center p-4">
-            <div>
-                <h4 class="fw-bold mb-1">My Tickets</h4>
-                <div class="text-muted small">
-                    Showing <?= count($tickets); ?> of <?= $totalRecords ?? 0; ?> tickets.
+                    <p class="page-description">
+                        View and track all support tickets created under your account.
+                    </p>
+
                 </div>
+
+                <div class="page-actions">
+
+                    <a
+                        href="<?= BASE_URL ?>/tickets/create"
+                        class="btn btn-primary-custom">
+
+                        <i class="bi bi-plus-circle-fill me-2"></i>
+
+                        Create Ticket
+
+                    </a>
+
+                </div>
+
             </div>
 
-            <a href="<?= BASE_URL ?>/tickets/create" class="btn btn-primary-custom btn-sm">
-                Create Ticket
-            </a>
         </div>
 
-        <div class="card-body p-4">
+    </section>
 
-            <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success">
-                    <?= htmlspecialchars($_SESSION['success']); ?>
-                    <?php unset($_SESSION['success']); ?>
+    <!-- =========================================================
+         FLASH MESSAGES
+    ========================================================== -->
+    <?php if (!empty($_SESSION['success'])): ?>
+
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            <?= htmlspecialchars($_SESSION['success']); ?>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close">
+            </button>
+
+        </div>
+
+        <?php unset($_SESSION['success']); ?>
+
+    <?php endif; ?>
+
+
+    <?php if (!empty($_SESSION['error'])): ?>
+
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4">
+
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+            <?= htmlspecialchars($_SESSION['error']); ?>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close">
+            </button>
+
+        </div>
+
+        <?php unset($_SESSION['error']); ?>
+
+    <?php endif; ?>
+
+
+    <!-- =========================================================
+         TICKET DIRECTORY
+    ========================================================== -->
+    <section class="table-card content-section">
+
+        <div class="table-card-header">
+
+            <div>
+
+                <div class="table-card-title">
+                    Ticket Directory
                 </div>
-            <?php endif; ?>
+
+                <div class="table-card-subtitle">
+                    Review your ticket subjects, priorities, statuses and dates.
+                </div>
+
+            </div>
+
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                <?php if (!empty($tickets)): ?>
+
+                    <div class="position-relative">
+
+                        <i
+                            class="bi bi-search position-absolute top-50 translate-middle-y text-muted"
+                            style="left: 14px;">
+                        </i>
+
+                        <input
+                            type="search"
+                            id="userTicketSearch"
+                            class="form-control ps-5"
+                            style="min-width: 280px;"
+                            placeholder="Search tickets..."
+                            autocomplete="off"
+                            aria-label="Search tickets">
+
+                    </div>
+
+                <?php endif; ?>
+
+                <div class="app-badge app-badge-primary">
+
+                    <i class="bi bi-ticket-detailed"></i>
+
+                    <span id="userTicketResultCount">
+                        Showing <?= $currentPageCount; ?> of <?= $totalRecords; ?>
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-card-body">
 
             <?php if (empty($tickets)): ?>
 
-                <div class="alert alert-info mb-0">
-                    No tickets found.
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+
+                        <i class="bi bi-ticket-perforated"></i>
+
+                    </div>
+
+                    <h3 class="empty-state-title">
+                        No tickets found
+                    </h3>
+
+                    <p class="empty-state-description">
+                        You have not created any support tickets yet.
+                    </p>
+
+                    <a
+                        href="<?= BASE_URL ?>/tickets/create"
+                        class="btn btn-primary-custom">
+
+                        <i class="bi bi-plus-circle-fill me-2"></i>
+
+                        Create Your First Ticket
+
+                    </a>
+
                 </div>
 
             <?php else: ?>
 
-                <div class="table-responsive">
+                <div
+                    class="table-responsive"
+                    id="userTicketTableWrapper">
 
-                    <table class="table align-middle tickets-table">
+                    <table
+                        class="table"
+                        id="userTicketTable">
 
                         <thead>
+
                             <tr>
-                                <th>Ticket No</th>
+                                <th>Ticket</th>
                                 <th>Subject</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created</th>
-                                <th>Closed At</th>
-                                <th>Action</th>
+                                <th>Closed</th>
+                                <th class="text-end">Action</th>
                             </tr>
+
                         </thead>
 
-                        <tbody>
+                        <tbody id="userTicketTableBody">
 
                             <?php foreach ($tickets as $ticket): ?>
 
                                 <?php
-                                $priorityClass = match ($ticket['priority']) {
-                                    'low' => 'priority-low',
-                                    'medium' => 'priority-medium',
-                                    'high' => 'priority-high',
-                                    'urgent' => 'priority-urgent',
-                                    default => 'priority-low'
-                                };
 
-                                $statusClass = match ($ticket['status']) {
-                                    'open' => 'status-open',
-                                    'in_progress' => 'status-in-progress',
-                                    'pending' => 'status-pending',
-                                    'resolved' => 'status-resolved',
-                                    'closed' => 'status-closed',
-                                    default => 'status-open'
-                                };
+                                $ticketId = (int) ($ticket['id'] ?? 0);
+
+                                $ticketNumber = trim(
+                                    (string) ($ticket['ticket_no'] ?? '')
+                                );
+
+                                $subject = trim(
+                                    (string) ($ticket['subject'] ?? '')
+                                );
+
+                                $priority = strtolower(
+                                    (string) ($ticket['priority'] ?? 'low')
+                                );
+
+                                $status = strtolower(
+                                    (string) ($ticket['status'] ?? 'open')
+                                );
+
+                                $createdAt = !empty($ticket['created_at'])
+                                    ? (string) $ticket['created_at']
+                                    : '-';
+
+                                $closedAt = !empty($ticket['closed_at'])
+                                    ? (string) $ticket['closed_at']
+                                    : null;
+
+                                $priorityLabel = ucfirst($priority);
+
+                                $statusLabel = ucwords(
+                                    str_replace('_', ' ', $status)
+                                );
+
                                 ?>
 
                                 <tr>
-                                    <td class="fw-semibold">
-                                        <?= htmlspecialchars($ticket['ticket_no']); ?>
+
+                                    <td data-label="Ticket">
+
+                                        <div class="fw-semibold">
+
+                                            <?= htmlspecialchars(
+                                                $ticketNumber !== ''
+                                                    ? $ticketNumber
+                                                    : '-'
+                                            ); ?>
+
+                                        </div>
+
                                     </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($ticket['subject']); ?>
+
+                                    <td data-label="Subject">
+
+                                        <div class="fw-semibold">
+
+                                            <?= htmlspecialchars(
+                                                $subject !== ''
+                                                    ? $subject
+                                                    : 'Untitled Ticket'
+                                            ); ?>
+
+                                        </div>
+
                                     </td>
 
-                                    <td>
-                                        <span class="badge-soft <?= $priorityClass; ?>">
-                                            <?= htmlspecialchars(ucfirst($ticket['priority'])); ?>
+
+                                    <td data-label="Priority">
+
+                                        <span class="status-badge <?= getUserTicketPriorityClass($priority); ?>">
+
+                                            <?= htmlspecialchars($priorityLabel); ?>
+
                                         </span>
+
                                     </td>
 
-                                    <td>
-                                        <span class="badge-soft <?= $statusClass; ?>">
-                                            <?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?>
+
+                                    <td data-label="Status">
+
+                                        <span class="status-badge <?= getUserTicketStatusClass($status); ?>">
+
+                                            <?= htmlspecialchars($statusLabel); ?>
+
                                         </span>
+
                                     </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($ticket['created_at']); ?>
+
+                                    <td data-label="Created">
+
+                                        <div class="text-nowrap">
+                                            <?= htmlspecialchars($createdAt); ?>
+                                        </div>
+
                                     </td>
 
-                                    <td>
-                                        <?php if (!empty($ticket['closed_at'])): ?>
-                                            <?= htmlspecialchars($ticket['closed_at']); ?>
+
+                                    <td data-label="Closed">
+
+                                        <?php if ($closedAt !== null): ?>
+
+                                            <div class="text-nowrap">
+                                                <?= htmlspecialchars($closedAt); ?>
+                                            </div>
+
                                         <?php else: ?>
-                                            <span class="text-muted">—</span>
+
+                                            <span class="text-muted">
+                                                —
+                                            </span>
+
                                         <?php endif; ?>
+
                                     </td>
 
-                                    <td>
+
+                                    <td
+                                        data-label="Action"
+                                        class="text-end">
+
                                         <a
-                                            href="<?= BASE_URL ?>/tickets/show/<?= $ticket['id']; ?>"
-                                            class="view-link">
-                                            View
+                                            href="<?= BASE_URL ?>/tickets/show/<?= $ticketId; ?>"
+                                            class="table-action-btn table-action-view ms-auto"
+                                            title="View ticket"
+                                            aria-label="View ticket">
+
+                                            <i class="bi bi-eye-fill"></i>
+
                                         </a>
+
                                     </td>
+
                                 </tr>
 
                             <?php endforeach; ?>
@@ -210,14 +404,170 @@
                     </table>
 
                 </div>
-                <?php require ROOT_PATH . "/app/Views/partials/pagination.php"; ?>
+
+
+                <!-- Search Empty State -->
+                <div
+                    id="userTicketNoResults"
+                    class="empty-state d-none">
+
+                    <div class="empty-state-icon">
+
+                        <i class="bi bi-search"></i>
+
+                    </div>
+
+                    <h3 class="empty-state-title">
+                        No matching tickets
+                    </h3>
+
+                    <p class="empty-state-description">
+                        No tickets match your search. Try another ticket number,
+                        subject, priority, status or date.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        id="clearUserTicketSearch">
+
+                        <i class="bi bi-x-circle me-2"></i>
+
+                        Clear Search
+
+                    </button>
+
+                </div>
+
+
+                <div id="userTicketPagination">
+
+                    <?php
+                    require ROOT_PATH . "/app/Views/partials/pagination.php";
+                    ?>
+
+                </div>
 
             <?php endif; ?>
 
         </div>
 
-    </div>
+    </section>
 
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const searchInput = document.getElementById('userTicketSearch');
+    const tableWrapper = document.getElementById('userTicketTableWrapper');
+    const tableBody = document.getElementById('userTicketTableBody');
+    const noResults = document.getElementById('userTicketNoResults');
+    const clearButton = document.getElementById('clearUserTicketSearch');
+    const resultCount = document.getElementById('userTicketResultCount');
+    const pagination = document.getElementById('userTicketPagination');
+
+    if (!searchInput || !tableBody) {
+        return;
+    }
+
+    const rows = Array.from(
+        tableBody.querySelectorAll('tr')
+    );
+
+    const currentPageTotal = rows.length;
+
+    function filterUserTickets() {
+
+        const searchValue = searchInput.value
+            .trim()
+            .toLowerCase();
+
+        let visibleRows = 0;
+
+        rows.forEach(function (row) {
+
+            const searchableText = row.textContent
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
+
+            const isMatch =
+                searchValue === '' ||
+                searchableText.includes(searchValue);
+
+            row.classList.toggle('d-none', !isMatch);
+
+            if (isMatch) {
+                visibleRows++;
+            }
+
+        });
+
+        if (tableWrapper) {
+            tableWrapper.classList.toggle(
+                'd-none',
+                visibleRows === 0
+            );
+        }
+
+        if (noResults) {
+            noResults.classList.toggle(
+                'd-none',
+                visibleRows !== 0
+            );
+        }
+
+        if (pagination) {
+            pagination.classList.toggle(
+                'd-none',
+                searchValue !== ''
+            );
+        }
+
+        if (resultCount) {
+
+            if (searchValue === '') {
+
+                resultCount.textContent =
+                    'Showing ' +
+                    currentPageTotal +
+                    ' of <?= $totalRecords; ?>';
+
+            } else {
+
+                resultCount.textContent =
+                    visibleRows +
+                    ' matching ticket' +
+                    (visibleRows === 1 ? '' : 's');
+
+            }
+
+        }
+
+    }
+
+    searchInput.addEventListener(
+        'input',
+        filterUserTickets
+    );
+
+    if (clearButton) {
+
+        clearButton.addEventListener('click', function () {
+
+            searchInput.value = '';
+
+            filterUserTickets();
+
+            searchInput.focus();
+
+        });
+
+    }
+
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
