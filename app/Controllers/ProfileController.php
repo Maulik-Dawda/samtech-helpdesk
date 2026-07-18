@@ -3,6 +3,8 @@
 require_once ROOT_PATH . "/app/Core/Controller.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Permission.php";
+require_once ROOT_PATH . "/app/Models/ActivityLog.php";
+require_once ROOT_PATH . "/app/Services/MailService.php";
 
 class ProfileController extends Controller
 {
