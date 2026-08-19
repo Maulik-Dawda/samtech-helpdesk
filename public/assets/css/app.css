@@ -1,39 +1,54 @@
-/*
-|--------------------------------------------------------------------------
-| Legacy Application Styles
-|--------------------------------------------------------------------------
-|
-| Do not place sidebar, main-content, body layout or navbar rules here.
-| New layout styles are stored in:
-|
-| theme.css
-| layout.css
-| sidebar.css
-| components.css
-| tables.css
-| forms.css
-| responsive.css
-|
-*/
-
-.auth-body {
-    background: #f5f7fa;
+:root{
+    --primary-color:#b1e96f;
 }
 
-.brand-text {
-    color: #222222;
-    font-weight: 700;
+body{
+    background:#f5f7fa;
 }
 
-.auth-card {
-    padding: 30px;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, .08);
+.auth-body{
+    background:#f5f7fa;
 }
 
-.modal-content {
-    border: 0;
-    border-radius: 16px;
+.brand-text{
+    color:#222;
+    font-weight:700;
+}
+
+.btn-primary-custom{
+    background:var(--primary-color);
+    border:none;
+    color:#222;
+}
+
+.btn-primary-custom:hover{
+    background:#9ad153;
+}
+
+.auth-card{
+    background:white;
+    border-radius:16px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.modal-content{
+    border-radius:16px;
+    border:none;
+}
+
+.modal-header{
+    border-bottom:none;
+}
+
+.modal-footer{
+    border-top:none;
+}
+
+.btn-danger{
+    background:#dc3545;
+}
+
+.btn-danger:hover{
+    background:#bb2d3b;
 }
