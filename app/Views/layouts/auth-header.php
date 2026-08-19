@@ -13,8 +13,10 @@
 
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/app.css">
 
-    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/samtech-icon.png">
-    <link rel="shortcut icon" type="image/png" href="<?= BASE_URL ?>/assets/images/samtech-icon.png">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="<?= BASE_URL ?>/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= BASE_URL ?>/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed" href="<?= BASE_URL ?>/apple-touch-icon-precomposed.png">
 </head>
 
 <body class="auth-body">
