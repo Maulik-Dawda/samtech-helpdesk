@@ -1,0 +1,391 @@
+body.sidebar-open {
+    overflow: hidden;
+}
+
+.app-shell {
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+    background: var(--color-bg);
+}
+
+.main-content {
+    width: 100%;
+    min-height: 100vh;
+    padding: 24px;
+    overflow-x: hidden;
+    background: var(--color-bg);
+}
+
+.top-navbar {
+    position: sticky;
+    top: 12px;
+    z-index: 900;
+
+    width: 100%;
+    min-height: var(--topbar-height);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 24px;
+    padding: 12px 16px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.top-navbar-left,
+.top-navbar-actions,
+.top-navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.top-navbar-left {
+    gap: 12px;
+    min-width: 0;
+}
+
+.top-navbar-actions {
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.top-navbar-brand {
+    gap: 10px;
+    min-width: 0;
+}
+
+.top-navbar-icon {
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    object-fit: contain;
+    flex: 0 0 40px;
+}
+
+.top-navbar-brand-text {
+    min-width: 0;
+}
+
+.top-navbar-title {
+    color: var(--color-dark);
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.top-navbar-subtitle {
+    margin-top: 2px;
+    color: var(--color-muted);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.sidebar-toggle-btn,
+.topbar-icon-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+
+    background: var(--color-surface);
+    color: var(--color-dark);
+}
+
+.sidebar-toggle-btn {
+    display: none;
+    font-size: 24px;
+}
+
+.topbar-icon-btn {
+    font-size: 18px;
+}
+
+.user-card-btn {
+    min-width: 190px;
+    max-width: 245px;
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 6px 10px 6px 7px;
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+
+    background: var(--color-surface);
+    color: var(--color-dark);
+}
+
+.user-card-btn::after {
+    display: none;
+}
+
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--color-primary);
+    color: var(--color-dark);
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.avatar-circle-large {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+}
+
+.user-info {
+    min-width: 0;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-name,
+.user-role {
+    max-width: 140px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.user-name {
+    color: var(--color-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.user-role {
+    margin-top: 3px;
+    color: var(--color-muted);
+    font-size: 10px;
+}
+
+.user-menu-arrow {
+    color: var(--color-muted);
+    font-size: 11px;
+}
+
+.profile-dropdown-menu {
+    width: 250px;
+    padding: 8px;
+    margin-top: 8px !important;
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px;
+}
+
+.profile-dropdown-user {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-dropdown-name {
+    color: var(--color-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.profile-dropdown-role {
+    color: var(--color-muted);
+    font-size: 11px;
+}
+
+.profile-dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 9px 11px;
+    border-radius: 9px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+
+    background: rgba(15, 23, 42, .55);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity var(--transition-base),
+        visibility var(--transition-base);
+}
+
+body.sidebar-open .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.logout-modal-content {
+    border: 0;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.logout-modal-icon {
+    width: 66px;
+    height: 66px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 16px;
+
+    border-radius: 18px;
+
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+
+    font-size: 30px;
+}
+
+.logout-modal-title {
+    color: var(--color-dark);
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.logout-modal-description {
+    margin: 8px 0 0;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.logout-modal-actions {
+    gap: 10px;
+}
+
+@media (max-width: 1199.98px) {
+    .app-shell {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .sidebar-toggle-btn {
+        display: inline-flex;
+    }
+
+    .main-content {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .main-content {
+        padding: 12px;
+    }
+
+    .top-navbar {
+        top: 6px;
+        min-height: 62px;
+        margin-bottom: 16px;
+        padding: 9px 10px;
+    }
+
+    .top-navbar-brand-text {
+        display: none;
+    }
+
+    .top-navbar-icon {
+        width: 34px !important;
+        height: 34px !important;
+        max-width: 34px !important;
+        max-height: 34px !important;
+        flex-basis: 34px;
+    }
+
+    .topbar-icon-btn {
+        display: none;
+    }
+
+    .user-card-btn {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+        min-height: 42px;
+        padding: 3px;
+        border-radius: 50%;
+    }
+
+    .user-card-btn .user-info,
+    .user-card-btn .user-menu-arrow {
+        display: none;
+    }
+}
+
+@media print {
+    body {
+        overflow: visible !important;
+        background: #ffffff !important;
+    }
+
+    .sidebar,
+    .sidebar-overlay,
+    .top-navbar,
+    .modal,
+    .samtech-loader-overlay {
+        display: none !important;
+    }
+
+    .app-shell {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .main-content {
+        width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+    }
+}

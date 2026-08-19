@@ -1,0 +1,386 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+
+    width: var(--sidebar-width);
+    height: 100vh;
+    max-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 16px 14px;
+    padding-bottom: calc(
+        16px + env(safe-area-inset-bottom, 0px)
+    );
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            #111827 0%,
+            #0f172a 100%
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        8px 0 28px rgba(15, 23, 42, .14);
+
+    transition:
+        transform var(--transition-base);
+}
+
+.sidebar-header {
+    width: 100%;
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding-bottom: 12px;
+}
+
+.sidebar-logo {
+    width: 100%;
+    height: 100px;
+    min-height: 100px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 10px;
+
+    overflow: hidden;
+
+    border-radius: var(--radius-lg);
+
+    background: #ffffff;
+}
+
+.sidebar-logo img {
+    width: auto !important;
+    height: auto !important;
+
+    max-width: 170px !important;
+    max-height: 100px !important;
+
+    object-fit: contain !important;
+}
+
+.sidebar-close-btn {
+    display: none;
+
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: var(--radius-md);
+
+    background: rgba(255, 255, 255, .08);
+    color: #ffffff;
+
+    font-size: 20px;
+}
+
+.sidebar-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 3px;
+    padding-bottom: 12px;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(148, 163, 184, .35)
+        transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .35);
+    border-radius: 999px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, .55);
+}
+
+.sidebar-section {
+    margin-top: 8px;
+}
+
+.sidebar-title {
+    margin: 17px 12px 8px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+
+.sidebar-link {
+    width: 100%;
+    min-height: 44px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    margin-bottom: 5px;
+    padding: 10px 12px;
+
+    overflow: hidden;
+
+    border-radius: var(--radius-md);
+
+    color: #cbd5e1;
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.sidebar-link:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #ffffff;
+    transform: translateX(2px);
+}
+
+.sidebar-link.active {
+    background: var(--color-primary);
+    color: var(--color-dark);
+    font-weight: 800;
+}
+
+.sidebar-link-icon {
+    width: 22px;
+    flex: 0 0 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+}
+
+.sidebar-link-text {
+    min-width: 0;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+    position: relative;
+    z-index: 2;
+
+    flex: 0 0 auto;
+
+    padding-top: 10px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(15, 23, 42, 0) 0%,
+            #0f172a 22%
+        );
+}
+
+.sidebar-account {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 10px;
+
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: var(--radius-lg);
+
+    background: rgba(255, 255, 255, .06);
+
+    box-shadow:
+        0 -6px 18px rgba(15, 23, 42, .18);
+}
+
+.sidebar-account-avatar {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--color-primary);
+    color: var(--color-dark);
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.sidebar-account-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.sidebar-account-name,
+.sidebar-account-role {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sidebar-account-name {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.sidebar-account-role {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.sidebar-account-logout {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: rgba(239, 68, 68, .14);
+    color: #fca5a5;
+}
+
+@media (max-width: 1199.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
+        box-shadow:
+            18px 0 42px rgba(15, 23, 42, .28);
+    }
+
+    .sidebar-close-btn {
+        display: inline-flex;
+    }
+
+    .sidebar-logo {
+        flex: 1;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sidebar {
+        width: min(86vw, 300px);
+        padding: 13px 11px;
+    }
+
+    .sidebar-logo {
+        width: 75px;
+        height: 75px;
+        min-height: 75px;
+    }
+
+    .sidebar-logo img {
+        max-width: 170px !important;
+        max-height: 100px !important;
+    }
+}
+@media (max-width: 1199.98px) {
+    .sidebar {
+        height: 100dvh;
+        max-height: 100dvh;
+    }
+
+    .sidebar-nav {
+        padding-bottom: 10px;
+    }
+
+    .sidebar-footer {
+        padding-top: 8px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sidebar {
+        width: min(88vw, 300px);
+
+        padding:
+            12px
+            11px
+            calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .sidebar-header {
+        padding-bottom: 10px;
+    }
+
+    .sidebar-nav {
+        padding-bottom: 8px;
+    }
+
+    .sidebar-account {
+        padding: 8px;
+    }
+
+    .sidebar-account-avatar {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
+    .sidebar-account-logout {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+}

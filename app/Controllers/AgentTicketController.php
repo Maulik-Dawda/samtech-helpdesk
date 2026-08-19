@@ -1,0 +1,365 @@
+<?php
+
+require_once ROOT_PATH . "/app/Core/Controller.php";
+require_once ROOT_PATH . "/app/Models/Ticket.php";
+require_once ROOT_PATH . "/app/Models/TicketReply.php";
+require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
+require_once ROOT_PATH . "/app/Models/Attachment.php";
+require_once ROOT_PATH . "/app/Services/UploadService.php";
+require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/Organization.php";
+
+class AgentTicketController extends Controller
+{
+    public function index()
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $ticketModel = new Ticket();
+
+        $totalRecords = $ticketModel->countAllTicketsForAgent();
+        $totalPages = max(1, ceil($totalRecords / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $tickets = $ticketModel->getAllTicketsForAgentPaginated(
+            $perPage,
+            $offset
+        );
+
+        $this->view('agent/tickets/index', [
+            'tickets' => $tickets,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages
+        ]);
+    }
+
+    public function show($id)
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
+
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->findForAgent($id);
+
+        if (!$ticket) {
+            http_response_code(404);
+            echo "Ticket not found.";
+            exit;
+        }
+
+        $replyModel = new TicketReply();
+        $replies = $replyModel->getByTicketId($ticket['id']);
+
+        $historyModel = new TicketStatusHistory();
+        $statusHistory = $historyModel->getByTicketId($ticket['id']);
+
+        $attachmentModel = new Attachment();
+        $attachments = $attachmentModel->getTicketAttachments($ticket['id']);
+
+        $replyAttachments = $attachmentModel->getReplyAttachmentsByTicketId($ticket['id']);
+
+        $this->view('agent/tickets/show', [
+            'ticket' => $ticket,
+            'replies' => $replies,
+            'statusHistory' => $statusHistory,
+            'attachments' => $attachments,
+            'replyAttachments' => $replyAttachments
+        ]);
+    }
+    public function reply($id)
+    {
+        Csrf::verify();
+
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $message = trim($_POST['message'] ?? '');
+
+        if (empty($message)) {
+            $_SESSION['error'] = "Reply message is required.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+
+        $ticketModel = new Ticket();
+
+        $ticket = $ticketModel->findForAgent($id);
+
+        if (!$ticket) {
+            http_response_code(404);
+            echo "Ticket not found.";
+            exit;
+        }
+
+        $replyModel = new TicketReply();
+
+        $replyId = $replyModel->create([
+            'ticket_id' => $ticket['id'],
+            'user_id' => $_SESSION['auth_user_id'],
+            'message' => $message,
+            'attachment_path' => null
+        ]);
+
+        if (!$replyId) {
+            $_SESSION['error'] = "Unable to send reply.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+
+        try {
+            if (!empty($_FILES['attachments']['name'][0])) {
+
+                $uploadedFiles = UploadService::uploadMultiple(
+                    $_FILES['attachments'],
+                    'replies'
+                );
+
+                $attachmentModel = new Attachment();
+
+                foreach ($uploadedFiles as $file) {
+                    $attachmentModel->createReplyAttachment([
+                        'reply_id' => $replyId,
+                        'ticket_id' => $ticket['id'],
+                        'uploaded_by' => $_SESSION['auth_user_id'],
+                        'original_name' => $file['original_name'],
+                        'stored_name' => $file['stored_name'],
+                        'file_path' => $file['file_path'],
+                        'file_type' => $file['file_type'],
+                        'file_size' => $file['file_size']
+                    ]);
+                }
+            }
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Reply sent, but attachment failed: " . $e->getMessage();
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+
+        $userModel = new User();
+
+        $agent = $userModel->findById(
+            $_SESSION['auth_user_id']
+        );
+
+        TicketNotificationService::agentReplied(
+            $ticket,
+            $agent,
+            $message
+        );
+
+        $_SESSION['success'] =
+            "Reply sent successfully.";
+
+        header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+        exit;
+    }
+
+    public function updateStatus($id)
+    {
+        Csrf::verify();
+
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $status = $_POST['status'] ?? '';
+        $resolutionMessage = trim($_POST['resolution_message'] ?? '');
+
+        $allowedStatuses = [
+            'open',
+            'in_progress',
+            'pending',
+            'resolved',
+            'closed'
+        ];
+
+        if (!in_array($status, $allowedStatuses)) {
+            $_SESSION['error'] = "Invalid status selected.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+
+        if ($status === 'closed' && empty($resolutionMessage)) {
+            $_SESSION['error'] = "Resolution message is required before closing the ticket.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+
+        try {
+            $ticketModel = new Ticket();
+            $ticket = $ticketModel->findForAgent($id);
+
+            if (!$ticket) {
+                $_SESSION['error'] = "Ticket not found.";
+                header("Location: " . BASE_URL . "/agent/tickets");
+                exit;
+            }
+
+            if ($ticket['status'] === 'closed') {
+                $_SESSION['error'] = "This ticket is already closed.";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            if ($ticket['status'] === $status) {
+                $_SESSION['error'] = "Ticket is already marked as " . ucwords(str_replace('_', ' ', $status)) . ".";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            if ($status === 'closed') {
+                $replyModel = new TicketReply();
+
+                $replyId = $replyModel->create([
+                    'ticket_id' => $ticket['id'],
+                    'user_id' => $_SESSION['auth_user_id'],
+                    'message' => "[Resolution] " . $resolutionMessage,
+                    'attachment_path' => null
+                ]);
+
+                if (!$replyId) {
+                    $_SESSION['error'] = "Unable to save resolution message. Ticket was not closed.";
+                    header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                    exit;
+                }
+            }
+
+            $historyModel = new TicketStatusHistory();
+
+            $historyCreated = $historyModel->create(
+                $ticket['id'],
+                $ticket['status'],
+                $status,
+                $_SESSION['auth_user_id']
+            );
+
+            if (!$historyCreated) {
+                $_SESSION['error'] = "Unable to save status history.";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+
+            $updated = $ticketModel->updateStatusByAgent(
+                $ticket['id'],
+                $status,
+                $_SESSION['auth_user_id']
+            );
+
+            if (!$updated) {
+                $_SESSION['error'] = "Unable to update ticket status.";
+                header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+                exit;
+            }
+            $userModel = new User();
+
+            $updatedBy = $userModel->findById(
+                $_SESSION['auth_user_id']
+            );
+
+            TicketNotificationService::statusUpdated(
+                $ticket,
+                $ticket['status'],
+                $status,
+                $updatedBy,
+                $resolutionMessage
+            );
+
+            $_SESSION['success'] = "Ticket status updated successfully.";
+
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        } catch (Throwable $e) {
+            error_log("Ticket Status Update Error: " . $e->getMessage());
+
+            $_SESSION['error'] = "Something went wrong while updating ticket status.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+    }
+    public function create()
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
+
+        $organizationModel = new Organization();
+
+        $organizations = $organizationModel->getAllActive();
+
+        $this->view('agent/tickets/create', [
+            'organizations' => $organizations
+        ]);
+    }
+    public function store()
+    {
+        Csrf::verify();
+
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('agent');
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $organizationId = (int)($_POST['organization_id'] ?? 0);
+        $subject = trim($_POST['subject'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $priority = $_POST['priority'] ?? 'medium';
+
+        if (
+            empty($organizationId) ||
+            empty($subject) ||
+            empty($description)
+        ) {
+            $_SESSION['error'] = 'All required fields must be completed.';
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
+
+        $ticketModel = new Ticket();
+
+        $ticketNo = $ticketModel->generateTicketNo();
+
+        $created = $ticketModel->create([
+            'ticket_no' => $ticketNo,
+            'user_id' => $_SESSION['auth_user_id'],
+            'organization_id' => $organizationId,
+            'created_by' => $_SESSION['auth_user_id'],
+            'created_by_role' => 'agent',
+            'subject' => $subject,
+            'description' => $description,
+            'priority' => $priority,
+            'status' => 'open'
+        ]);
+
+        if (!$created) {
+            $_SESSION['error'] = 'Unable to create ticket.';
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
+
+        $_SESSION['success'] =
+            'Ticket created successfully.';
+
+        header("Location: " . BASE_URL . "/agent/tickets");
+        exit;
+    }
+}

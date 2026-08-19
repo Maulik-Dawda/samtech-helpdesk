@@ -1,0 +1,39 @@
+/*
+|--------------------------------------------------------------------------
+| Legacy Application Styles
+|--------------------------------------------------------------------------
+|
+| Do not place sidebar, main-content, body layout or navbar rules here.
+| New layout styles are stored in:
+|
+| theme.css
+| layout.css
+| sidebar.css
+| components.css
+| tables.css
+| forms.css
+| responsive.css
+|
+*/
+
+.auth-body {
+    background: #f5f7fa;
+}
+
+.brand-text {
+    color: #222222;
+    font-weight: 700;
+}
+
+.auth-card {
+    padding: 30px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, .08);
+}
+
+.modal-content {
+    border: 0;
+    border-radius: 16px;
+}

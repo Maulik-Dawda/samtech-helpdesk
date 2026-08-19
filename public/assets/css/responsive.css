@@ -1,0 +1,419 @@
+/*
+|--------------------------------------------------------------------------
+| Large Desktop
+|--------------------------------------------------------------------------
+*/
+
+@media (min-width:1600px){
+
+.container-fluid{
+    max-width:1650px;
+    margin:auto;
+}
+
+.metric-grid{
+    grid-template-columns:repeat(4,1fr);
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Desktop
+|--------------------------------------------------------------------------
+*/
+
+@media(max-width:1400px){
+
+.metric-grid{
+
+    grid-template-columns:repeat(2,1fr);
+}
+
+.quick-actions-grid{
+
+    grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Laptop
+|--------------------------------------------------------------------------
+*/
+
+@media(max-width:1199px){
+
+.app-shell{
+
+    margin-left:0;
+    width:100%;
+}
+
+.main-content{
+
+    padding:18px;
+}
+
+.page-header{
+
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.page-actions{
+
+    width:100%;
+}
+
+.page-actions .btn{
+
+    flex:1;
+}
+
+.chart-wrapper{
+
+    min-height:250px;
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Tablet
+|--------------------------------------------------------------------------
+*/
+
+@media(max-width:991px){
+
+.metric-grid{
+
+    grid-template-columns:repeat(2,1fr);
+}
+
+.quick-actions-grid{
+
+    grid-template-columns:1fr;
+}
+
+.chart-card{
+
+    min-height:auto;
+}
+
+.chart-wrapper{
+
+    min-height:230px;
+}
+
+.table-card-header{
+
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.table-card-header .btn{
+
+    width:100%;
+}
+
+.form-card{
+
+    border-radius:18px;
+}
+
+.page-title{
+
+    font-size:24px;
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Mobile
+|--------------------------------------------------------------------------
+*/
+
+@media(max-width:768px){
+
+.main-content{
+
+    padding:14px;
+}
+
+.metric-grid{
+
+    grid-template-columns:1fr;
+}
+
+.metric-card{
+
+    min-height:130px;
+}
+
+.metric-card-value{
+
+    font-size:28px;
+}
+
+.page-title{
+
+    font-size:22px;
+}
+
+.page-description{
+
+    font-size:13px;
+}
+
+.chart-wrapper{
+
+    min-height:220px;
+}
+
+.table-responsive{
+
+    border-radius:14px;
+}
+
+.list-toolbar{
+
+    flex-direction:column;
+    align-items:stretch;
+}
+
+.list-toolbar-left,
+.list-toolbar-right{
+
+    width:100%;
+}
+
+.table-search{
+
+    width:100%;
+}
+
+.table-filter{
+
+    width:100%;
+}
+
+.pagination-wrapper{
+
+    flex-direction:column;
+    align-items:center;
+}
+
+.pagination{
+
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Small Mobile
+|--------------------------------------------------------------------------
+*/
+
+@media(max-width:576px){
+
+.main-content{
+
+    padding:10px;
+}
+
+.top-navbar{
+
+    padding:10px;
+}
+
+.top-navbar-title{
+
+    font-size:15px;
+}
+
+.metric-card{
+
+    padding:16px;
+}
+
+.metric-card-label{
+
+    font-size:11px;
+}
+
+.metric-card-value{
+
+    font-size:25px;
+}
+
+.quick-action-link{
+
+    min-height:65px;
+}
+
+.quick-action-title{
+
+    font-size:13px;
+}
+
+.quick-action-description{
+
+    font-size:11px;
+}
+
+.chart-card{
+
+    padding:15px;
+}
+
+.chart-wrapper{
+
+    min-height:210px;
+}
+
+.table-card-header{
+
+    padding:15px;
+}
+
+.table td{
+
+    padding:12px;
+}
+
+.form-card-header,
+.form-card-body,
+.form-card-footer{
+
+    padding:16px;
+}
+
+.modal-dialog{
+
+    margin:.6rem;
+}
+
+.modal-content{
+
+    border-radius:16px;
+}
+
+.btn{
+
+    min-height:44px;
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Landscape Phones
+|--------------------------------------------------------------------------
+*/
+
+@media(max-height:500px){
+
+.sidebar{
+
+    overflow-y:auto;
+}
+
+.auth-form-page{
+
+    align-items:flex-start;
+}
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Prevent Overflow
+|--------------------------------------------------------------------------
+*/
+
+img,
+canvas,
+table{
+
+    max-width:100%;
+}
+
+.table-responsive{
+
+    overflow-x:auto;
+}
+
+pre{
+
+    overflow:auto;
+}
+
+.card,
+.ui-panel,
+.chart-card{
+
+    overflow:hidden;
+}
+
+.row{
+
+    --bs-gutter-x:1rem;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Print
+|--------------------------------------------------------------------------
+*/
+
+@media print{
+
+.sidebar,
+.sidebar-overlay,
+.top-navbar,
+.btn,
+.pagination-wrapper,
+.modal,
+.dropdown{
+
+    display:none!important;
+}
+
+.app-shell{
+
+    margin:0!important;
+    width:100%!important;
+}
+
+.main-content{
+
+    padding:0!important;
+    background:#fff!important;
+}
+
+.table{
+
+    font-size:11px;
+}
+
+.table th,
+.table td{
+
+    padding:6px;
+}
+
+}
