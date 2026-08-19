@@ -12,41 +12,45 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 <style>
     html,
     body {
-        height: 100%;
-        overflow: hidden;
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 15% 22%, rgba(177, 233, 111, .16), transparent 28%),
+            radial-gradient(circle at 85% 70%, rgba(76, 175, 80, .14), transparent 30%),
+            linear-gradient(135deg, #f8fafc 0%, #ffffff 58%, #f1f8ee 100%);
     }
 
     .auth-page {
         min-height: 100vh;
         position: relative;
-        overflow: hidden;
-        background:
-            radial-gradient(circle at 15% 22%, rgba(177, 233, 111, .14), transparent 28%),
-            radial-gradient(circle at 85% 70%, rgba(76, 175, 80, .13), transparent 30%),
-            linear-gradient(135deg, #f8fafc 0%, #ffffff 58%, #f1f8ee 100%);
+        padding: 30px 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .auth-card {
         position: relative;
         z-index: 2;
-        background: rgba(255,255,255,.94);
-        border-radius: 20px;
-        padding: 24px 28px;
-        box-shadow: 0 18px 55px rgba(15,23,42,.10);
-        border-top: 4px solid #6cb33f;
-        backdrop-filter: blur(14px);
+        background: rgba(255, 255, 255, .96);
+        border-radius: 24px;
+        padding: 32px 32px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, .12);
+        border-top: 5px solid #6cb33f;
+        backdrop-filter: blur(16px);
     }
 
     .auth-logo {
-        height: 72px;
-        max-width: 300px;
+        height: 64px;
+        max-width: 280px;
         width: auto;
         object-fit: contain;
     }
 
     .login-subtitle {
-        font-size: 16px;
+        font-size: 15px;
         color: #64748b;
+        font-weight: 600;
     }
 
     .secure-pill {
@@ -55,8 +59,8 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         gap: 7px;
         background: #f0f9eb;
         color: #3b941f;
-        border: 1px solid rgba(108,179,63,.25);
-        padding: 6px 12px;
+        border: 1px solid rgba(108, 179, 63, .30);
+        padding: 6px 14px;
         border-radius: 999px;
         font-size: 12px;
         font-weight: 700;
@@ -65,52 +69,112 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
     .form-label {
         font-weight: 700;
-        color: #111827;
-        margin-bottom: 6px;
+        color: #1e293b;
+        margin-bottom: 8px;
         font-size: 14px;
     }
 
-    .setup-steps {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 18px;
+    /* Mode Switcher Tabs */
+    .setup-mode-nav {
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 14px;
+        display: flex;
+        gap: 4px;
+        margin-bottom: 22px;
     }
 
-    .setup-step {
-        background: #f8fafc;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 10px;
-        text-align: center;
-    }
-
-    .step-icon {
-        width: 34px;
-        height: 34px;
-        margin: 0 auto 7px;
-        border-radius: 50%;
-        background: #f0f9eb;
-        color: #3b941f;
+    .setup-mode-btn {
+        flex: 1;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #64748b;
+        background: transparent;
+        transition: all .2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 15px;
+        gap: 7px;
+        cursor: pointer;
     }
 
-    .step-title {
-        color: #111827;
-        font-size: 12px;
-        font-weight: 800;
+    .setup-mode-btn.active {
+        background: #ffffff;
+        color: #3b941f;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
     }
 
-    .step-text {
-        color: #64748b;
+    /* Scanner Frame Styling */
+    .qr-scanner-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .qr-scanner-card {
+        position: relative;
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(108, 179, 63, 0.12);
+        transition: all .3s ease;
+    }
+
+    .qr-scanner-card:hover {
+        border-color: #6cb33f;
+        box-shadow: 0 12px 36px rgba(108, 179, 63, 0.22);
+    }
+
+    .qr-frame {
+        position: relative;
+        display: inline-block;
+        padding: 12px;
+        border-radius: 14px;
+        background: #f8fafc;
+    }
+
+    .corner-bracket {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-color: #6cb33f;
+        border-style: solid;
+        pointer-events: none;
+    }
+
+    .corner-tl { top: 4px; left: 4px; border-width: 3px 0 0 3px; border-top-left-radius: 8px; }
+    .corner-tr { top: 4px; right: 4px; border-width: 3px 3px 0 0; border-top-right-radius: 8px; }
+    .corner-bl { bottom: 4px; left: 4px; border-width: 0 0 3px 3px; border-bottom-left-radius: 8px; }
+    .corner-br { bottom: 4px; right: 4px; border-width: 0 3px 3px 0; border-bottom-right-radius: 8px; }
+
+    .qr-image {
+        width: 170px;
+        height: 170px;
+        display: block;
+        border-radius: 8px;
+    }
+
+    .scanner-badge {
         font-size: 11px;
-        line-height: 1.3;
-        margin-top: 2px;
+        font-weight: 700;
+        color: #3b941f;
+        background: #f0f9eb;
+        border: 1px solid rgba(108, 179, 63, 0.25);
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
 
+    /* Secret Key Box */
     .secret-row {
         display: flex;
         gap: 8px;
@@ -124,10 +188,10 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         border-radius: 12px;
         padding: 13px 14px;
         text-align: center;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 800;
         letter-spacing: 2px;
-        color: #111827;
+        color: #0f172a;
         word-break: break-word;
         min-height: 48px;
         display: flex;
@@ -136,17 +200,20 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
     }
 
     .btn-copy {
-        width: 50px;
+        width: 52px;
         border: 1px solid #d6dde8;
         background: #fff;
         border-radius: 12px;
         color: #334155;
         font-weight: 800;
+        transition: all .2s ease;
+        cursor: pointer;
     }
 
     .btn-copy:hover {
-        background: #f8fafc;
+        background: #f0f9eb;
         color: #3b941f;
+        border-color: #6cb33f;
     }
 
     .input-wrap {
@@ -155,54 +222,58 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
     .input-icon {
         position: absolute;
-        left: 15px;
+        left: 16px;
         top: 50%;
         transform: translateY(-50%);
-        color: #475569;
-        font-size: 16px;
+        color: #64748b;
+        font-size: 18px;
         z-index: 2;
     }
 
     .auth-card .form-control {
-        height: 48px;
-        border-radius: 10px;
-        border: 1px solid #d6dde8;
+        height: 50px;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
         padding-left: 48px;
-        font-size: 14px;
-        color: #111827;
+        font-size: 15px;
+        color: #0f172a;
         box-shadow: none;
+        transition: all .2s ease;
     }
 
     .auth-card .form-control:focus {
         border-color: #6cb33f;
-        box-shadow: 0 0 0 .18rem rgba(108,179,63,.14);
+        box-shadow: 0 0 0 .22rem rgba(108, 179, 63, .18);
     }
 
     .otp-input {
         text-align: center;
-        font-size: 18px !important;
+        font-size: 20px !important;
         font-weight: 800;
-        letter-spacing: 5px;
+        letter-spacing: 6px;
         padding-left: 48px !important;
     }
 
     .btn-login {
-        height: 48px;
-        border-radius: 10px;
+        height: 50px;
+        border-radius: 12px;
         background: linear-gradient(135deg, #6cb33f, #3b941f);
         border: 0;
         color: #fff;
+        font-size: 15px;
         font-weight: 800;
-        box-shadow: 0 12px 22px rgba(67,160,38,.22);
+        box-shadow: 0 12px 24px rgba(67, 160, 38, .25);
+        transition: all .2s ease;
     }
 
     .btn-login:hover {
         color: #fff;
         background: linear-gradient(135deg, #5aa231, #2f8318);
+        box-shadow: 0 14px 28px rgba(67, 160, 38, .32);
     }
 
     .back-link {
-        font-weight: 600;
+        font-weight: 700;
         font-size: 14px;
         color: #3b941f;
     }
@@ -214,7 +285,7 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
     .alert-custom {
         border: 0;
         border-radius: 12px;
-        padding: 11px 14px;
+        padding: 12px 16px;
         font-size: 14px;
         display: flex;
         align-items: flex-start;
@@ -246,19 +317,19 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
     .security-icon {
         position: absolute;
-        color: rgba(76,175,80,.13);
-        font-size: 34px;
+        color: rgba(76, 175, 80, .14);
+        font-size: 36px;
         z-index: 1;
         animation: floatIcon 7s ease-in-out infinite;
     }
 
-    .icon-1 { left: 13%; top: 28%; }
-    .icon-2 { right: 13%; top: 52%; animation-delay: 1.2s; }
-    .icon-3 { left: 22%; bottom: 17%; animation-delay: 2s; }
-    .icon-4 { right: 24%; top: 13%; animation-delay: .6s; }
+    .icon-1 { left: 10%; top: 25%; }
+    .icon-2 { right: 10%; top: 50%; animation-delay: 1.2s; }
+    .icon-3 { left: 18%; bottom: 15%; animation-delay: 2s; }
+    .icon-4 { right: 20%; top: 12%; animation-delay: .6s; }
 
     @keyframes floatIcon {
-        0%,100% { transform: translateY(0); }
+        0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-14px); }
     }
 
@@ -269,27 +340,9 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         font-size: 13px;
     }
 
-    @media(max-height: 780px) {
-        .auth-card {
-            padding: 20px 26px;
-        }
-
-        .auth-logo {
-            height: 60px;
-        }
-
-        .setup-steps {
-            margin-bottom: 14px;
-        }
-
-        .step-text {
-            display: none;
-        }
-    }
-
     @media(max-width: 576px) {
-        .setup-steps {
-            grid-template-columns: 1fr;
+        .auth-card {
+            padding: 24px 20px;
         }
     }
 </style>
@@ -297,128 +350,94 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 <div class="auth-page">
 
     <i class="bi bi-shield-lock security-icon icon-1"></i>
-    <i class="bi bi-phone security-icon icon-2"></i>
+    <i class="bi bi-qr-code-scan security-icon icon-2"></i>
     <i class="bi bi-key security-icon icon-3"></i>
     <i class="bi bi-fingerprint security-icon icon-4"></i>
 
-    <div class="container min-vh-100 d-flex flex-column align-items-center justify-content-center py-3">
+    <div class="container d-flex flex-column align-items-center justify-content-center py-4">
 
-        <div class="auth-card w-100 <?= $hasError ? 'shake' : ''; ?>" style="max-width: 500px;">
+        <div class="auth-card w-100 <?= $hasError ? 'shake' : ''; ?>" style="max-width: 480px;">
 
-            <div class="text-center mb-3">
-
+            <div class="text-center mb-4">
                 <img
                     src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
                     alt="Samtech Helpdesk"
                     class="auth-logo mb-2">
 
                 <p class="login-subtitle mb-0">
-                    Authenticator Setup
+                    Two-Factor Authentication Setup
                 </p>
 
                 <div class="secure-pill">
                     <i class="bi bi-shield-check"></i>
-                    Microsoft Authenticator
+                    Authenticator App Verification
                 </div>
-
             </div>
 
             <?php if ($hasError): ?>
-                <div class="alert-custom alert-error mb-3">
+                <div class="alert-custom alert-error mb-4">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-
                     <div>
-                        <strong>Setup failed</strong>
+                        <strong>Setup Failed</strong>
                         <div>
                             <?= htmlspecialchars($_SESSION['error']); ?>
                         </div>
                     </div>
-
                     <?php unset($_SESSION['error']); ?>
                 </div>
             <?php endif; ?>
 
-            <div class="setup-steps">
-
-                <div class="setup-step">
-                    <div class="step-icon">
-                        <i class="bi bi-phone"></i>
-                    </div>
-                    <div class="step-title">
-                        Open App
-                    </div>
-                    <div class="step-text">
-                        Microsoft Authenticator
-                    </div>
-                </div>
-
-                <div class="setup-step">
-                    <div class="step-icon">
-                        <i class="bi bi-plus-lg"></i>
-                    </div>
-                    <div class="step-title">
-                        Add Account
-                    </div>
-                    <div class="step-text">
-                        Other account
-                    </div>
-                </div>
-
-                <div class="setup-step">
-                    <div class="step-icon">
-                        <i class="bi bi-qr-code-scan"></i>
-                    </div>
-                    <div class="step-title">
-                        Scan QR Code
-                    </div>
-                    <div class="step-text">
-                        Or enter key
-                    </div>
-                </div>
-
+            <!-- Navigation Mode Switcher -->
+            <div class="setup-mode-nav">
+                <button type="button" class="setup-mode-btn active" id="btnModeQr" onclick="switchSetupMode('qr')">
+                    <i class="bi bi-qr-code-scan"></i> Scan QR Code
+                </button>
+                <button type="button" class="setup-mode-btn" id="btnModeManual" onclick="switchSetupMode('manual')">
+                    <i class="bi bi-key"></i> Manual Key
+                </button>
             </div>
 
-            <?php if (!empty($qrCodeDataUri)): ?>
-                <div class="text-center mb-3">
-                    <div class="d-inline-block p-2 bg-white rounded-3 border shadow-sm">
-                        <img src="<?= $qrCodeDataUri; ?>" alt="2FA QR Code" style="width: 160px; height: 160px; display: block;">
+            <!-- Tab 1: QR Code Scanner View -->
+            <div id="setupViewQr" class="qr-scanner-wrapper">
+                <?php if (!empty($qrCodeDataUri)): ?>
+                    <div class="qr-scanner-card">
+                        <div class="qr-frame">
+                            <span class="corner-bracket corner-tl"></span>
+                            <span class="corner-bracket corner-tr"></span>
+                            <span class="corner-bracket corner-bl"></span>
+                            <span class="corner-bracket corner-br"></span>
+                            <img src="<?= $qrCodeDataUri; ?>" alt="2FA Scanner QR Code" class="qr-image">
+                        </div>
                     </div>
-                    <small class="text-muted d-block mt-2">
-                        Scan this QR code with Microsoft Authenticator or Google Authenticator.
-                    </small>
-                </div>
-            <?php endif; ?>
+                    <div class="scanner-badge">
+                        <i class="bi bi-camera me-1"></i> Scan with Microsoft or Google Authenticator
+                    </div>
+                <?php endif; ?>
+            </div>
 
-            <div class="mb-3">
-
+            <!-- Tab 2: Manual Setup Key View -->
+            <div id="setupViewManual" class="mb-4" style="display: none;">
                 <label class="form-label">
-                    Setup Key (Manual Entry)
+                    Setup Secret Key
                 </label>
-
                 <div class="secret-row">
-
                     <div class="secret-box" id="setupKeyBox">
                         <?= htmlspecialchars($formattedSecret); ?>
                     </div>
-
                     <button
                         type="button"
                         class="btn-copy"
                         onclick="copySecret()"
                         title="Copy setup key">
-
                         <i class="bi bi-copy" id="copyIcon"></i>
-
                     </button>
-
                 </div>
-
                 <small class="text-muted d-block mt-2">
-                    Or copy this key and paste it manually into your authenticator app.
+                    Enter this secret key manually into your authenticator app if you cannot scan the QR code.
                 </small>
-
             </div>
 
+            <!-- 6-Digit Verification Code Form -->
             <form
                 method="POST"
                 action="<?= BASE_URL ?>/mfa-setup"
@@ -426,16 +445,12 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
                 <?= Csrf::field(); ?>
 
-                <div class="mb-3">
-
+                <div class="mb-4">
                     <label class="form-label">
-                        Verification Code
+                        Enter 6-Digit Verification Code
                     </label>
-
                     <div class="input-wrap">
-
                         <i class="bi bi-fingerprint input-icon"></i>
-
                         <input
                             type="text"
                             name="code"
@@ -447,20 +462,18 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
                             autocomplete="one-time-code"
                             required
                             autofocus>
-
                     </div>
-
                 </div>
 
-                <button type="submit" class="btn btn-login w-100">
-                    Activate Authenticator
+                <button type="submit" class="btn btn-login w-100 mb-3">
+                    <i class="bi bi-shield-lock me-1"></i> Activate 2FA Security
                 </button>
 
             </form>
 
-            <div class="text-center mt-3">
+            <div class="text-center">
                 <a href="<?= BASE_URL ?>/logout" class="back-link text-decoration-none">
-                    Cancel & Logout
+                    <i class="bi bi-arrow-left me-1"></i> Cancel & Logout
                 </a>
             </div>
 
@@ -476,19 +489,38 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 </div>
 
 <script>
-function copySecret()
-{
+function switchSetupMode(mode) {
+    const btnQr = document.getElementById('btnModeQr');
+    const btnManual = document.getElementById('btnModeManual');
+    const viewQr = document.getElementById('setupViewQr');
+    const viewManual = document.getElementById('setupViewManual');
+
+    if (mode === 'qr') {
+        btnQr.classList.add('active');
+        btnManual.classList.remove('active');
+        viewQr.style.display = 'flex';
+        viewManual.style.display = 'none';
+    } else {
+        btnManual.classList.add('active');
+        btnQr.classList.remove('active');
+        viewManual.style.display = 'block';
+        viewQr.style.display = 'none';
+    }
+}
+
+function copySecret() {
     navigator.clipboard.writeText('<?= htmlspecialchars($secret); ?>');
 
     const icon = document.getElementById('copyIcon');
-
     icon.classList.remove('bi-copy');
-    icon.classList.add('bi-check-circle');
+    icon.classList.add('bi-check-circle-fill');
+    icon.style.color = '#3b941f';
 
     setTimeout(() => {
-        icon.classList.remove('bi-check-circle');
+        icon.classList.remove('bi-check-circle-fill');
         icon.classList.add('bi-copy');
-    }, 1800);
+        icon.style.color = '';
+    }, 2000);
 }
 </script>
 
