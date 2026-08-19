@@ -52,10 +52,16 @@ class MfaController extends Controller
 
         $qrCodeDataUri = '';
         try {
-            $qrCodeDataUri = $tfa->getQRCodeImageAsDataUri(
+            $qrText = $tfa->getQRText(
                 $_SESSION['mfa_setup_email'] ?? 'User',
                 $secret
             );
+            $iconUrl = rtrim(BASE_URL, '/') . '/assets/images/samtech-icon.png';
+            $qrTextWithImage = $qrText . '&image=' . urlencode($iconUrl);
+
+            $baconProvider = new BaconQrCodeProvider(4, '#ffffff', '#000000', 'svg');
+            $svgData = $baconProvider->getQRCodeImage($qrTextWithImage, 200);
+            $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($svgData);
         } catch (\Throwable $e) {
             error_log("QR Code Generation Error: " . $e->getMessage());
         }
