@@ -7,20 +7,7 @@ require_once ROOT_PATH . "/app/Models/MfaRecoveryOtp.php";
 require_once ROOT_PATH . "/app/Models/ActivityLog.php";
 
 use RobThree\Auth\TwoFactorAuth;
-use RobThree\Auth\Providers\Qr\IQRCodeProvider;
-
-class DummyQrProvider implements IQRCodeProvider
-{
-    public function getQRCodeImage(string $qrText, int $size): string
-    {
-        return '';
-    }
-
-    public function getMimeType(): string
-    {
-        return 'image/png';
-    }
-}
+use RobThree\Auth\Providers\Qr\BaconQrCodeProvider;
 
 class MfaController extends Controller
 {
@@ -34,7 +21,7 @@ class MfaController extends Controller
     private function tfa()
     {
         return new TwoFactorAuth(
-            new DummyQrProvider(),
+            new BaconQrCodeProvider(4, '#ffffff', '#000000', 'svg'),
             'Samtech Helpdesk'
         );
     }
@@ -63,8 +50,19 @@ class MfaController extends Controller
             $secret = $secretRow['secret_key'];
         }
 
+        $qrCodeDataUri = '';
+        try {
+            $qrCodeDataUri = $tfa->getQRCodeImageAsDataUri(
+                $_SESSION['mfa_setup_email'] ?? 'User',
+                $secret
+            );
+        } catch (\Throwable $e) {
+            error_log("QR Code Generation Error: " . $e->getMessage());
+        }
+
         $this->view('auth/mfa-setup', [
-            'secret' => $secret
+            'secret' => $secret,
+            'qrCodeDataUri' => $qrCodeDataUri
         ]);
     }
 

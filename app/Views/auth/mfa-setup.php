@@ -366,22 +366,33 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
                 <div class="setup-step">
                     <div class="step-icon">
-                        <i class="bi bi-key"></i>
+                        <i class="bi bi-qr-code-scan"></i>
                     </div>
                     <div class="step-title">
-                        Setup Key
+                        Scan QR Code
                     </div>
                     <div class="step-text">
-                        Enter manually
+                        Or enter key
                     </div>
                 </div>
 
             </div>
 
+            <?php if (!empty($qrCodeDataUri)): ?>
+                <div class="text-center mb-3">
+                    <div class="d-inline-block p-2 bg-white rounded-3 border shadow-sm">
+                        <img src="<?= $qrCodeDataUri; ?>" alt="2FA QR Code" style="width: 160px; height: 160px; display: block;">
+                    </div>
+                    <small class="text-muted d-block mt-2">
+                        Scan this QR code with Microsoft Authenticator or Google Authenticator.
+                    </small>
+                </div>
+            <?php endif; ?>
+
             <div class="mb-3">
 
                 <label class="form-label">
-                    Setup Key
+                    Setup Key (Manual Entry)
                 </label>
 
                 <div class="secret-row">
@@ -403,7 +414,7 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
                 </div>
 
                 <small class="text-muted d-block mt-2">
-                    Copy this key and paste it in Microsoft Authenticator.
+                    Or copy this key and paste it manually into your authenticator app.
                 </small>
 
             </div>
