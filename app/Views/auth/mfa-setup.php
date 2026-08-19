@@ -129,6 +129,14 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         height: 100%;
     }
 
+    .tab-view-panel {
+        transition: opacity .25s ease-in-out;
+    }
+
+    .tab-view-panel.d-none-custom {
+        display: none !important;
+    }
+
     .qr-scanner-wrapper {
         display: flex;
         flex-direction: column;
@@ -386,7 +394,7 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
                         </div>
 
                         <!-- Tab 1: QR Code Scanner View -->
-                        <div id="setupViewQr" class="qr-scanner-wrapper">
+                        <div id="setupViewQr" class="qr-scanner-wrapper tab-view-panel">
                             <?php if (!empty($qrCodeDataUri)): ?>
                                 <div class="qr-frame-card">
                                     <div class="position-relative d-inline-block">
@@ -404,7 +412,7 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
                         </div>
 
                         <!-- Tab 2: Manual Key View -->
-                        <div id="setupViewManual" class="flex-grow-1 d-flex flex-column justify-content-center" style="display: none;">
+                        <div id="setupViewManual" class="flex-grow-1 d-flex flex-column justify-content-center tab-view-panel d-none-custom">
                             <label class="form-label text-center">
                                 Setup Secret Key
                             </label>
@@ -502,11 +510,15 @@ function switchSetupMode(mode) {
     if (mode === 'qr') {
         btnQr.classList.add('active');
         btnManual.classList.remove('active');
+        viewQr.classList.remove('d-none-custom');
+        viewManual.classList.add('d-none-custom');
         viewQr.style.display = 'flex';
         viewManual.style.display = 'none';
     } else {
         btnManual.classList.add('active');
         btnQr.classList.remove('active');
+        viewManual.classList.remove('d-none-custom');
+        viewQr.classList.add('d-none-custom');
         viewManual.style.display = 'flex';
         viewQr.style.display = 'none';
     }
@@ -526,4 +538,4 @@ function copySecret() {
 }
 </script>
 
-<?php require_once ROOT_PATH . "/app/Views/layouts/auth-footer.php"; ?>
+<?php require_once ROOT_PATH . "/app/Views/layouts/auth-footer.php"; ?>>
