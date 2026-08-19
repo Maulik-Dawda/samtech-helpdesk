@@ -12,7 +12,10 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 <style>
     html,
     body {
-        min-height: 100vh;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
         background:
             radial-gradient(circle at 15% 22%, rgba(177, 233, 111, .16), transparent 28%),
             radial-gradient(circle at 85% 70%, rgba(76, 175, 80, .14), transparent 30%),
@@ -20,35 +23,43 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
     }
 
     .auth-page {
-        min-height: 100vh;
-        position: relative;
-        padding: 24px 15px;
+        height: 100vh;
+        width: 100vw;
+        padding: 16px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        box-sizing: border-box;
     }
 
     .auth-card {
         position: relative;
         z-index: 2;
         background: rgba(255, 255, 255, .96);
-        border-radius: 24px;
-        padding: 32px 36px;
-        box-shadow: 0 20px 60px rgba(15, 23, 42, .12);
-        border-top: 5px solid #6cb33f;
+        border-radius: 20px;
+        padding: 24px 30px;
+        box-shadow: 0 16px 50px rgba(15, 23, 42, .10);
+        border-top: 4px solid #6cb33f;
         backdrop-filter: blur(16px);
+        max-height: calc(100vh - 40px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .auth-header {
+        margin-bottom: 16px;
     }
 
     .auth-logo {
-        height: 56px;
-        max-width: 260px;
+        height: 46px;
+        max-width: 220px;
         width: auto;
         object-fit: contain;
     }
 
     .login-subtitle {
-        font-size: 15px;
+        font-size: 14px;
         color: #64748b;
         font-weight: 600;
     }
@@ -56,59 +67,30 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
     .secure-pill {
         display: inline-flex;
         align-items: center;
-        gap: 7px;
+        gap: 6px;
         background: #f0f9eb;
         color: #3b941f;
         border: 1px solid rgba(108, 179, 63, .30);
-        padding: 5px 14px;
+        padding: 4px 12px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
-        margin-top: 6px;
+        margin-top: 4px;
     }
 
     .form-label {
         font-weight: 700;
         color: #1e293b;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-    /* Mode Switcher Tabs */
-    .setup-mode-nav {
-        background: #f1f5f9;
-        padding: 4px;
-        border-radius: 14px;
-        display: flex;
-        gap: 4px;
-        margin-bottom: 18px;
-    }
-
-    .setup-mode-btn {
-        flex: 1;
-        padding: 8px 12px;
-        border: 0;
-        border-radius: 10px;
+        margin-bottom: 6px;
         font-size: 13px;
-        font-weight: 700;
-        color: #64748b;
-        background: transparent;
-        transition: all .2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        cursor: pointer;
     }
 
-    .setup-mode-btn.active {
-        background: #ffffff;
-        color: #3b941f;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
-    }
-
-    /* Left Column Scanner Styling */
-    .qr-scanner-wrapper {
+    /* Left Column QR Scanner */
+    .qr-scanner-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 16px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -116,55 +98,42 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         height: 100%;
     }
 
-    .qr-scanner-card {
+    .qr-frame-card {
         position: relative;
         background: #ffffff;
         border: 2px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 14px;
-        box-shadow: 0 10px 30px rgba(108, 179, 63, 0.10);
-        transition: all .3s ease;
-    }
-
-    .qr-scanner-card:hover {
-        border-color: #6cb33f;
-        box-shadow: 0 12px 36px rgba(108, 179, 63, 0.20);
-    }
-
-    .qr-frame {
-        position: relative;
+        border-radius: 14px;
+        padding: 8px;
+        box-shadow: 0 8px 24px rgba(108, 179, 63, 0.10);
         display: inline-block;
-        padding: 10px;
-        border-radius: 12px;
-        background: #f8fafc;
     }
 
     .corner-bracket {
         position: absolute;
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         border-color: #6cb33f;
         border-style: solid;
         pointer-events: none;
     }
 
-    .corner-tl { top: 3px; left: 3px; border-width: 3px 0 0 3px; border-top-left-radius: 6px; }
-    .corner-tr { top: 3px; right: 3px; border-width: 3px 3px 0 0; border-top-right-radius: 6px; }
-    .corner-bl { bottom: 3px; left: 3px; border-width: 0 0 3px 3px; border-bottom-left-radius: 6px; }
-    .corner-br { bottom: 3px; right: 3px; border-width: 0 3px 3px 0; border-bottom-right-radius: 6px; }
+    .corner-tl { top: 2px; left: 2px; border-width: 3px 0 0 3px; border-top-left-radius: 5px; }
+    .corner-tr { top: 2px; right: 2px; border-width: 3px 3px 0 0; border-top-right-radius: 5px; }
+    .corner-bl { bottom: 2px; left: 2px; border-width: 0 0 3px 3px; border-bottom-left-radius: 5px; }
+    .corner-br { bottom: 2px; right: 2px; border-width: 0 3px 3px 0; border-bottom-right-radius: 5px; }
 
     .qr-image {
-        width: 160px;
-        height: 160px;
+        width: 140px;
+        height: 140px;
         display: block;
-        border-radius: 6px;
+        border-radius: 4px;
     }
 
     .scanner-badge {
         font-size: 11px;
         font-weight: 700;
         color: #3b941f;
-        background: #f0f9eb;
+        background: #ffffff;
         border: 1px solid rgba(108, 179, 63, 0.25);
         padding: 4px 10px;
         border-radius: 20px;
@@ -174,57 +143,15 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         gap: 5px;
     }
 
-    /* Secret Key Box */
-    .secret-row {
-        display: flex;
-        gap: 8px;
-        align-items: stretch;
-    }
-
-    .secret-box {
-        flex: 1;
-        background: #f8fafc;
-        border: 1px solid #d6dde8;
-        border-radius: 12px;
-        padding: 12px 14px;
-        text-align: center;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 2px;
-        color: #0f172a;
-        word-break: break-word;
-        min-height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-copy {
-        width: 50px;
-        border: 1px solid #d6dde8;
-        background: #fff;
-        border-radius: 12px;
-        color: #334155;
-        font-weight: 800;
-        transition: all .2s ease;
-        cursor: pointer;
-    }
-
-    .btn-copy:hover {
-        background: #f0f9eb;
-        color: #3b941f;
-        border-color: #6cb33f;
-    }
-
-    /* Right Column Verification Form */
+    /* Right Column Form */
     .right-col-box {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 22px;
+        border-radius: 16px;
+        padding: 20px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
         height: 100%;
     }
 
@@ -234,60 +161,79 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
     .input-icon {
         position: absolute;
-        left: 16px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: #64748b;
-        font-size: 18px;
+        font-size: 16px;
         z-index: 2;
     }
 
     .auth-card .form-control {
-        height: 50px;
-        border-radius: 12px;
+        height: 44px;
+        border-radius: 10px;
         border: 1px solid #cbd5e1;
-        padding-left: 48px;
-        font-size: 15px;
+        padding-left: 44px;
+        font-size: 14px;
         color: #0f172a;
         box-shadow: none;
-        transition: all .2s ease;
         background: #ffffff;
     }
 
     .auth-card .form-control:focus {
         border-color: #6cb33f;
-        box-shadow: 0 0 0 .22rem rgba(108, 179, 63, .18);
+        box-shadow: 0 0 0 .18rem rgba(108, 179, 63, .18);
     }
 
     .otp-input {
         text-align: center;
-        font-size: 20px !important;
+        font-size: 18px !important;
         font-weight: 800;
-        letter-spacing: 6px;
-        padding-left: 48px !important;
+        letter-spacing: 5px;
+        padding-left: 44px !important;
     }
 
     .btn-login {
-        height: 50px;
-        border-radius: 12px;
+        height: 44px;
+        border-radius: 10px;
         background: linear-gradient(135deg, #6cb33f, #3b941f);
         border: 0;
         color: #fff;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 800;
-        box-shadow: 0 10px 20px rgba(67, 160, 38, .25);
-        transition: all .2s ease;
+        box-shadow: 0 8px 18px rgba(67, 160, 38, .22);
     }
 
     .btn-login:hover {
         color: #fff;
         background: linear-gradient(135deg, #5aa231, #2f8318);
-        box-shadow: 0 12px 24px rgba(67, 160, 38, .32);
+    }
+
+    .secret-box-small {
+        background: #ffffff;
+        border: 1px solid #d6dde8;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #0f172a;
+        font-family: monospace;
+    }
+
+    .btn-copy-sm {
+        border: 1px solid #d6dde8;
+        background: #fff;
+        border-radius: 8px;
+        color: #3b941f;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 4px 8px;
     }
 
     .back-link {
         font-weight: 700;
-        font-size: 14px;
+        font-size: 13px;
         color: #3b941f;
     }
 
@@ -297,12 +243,12 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 
     .alert-custom {
         border: 0;
-        border-radius: 12px;
-        padding: 12px 16px;
-        font-size: 14px;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
         display: flex;
         align-items: flex-start;
-        gap: 10px;
+        gap: 8px;
     }
 
     .alert-error {
@@ -310,74 +256,35 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
         color: #991b1b;
     }
 
-    .alert-custom i {
-        font-size: 18px;
-        margin-top: 1px;
-    }
-
-    .shake {
-        animation: shake .45s ease-in-out;
-    }
-
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        20% { transform: translateX(-8px); }
-        40% { transform: translateX(8px); }
-        60% { transform: translateX(-6px); }
-        80% { transform: translateX(6px); }
-        100% { transform: translateX(0); }
-    }
-
-    .security-icon {
-        position: absolute;
-        color: rgba(76, 175, 80, .14);
-        font-size: 36px;
-        z-index: 1;
-        animation: floatIcon 7s ease-in-out infinite;
-    }
-
-    .icon-1 { left: 8%; top: 20%; }
-    .icon-2 { right: 8%; top: 50%; animation-delay: 1.2s; }
-    .icon-3 { left: 14%; bottom: 15%; animation-delay: 2s; }
-    .icon-4 { right: 16%; top: 12%; animation-delay: .6s; }
-
-    @keyframes floatIcon {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-14px); }
-    }
-
     .footer-text {
-        position: relative;
-        z-index: 2;
         color: #64748b;
-        font-size: 13px;
+        font-size: 12px;
+        margin-top: 10px;
     }
 
-    @media(max-width: 991px) {
-        .auth-card {
-            max-width: 520px !important;
-            padding: 24px 20px;
+    @media(max-width: 767px) {
+        html, body {
+            overflow: auto;
         }
-
-        .right-col-box {
-            margin-top: 20px;
+        .auth-page {
+            height: auto;
+            min-height: 100vh;
+        }
+        .auth-card {
+            max-height: none;
+            padding: 20px 16px;
         }
     }
 </style>
 
 <div class="auth-page">
 
-    <i class="bi bi-shield-lock security-icon icon-1"></i>
-    <i class="bi bi-qr-code-scan security-icon icon-2"></i>
-    <i class="bi bi-key security-icon icon-3"></i>
-    <i class="bi bi-fingerprint security-icon icon-4"></i>
+    <div class="container d-flex flex-column align-items-center justify-content-center">
 
-    <div class="container d-flex flex-column align-items-center justify-content-center py-2">
+        <div class="auth-card w-100 <?= $hasError ? 'shake' : ''; ?>" style="max-width: 760px;">
 
-        <div class="auth-card w-100 <?= $hasError ? 'shake' : ''; ?>" style="max-width: 860px;">
-
-            <!-- Header Section -->
-            <div class="text-center mb-4">
+            <!-- Compact Header -->
+            <div class="text-center auth-header">
                 <img
                     src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
                     alt="Samtech Helpdesk"
@@ -394,137 +301,120 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
             </div>
 
             <?php if ($hasError): ?>
-                <div class="alert-custom alert-error mb-4">
+                <div class="alert-custom alert-error mb-3">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <div>
-                        <strong>Setup Failed</strong>
-                        <div>
-                            <?= htmlspecialchars($_SESSION['error']); ?>
-                        </div>
+                        <strong>Setup Failed:</strong> <?= htmlspecialchars($_SESSION['error']); ?>
                     </div>
                     <?php unset($_SESSION['error']); ?>
                 </div>
             <?php endif; ?>
 
-            <!-- 2-Column Split Body Layout -->
-            <div class="row g-4 align-items-stretch">
+            <!-- 2-Column Split View -->
+            <div class="row g-3 align-items-stretch">
 
-                <!-- Left Column: Scanner & Key Options -->
-                <div class="col-lg-6 d-flex flex-column">
-
-                    <!-- Mode Switcher Tabs -->
-                    <div class="setup-mode-nav">
-                        <button type="button" class="setup-mode-btn active" id="btnModeQr" onclick="switchSetupMode('qr')">
-                            <i class="bi bi-qr-code-scan"></i> Scan QR Code
-                        </button>
-                        <button type="button" class="setup-mode-btn" id="btnModeManual" onclick="switchSetupMode('manual')">
-                            <i class="bi bi-key"></i> Manual Key
-                        </button>
-                    </div>
-
-                    <!-- Tab 1: QR Code Scanner View -->
-                    <div id="setupViewQr" class="qr-scanner-wrapper flex-grow-1">
+                <!-- Left Column: Pure QR Code Scanner (No Key text inside scanner box) -->
+                <div class="col-md-5 d-flex flex-column">
+                    <div class="qr-scanner-box">
+                        <div class="text-center mb-2">
+                            <span class="fw-bold text-dark small">Scan QR Code</span>
+                        </div>
                         <?php if (!empty($qrCodeDataUri)): ?>
-                            <div class="qr-scanner-card">
-                                <div class="qr-frame">
+                            <div class="qr-frame-card">
+                                <div class="position-relative d-inline-block">
                                     <span class="corner-bracket corner-tl"></span>
                                     <span class="corner-bracket corner-tr"></span>
                                     <span class="corner-bracket corner-bl"></span>
                                     <span class="corner-bracket corner-br"></span>
-                                    <img src="<?= $qrCodeDataUri; ?>" alt="2FA Scanner QR Code" class="qr-image">
+                                    <img src="<?= $qrCodeDataUri; ?>" alt="2FA QR Code" class="qr-image">
                                 </div>
                             </div>
                             <div class="scanner-badge">
-                                <i class="bi bi-camera me-1"></i> Scan with Authenticator App
+                                <i class="bi bi-camera me-1"></i> Scan in App
                             </div>
                         <?php endif; ?>
                     </div>
-
-                    <!-- Tab 2: Manual Setup Key View -->
-                    <div id="setupViewManual" class="flex-grow-1 d-flex flex-column justify-content-center" style="display: none;">
-                        <label class="form-label">
-                            Setup Secret Key
-                        </label>
-                        <div class="secret-row">
-                            <div class="secret-box" id="setupKeyBox">
-                                <?= htmlspecialchars($formattedSecret); ?>
-                            </div>
-                            <button
-                                type="button"
-                                class="btn-copy"
-                                onclick="copySecret()"
-                                title="Copy setup key">
-                                <i class="bi bi-copy" id="copyIcon"></i>
-                            </button>
-                        </div>
-                        <small class="text-muted d-block mt-2">
-                            Enter this secret key manually into Microsoft Authenticator or Google Authenticator.
-                        </small>
-                    </div>
-
                 </div>
 
-                <!-- Right Column: Verification Form -->
-                <div class="col-lg-6">
-
+                <!-- Right Column: Verification Form & Manual Key Option -->
+                <div class="col-md-7">
                     <div class="right-col-box">
-                        <div class="mb-3 text-center text-lg-start">
+                        <div>
                             <h6 class="fw-bold text-dark mb-1">
                                 <i class="bi bi-shield-lock-fill text-success me-1"></i> Complete Setup
                             </h6>
-                            <p class="text-muted small mb-0">
-                                Enter the 6-digit security code displayed in your authenticator app to activate 2FA.
+                            <p class="text-muted small mb-3">
+                                Scan the QR code with Microsoft Authenticator or Google Authenticator and enter the code below.
                             </p>
-                        </div>
 
-                        <form
-                            method="POST"
-                            action="<?= BASE_URL ?>/mfa-setup"
-                            onsubmit="showSamtechLoader('Activating authenticator...')">
+                            <form
+                                method="POST"
+                                action="<?= BASE_URL ?>/mfa-setup"
+                                onsubmit="showSamtechLoader('Activating authenticator...')">
 
-                            <?= Csrf::field(); ?>
+                                <?= Csrf::field(); ?>
 
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    6-Digit Verification Code
-                                </label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-fingerprint input-icon"></i>
-                                    <input
-                                        type="text"
-                                        name="code"
-                                        class="form-control otp-input"
-                                        maxlength="6"
-                                        pattern="[0-9]{6}"
-                                        inputmode="numeric"
-                                        placeholder="000000"
-                                        autocomplete="one-time-code"
-                                        required
-                                        autofocus>
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Enter 6-Digit Verification Code
+                                    </label>
+                                    <div class="input-wrap">
+                                        <i class="bi bi-fingerprint input-icon"></i>
+                                        <input
+                                            type="text"
+                                            name="code"
+                                            class="form-control otp-input"
+                                            maxlength="6"
+                                            pattern="[0-9]{6}"
+                                            inputmode="numeric"
+                                            placeholder="000000"
+                                            autocomplete="one-time-code"
+                                            required
+                                            autofocus>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <button type="submit" class="btn btn-login w-100 mb-3">
-                                <i class="bi bi-shield-check me-1"></i> Activate Authenticator
-                            </button>
-
-                        </form>
-
-                        <div class="text-center">
-                            <a href="<?= BASE_URL ?>/logout" class="back-link text-decoration-none">
-                                <i class="bi bi-arrow-left me-1"></i> Cancel & Logout
-                            </a>
+                                <button type="submit" class="btn btn-login w-100 mb-2">
+                                    <i class="bi bi-shield-check me-1"></i> Activate Authenticator
+                                </button>
+                            </form>
                         </div>
-                    </div>
 
+                        <!-- Manual Key Fallback Collapsible -->
+                        <div class="pt-2 border-top mt-2">
+                            <details style="cursor: pointer;">
+                                <summary class="text-muted small fw-semibold">
+                                    Can't scan? Use manual setup key
+                                </summary>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <div class="secret-box-small flex-grow-1 text-center" id="setupKeyBox">
+                                        <?= htmlspecialchars($formattedSecret); ?>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn-copy-sm"
+                                        onclick="copySecret()"
+                                        title="Copy setup key">
+                                        <i class="bi bi-copy" id="copyIcon"></i> Copy
+                                    </button>
+                                </div>
+                            </details>
+
+                            <div class="text-center mt-2">
+                                <a href="<?= BASE_URL ?>/logout" class="back-link text-decoration-none">
+                                    <i class="bi bi-arrow-left me-1"></i> Cancel & Logout
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
 
         </div>
 
-        <div class="footer-text mt-3">
-            <i class="bi bi-shield-check text-success me-1"></i>
+        <div class="footer-text">
             © <?= date('Y'); ?> Samtech Solutions. All rights reserved.
         </div>
 
@@ -533,36 +423,15 @@ $formattedSecret = trim(chunk_split($secret, 4, ' '));
 </div>
 
 <script>
-function switchSetupMode(mode) {
-    const btnQr = document.getElementById('btnModeQr');
-    const btnManual = document.getElementById('btnModeManual');
-    const viewQr = document.getElementById('setupViewQr');
-    const viewManual = document.getElementById('setupViewManual');
-
-    if (mode === 'qr') {
-        btnQr.classList.add('active');
-        btnManual.classList.remove('active');
-        viewQr.style.display = 'flex';
-        viewManual.style.display = 'none';
-    } else {
-        btnManual.classList.add('active');
-        btnQr.classList.remove('active');
-        viewManual.style.display = 'flex';
-        viewQr.style.display = 'none';
-    }
-}
-
 function copySecret() {
     navigator.clipboard.writeText('<?= htmlspecialchars($secret); ?>');
 
     const icon = document.getElementById('copyIcon');
     icon.classList.remove('bi-copy');
     icon.classList.add('bi-check-circle-fill');
-    icon.style.color = '#3b941f';
 
     setTimeout(() => {
         icon.classList.remove('bi-check-circle-fill');
-        icon.style.color = '';
         icon.classList.add('bi-copy');
     }, 2000);
 }
