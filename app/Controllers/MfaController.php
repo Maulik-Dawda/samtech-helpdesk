@@ -56,8 +56,9 @@ class MfaController extends Controller
                 $_SESSION['mfa_setup_email'] ?? 'User',
                 $secret
             );
-            $iconUrl = rtrim(BASE_URL, '/') . '/apple-touch-icon.png';
-            $qrTextWithImage = $qrText . '&image=' . urlencode($iconUrl) . '&icon=' . urlencode($iconUrl);
+            $iconUrl = rtrim(BASE_URL, '/') . '/assets/images/samtech-icon.png';
+            $appleIconUrl = rtrim(BASE_URL, '/') . '/apple-touch-icon.png';
+            $qrTextWithImage = $qrText . '&image=' . urlencode($iconUrl) . '&icon=' . urlencode($appleIconUrl);
 
             $baconProvider = new BaconQrCodeProvider(4, '#ffffff', '#000000', 'svg');
             $svgData = $baconProvider->getQRCodeImage($qrTextWithImage, 200);
