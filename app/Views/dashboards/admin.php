@@ -126,105 +126,327 @@ function dashboardActivityIcon(string $action): string
 
 <div class="container-fluid px-0">
 
-    <!-- =========================================================
-         DASHBOARD PAGE HEADER (Matching Mockup)
-    ========================================================== -->
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
-        <div>
-            <h1 class="h3 fw-bold mb-1 text-dark">Dashboard</h1>
-            <p class="text-muted small mb-0">Welcome back, <?= htmlspecialchars($adminName); ?>. Here is your administrator overview.</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-                <button class="btn btn-light btn-sm border dropdown-toggle px-3 py-2 fw-semibold" type="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-calendar3 me-1"></i> <?= htmlspecialchars($currentDate); ?>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                    <li><a class="dropdown-item small" href="#">Today</a></li>
-                    <li><a class="dropdown-item small" href="#">This Week</a></li>
-                    <li><a class="dropdown-item small" href="#">This Month</a></li>
-                </ul>
+    <!-- Dashboard Hero -->
+    <section class="ui-panel mb-4">
+
+        <div class="ui-panel-body">
+
+            <div class="page-header mb-0">
+
+                <div class="page-header-content">
+
+                    <div class="app-badge app-badge-primary mb-3">
+                        <i class="bi bi-speedometer2"></i>
+                        Administrator Dashboard
+                    </div>
+
+                    <h1 class="page-title">
+                        <?= htmlspecialchars($greeting); ?>,
+                        <?= htmlspecialchars($adminName); ?>! 👋
+                    </h1>
+
+                    <p class="page-description">
+                        Monitor tickets, users, organizations and recent
+                        helpdesk activity from one place.
+                    </p>
+
+                </div>
+
+                <div class="page-actions">
+
+                    <div class="date-pill">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        <div>
+
+                            <div class="dashboard-date">
+                                <?= htmlspecialchars($currentDate); ?>
+                            </div>
+
+                            <div class="dashboard-time">
+                                <?= htmlspecialchars($currentTime); ?>
+                                <span>Dubai Time</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-            <a href="<?= BASE_URL ?>/agent/tickets/create" class="btn btn-primary-custom btn-sm px-3 py-2">
-                <i class="bi bi-plus-lg me-1"></i> New Ticket
-            </a>
-        </div>
-    </div>
 
-    <!-- =========================================================
-         TOP TICKET METRICS ROW (Matching 5-Card Mockup Row)
-    ========================================================== -->
-    <div class="row g-3 mb-4">
-        <!-- Total Tickets -->
-        <div class="col">
-            <a href="<?= BASE_URL ?>/agent/tickets" class="metric-card d-block text-decoration-none h-100">
-                <div class="metric-card-header mb-2">
-                    <span class="text-muted small fw-bold">Total Tickets</span>
-                    <span class="metric-card-icon"><i class="bi bi-ticket-perforated"></i></span>
-                </div>
-                <div class="d-flex align-items-baseline justify-content-between">
-                    <span class="metric-card-value me-2"><?= (int) $ticketCounts['total']; ?></span>
-                    <span class="metric-card-meta positive"><i class="bi bi-arrow-up-short"></i> +7.4% ↑</span>
-                </div>
-            </a>
+            <div class="quick-actions-grid mt-4">
+
+                <a
+                    href="<?= BASE_URL ?>/agent/tickets/create"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Create Ticket
+                        </span>
+
+                        <span class="quick-action-description">
+                            Open a ticket for any organization.
+                        </span>
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
+
+                <a
+                    href="<?= BASE_URL ?>/admin/users/create"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Create User or Agent
+                        </span>
+
+                        <span class="quick-action-description">
+                            Add users, agents or administrators.
+                        </span>
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
+
+                <a
+                    href="<?= BASE_URL ?>/organizations/create"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-building-add"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Create Organization
+                        </span>
+
+                        <span class="quick-action-description">
+                            Add a new customer organization.
+                        </span>
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
+
+                <a
+                    href="<?= BASE_URL ?>/reports/tickets"
+                    class="quick-action-link">
+                    <span class="quick-action-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+                        <span class="quick-action-title">
+                            Open Reports
+                        </span>
+
+                        <span class="quick-action-description">
+                            Review, filter and print ticket reports.
+                        </span>
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
+
+            </div>
+
         </div>
 
-        <!-- Open Tickets -->
-        <div class="col">
-            <a href="<?= BASE_URL ?>/agent/tickets?status=open" class="metric-card d-block text-decoration-none h-100">
-                <div class="metric-card-header mb-2">
-                    <span class="text-muted small fw-bold">Open Tickets</span>
-                    <span class="metric-card-icon"><i class="bi bi-folder2-open"></i></span>
+    </section>
+
+    <!-- Ticket Metrics -->
+    <section class="content-section">
+
+        <div class="metric-grid">
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets"
+                class="metric-card text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
                 </div>
-                <div class="d-flex align-items-baseline justify-content-between">
-                    <span class="metric-card-value me-2"><?= (int) $ticketCounts['open_count']; ?></span>
-                    <span class="metric-card-meta positive"><i class="bi bi-arrow-up-short"></i> +2% ↑</span>
+
+                <div class="metric-card-label">
+                    Total Tickets
                 </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['total']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-collection"></i>
+                    All helpdesk tickets
+                </div>
+
             </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=open"
+                class="metric-card metric-card-info text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Open Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['open_count']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Waiting for attention
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=in_progress"
+                class="metric-card text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    In Progress
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['in_progress_count']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-person-workspace"></i>
+                    Currently being handled
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=pending"
+                class="metric-card metric-card-warning text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Pending Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['pending_count']; ?>
+                </div>
+
+                <div class="metric-card-meta warning">
+                    <i class="bi bi-hourglass"></i>
+                    Awaiting further action
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=resolved"
+                class="metric-card metric-card-success text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Resolved Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['resolved_count']; ?>
+                </div>
+
+                <div class="metric-card-meta positive">
+                    <i class="bi bi-check-circle"></i>
+                    Resolution completed
+                </div>
+
+            </a>
+
+            <a
+                href="<?= BASE_URL ?>/agent/tickets?status=closed"
+                class="metric-card metric-card-danger text-decoration-none">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-archive-fill"></i>
+                    </div>
+
+                    <i class="bi bi-arrow-up-right text-muted"></i>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Closed Tickets
+                </div>
+
+                <div class="metric-card-value">
+                    <?= (int)$ticketCounts['closed_count']; ?>
+                </div>
+
+                <div class="metric-card-meta">
+                    <i class="bi bi-lock-fill"></i>
+                    Completed and archived
+                </div>
+
+            </a>
+
         </div>
 
-        <!-- In Progress -->
-        <div class="col">
-            <a href="<?= BASE_URL ?>/agent/tickets?status=in_progress" class="metric-card d-block text-decoration-none h-100">
-                <div class="metric-card-header mb-2">
-                    <span class="text-muted small fw-bold">In Progress</span>
-                    <span class="metric-card-icon"><i class="bi bi-clock-history"></i></span>
-                </div>
-                <div class="d-flex align-items-baseline justify-content-between">
-                    <span class="metric-card-value me-2"><?= (int) $ticketCounts['in_progress_count']; ?></span>
-                    <span class="metric-card-meta positive"><i class="bi bi-arrow-up-short"></i> +3.5% ↑</span>
-                </div>
-            </a>
-        </div>
-
-        <!-- Pending Tickets -->
-        <div class="col">
-            <a href="<?= BASE_URL ?>/agent/tickets?status=pending" class="metric-card d-block text-decoration-none h-100">
-                <div class="metric-card-header mb-2">
-                    <span class="text-muted small fw-bold">Pending</span>
-                    <span class="metric-card-icon"><i class="bi bi-hourglass-split"></i></span>
-                </div>
-                <div class="d-flex align-items-baseline justify-content-between">
-                    <span class="metric-card-value me-2"><?= (int) $ticketCounts['pending_count']; ?></span>
-                    <span class="metric-card-meta warning"><i class="bi bi-dash-short"></i> 0%</span>
-                </div>
-            </a>
-        </div>
-
-        <!-- Resolved Tickets -->
-        <div class="col">
-            <a href="<?= BASE_URL ?>/agent/tickets?status=resolved" class="metric-card d-block text-decoration-none h-100">
-                <div class="metric-card-header mb-2">
-                    <span class="text-muted small fw-bold">Resolved</span>
-                    <span class="metric-card-icon"><i class="bi bi-check2-circle"></i></span>
-                </div>
-                <div class="d-flex align-items-baseline justify-content-between">
-                    <span class="metric-card-value me-2"><?= (int) $ticketCounts['resolved_count']; ?></span>
-                    <span class="metric-card-meta positive"><i class="bi bi-arrow-up-short"></i> +12% ↑</span>
-                </div>
-            </a>
-        </div>
-    </div>
+    </section>
 
     <!-- Account Summary -->
     <section class="content-section">

@@ -4,19 +4,12 @@
 |--------------------------------------------------------------------------
 */
 
-/*
-|--------------------------------------------------------------------------
-| Reusable Panels and Cards
-|--------------------------------------------------------------------------
-*/
-
 .ui-panel,
 .card {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
 }
 
 .ui-panel {
@@ -25,10 +18,12 @@
 
 .ui-panel-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    padding: 18px 22px;
+
+    padding: 20px 22px;
+
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -39,17 +34,21 @@
 
 .ui-panel-title {
     margin: 0;
+
     color: var(--color-dark);
-    font-size: 16px;
+
+    font-size: 17px;
     line-height: 1.3;
     font-weight: 800;
 }
 
 .ui-panel-subtitle {
-    margin: 4px 0 0;
+    margin: 5px 0 0;
+
     color: var(--color-muted);
+
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 .ui-panel-actions {
@@ -69,14 +68,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+
     padding: 14px 22px;
+
     border-top: 1px solid var(--color-border);
-    background: var(--color-surface-soft);
+    background: #fbfcfd;
 }
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard Metric Cards (Matching Reference Mockup)
+| Dashboard Metric Cards
 |--------------------------------------------------------------------------
 */
 
@@ -88,15 +89,24 @@
 
 .metric-card {
     position: relative;
+
     min-width: 0;
-    min-height: 120px;
-    padding: 18px 20px;
+    min-height: 148px;
+
+    padding: 20px;
+
     overflow: hidden;
+
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
+
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast);
 }
 
 .metric-card:hover {
@@ -105,74 +115,92 @@
     box-shadow: var(--shadow-md);
 }
 
+.metric-card::after {
+    content: "";
+
+    position: absolute;
+    top: -40px;
+    right: -40px;
+
+    width: 110px;
+    height: 110px;
+
+    border-radius: 50%;
+
+    background: rgba(177, 233, 111, .1);
+}
+
 .metric-card-header {
     position: relative;
     z-index: 1;
+
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
 }
 
 .metric-card-icon {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     flex-shrink: 0;
-    border-radius: 10px;
-    background: var(--color-surface-soft);
-    color: var(--color-muted);
-    font-size: 16px;
+
+    border-radius: 13px;
+
+    background: var(--color-primary-soft);
+    color: var(--color-primary-deep);
+
+    font-size: 18px;
 }
 
 .metric-card-label {
-    margin-top: 14px;
+    margin-top: 18px;
+
     color: var(--color-muted);
+
     font-size: 12px;
     line-height: 1.4;
     font-weight: 700;
 }
 
 .metric-card-value {
-    margin-top: 4px;
+    margin-top: 5px;
+
     color: var(--color-dark);
-    font-size: 28px;
+
+    font-size: 30px;
     line-height: 1.1;
     font-weight: 900;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
 }
 
 .metric-card-meta {
-    margin-top: 10px;
-    display: inline-flex;
+    margin-top: 12px;
+
+    display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    border-radius: var(--radius-pill);
+    gap: 6px;
+
+    color: var(--color-muted);
+
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
-.metric-card-meta.positive,
-.trend-positive {
-    background: var(--color-success-soft);
-    color: var(--color-success-text);
+.metric-card-meta.positive {
+    color: var(--color-success);
 }
 
-.metric-card-meta.warning,
-.trend-warning {
-    background: var(--color-warning-soft);
-    color: var(--color-warning-text);
+.metric-card-meta.warning {
+    color: var(--color-warning);
 }
 
-.metric-card-meta.danger,
-.trend-danger {
-    background: var(--color-danger-soft);
-    color: var(--color-danger-text);
+.metric-card-meta.danger {
+    color: var(--color-danger);
 }
 
 .metric-card-success .metric-card-icon {

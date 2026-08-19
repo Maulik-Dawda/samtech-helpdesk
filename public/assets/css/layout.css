@@ -31,7 +31,7 @@ body.sidebar-open {
     gap: 18px;
 
     margin-bottom: 24px;
-    padding: 10px 18px;
+    padding: 12px 16px;
 
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -62,12 +62,12 @@ body.sidebar-open {
 }
 
 .top-navbar-icon {
-    width: 36px !important;
-    height: 36px !important;
-    max-width: 36px !important;
-    max-height: 36px !important;
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
     object-fit: contain;
-    flex: 0 0 36px;
+    flex: 0 0 40px;
 }
 
 .top-navbar-brand-text {
@@ -76,13 +76,13 @@ body.sidebar-open {
 
 .top-navbar-title {
     color: var(--color-dark);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 800;
     white-space: nowrap;
 }
 
 .top-navbar-subtitle {
-    margin-top: 1px;
+    margin-top: 2px;
     color: var(--color-muted);
     font-size: 11px;
     white-space: nowrap;
@@ -90,8 +90,8 @@ body.sidebar-open {
 
 .sidebar-toggle-btn,
 .topbar-icon-btn {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     padding: 0;
 
     display: inline-flex;
@@ -101,49 +101,35 @@ body.sidebar-open {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
 
-    background: var(--color-surface-soft);
+    background: var(--color-surface);
     color: var(--color-dark);
-    transition: all var(--transition-fast);
-}
-
-.topbar-icon-btn:hover {
-    background: #ffffff;
-    border-color: var(--color-border-dark);
-    box-shadow: var(--shadow-sm);
 }
 
 .sidebar-toggle-btn {
     display: none;
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .topbar-icon-btn {
-    font-size: 17px;
+    font-size: 18px;
 }
 
 .user-card-btn {
-    min-width: 180px;
+    min-width: 190px;
     max-width: 245px;
-    min-height: 42px;
+    min-height: 46px;
 
     display: flex;
     align-items: center;
     gap: 9px;
 
-    padding: 5px 10px 5px 6px;
+    padding: 6px 10px 6px 7px;
 
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
 
-    background: var(--color-surface-soft);
+    background: var(--color-surface);
     color: var(--color-dark);
-    transition: all var(--transition-fast);
-}
-
-.user-card-btn:hover {
-    background: #ffffff;
-    border-color: var(--color-border-dark);
-    box-shadow: var(--shadow-sm);
 }
 
 .user-card-btn::after {
@@ -151,22 +137,7 @@ body.sidebar-open {
 }
 
 .avatar-circle {
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: var(--color-primary-soft);
-    color: var(--color-primary-deep);
-
-    font-size: 12px;
-    font-weight: 800;
-}
+    width: 36px;
     height: 36px;
     flex: 0 0 36px;
 

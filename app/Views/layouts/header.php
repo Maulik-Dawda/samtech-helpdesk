@@ -91,10 +91,6 @@ function assetVersion(string $relativePath): string
         ); ?>
     </title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
@@ -193,11 +189,8 @@ function assetVersion(string $relativePath): string
                                 Support Management System
                             </div>
 
-                    </div>
+                        </div>
 
-                    <div class="d-none d-md-flex align-items-center ms-3 position-relative" style="width: 240px;">
-                        <i class="bi bi-search position-absolute start-0 ms-3 text-muted small"></i>
-                        <input type="search" class="form-control form-control-sm rounded-pill ps-5 bg-light border-0 text-dark" placeholder="Quick search..." style="font-size: 12px; height: 36px;">
                     </div>
 
                 </div>
