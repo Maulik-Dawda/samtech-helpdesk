@@ -9,7 +9,7 @@ $logoSrc = file_exists($logoPath)
 
 <head>
     <meta charset="UTF-8">
-    <title>Ticket Detail Report</title>
+    <title>Samtech-Helpdesk-<?= htmlspecialchars($ticket['ticket_no'] ?? $ticket['id']); ?></title>
 
     <style>
         @page {

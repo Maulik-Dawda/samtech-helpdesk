@@ -9,7 +9,7 @@ $logoSrc = file_exists($logoPath)
 
 <head>
     <meta charset="UTF-8">
-    <title>Ticket Report</title>
+    <title>Samtech-Helpdesk-<?= rand(100000, 900000); ?></title>
 
     <style>
         @page {

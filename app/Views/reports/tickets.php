@@ -20,14 +20,14 @@
 
                 </div>
 
-                <button
-                    type="button"
+                <a
+                    href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
+                    target="_blank"
                     id="printReportBtn"
-                    onclick="downloadCurrentReportPdf(this)"
                     class="btn btn-primary-custom">
-                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>
-                    Download PDF
-                </button>
+                    <i class="bi bi-printer me-1"></i>
+                    Print Report
+                </a>
 
             </div>
 
@@ -217,27 +217,11 @@
 </div>
 
 <script>
-function downloadCurrentReportPdf(btn) {
-    const form = document.getElementById("ticketReportFilterForm");
-    const searchInput = document.getElementById("reportSearchInput");
-
-    let formData = form ? new FormData(form) : new FormData();
-    if (searchInput && searchInput.value.trim() !== "") {
-        formData.set("search", searchInput.value.trim());
-    }
-
-    const query = new URLSearchParams(formData).toString();
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
-    const filename = "Samtech-Helpdesk-" + randomNum + ".pdf";
-    const printUrl = "<?= BASE_URL ?>/reports/tickets/print?" + query;
-
-    generateDirectPdf(printUrl, filename, btn);
-}
-
 document.addEventListener("DOMContentLoaded", function() {
 
     const form = document.getElementById("ticketReportFilterForm");
     const table = document.getElementById("ticketReportTable");
+    const printBtn = document.getElementById("printReportBtn");
     const searchInput = document.getElementById("reportSearchInput");
 
     function bindLiveSearch() {
@@ -285,6 +269,10 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(function(html) {
             table.innerHTML = html;
             bindLiveSearch();
+
+            if (printBtn) {
+                printBtn.href = "<?= BASE_URL ?>/reports/tickets/print?" + query;
+            }
 
             if (typeof hideSamtechLoader === 'function') {
                 hideSamtechLoader();
