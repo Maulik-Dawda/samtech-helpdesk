@@ -48,12 +48,12 @@ $organizations = is_array($organizations ?? null)
                 <div class="page-actions">
 
                     <a
-                        href="<?= BASE_URL ?>/tickets"
+                        href="<?= BASE_URL ?>/agent/tickets"
                         class="btn btn-light">
 
                         <i class="bi bi-arrow-left me-2"></i>
 
-                        My Tickets
+                        All Tickets
 
                     </a>
 
@@ -347,7 +347,7 @@ $organizations = is_array($organizations ?? null)
                 <div class="col-12 d-flex justify-content-end gap-2">
 
                     <a
-                        href="<?= BASE_URL ?>/tickets"
+                        href="<?= BASE_URL ?>/agent/tickets"
                         class="btn btn-light">
 
                         Cancel

@@ -77,20 +77,26 @@ if (!function_exists('sidebarActive')) {
         string $path,
         bool $exact = false
     ): string {
-        $currentPath = sidebarCurrentPath();
-        $targetPath = '/' . ltrim($path, '/');
+        $currentPath = rtrim(sidebarCurrentPath(), '/');
+        $targetPath = rtrim('/' . ltrim($path, '/'), '/');
 
-        if ($exact) {
-            return rtrim($currentPath, '/') ===
-                rtrim($targetPath, '/')
-                ? 'active'
-                : '';
+        if ($exact || $currentPath === $targetPath) {
+            return $currentPath === $targetPath ? 'active' : '';
         }
 
-        return str_starts_with(
-            $currentPath,
-            $targetPath
-        ) ? 'active' : '';
+        if ($targetPath === '/agent/tickets' && str_starts_with($currentPath, '/agent/tickets/create')) {
+            return '';
+        }
+
+        if ($targetPath === '/admin/users' && str_starts_with($currentPath, '/admin/users/create')) {
+            return '';
+        }
+
+        if ($targetPath === '/organizations' && str_starts_with($currentPath, '/organizations/create')) {
+            return '';
+        }
+
+        return str_starts_with($currentPath, $targetPath) ? 'active' : '';
     }
 }
 
