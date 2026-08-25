@@ -131,7 +131,9 @@ async function downloadDirectServerPdf(downloadUrl, btn) {
 
     try {
         const response = await fetch(downloadUrl, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+            cache: 'no-cache'
         });
 
         if (!response.ok) {
