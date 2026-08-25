@@ -94,42 +94,52 @@ class PdfController extends Controller
 
     private function outputPdf($html, $filename)
     {
-        error_reporting(0);
-        ini_set('display_errors', '0');
+        try {
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
 
-        while (ob_get_level() > 0) {
-            ob_end_clean();
+            $options = new \Dompdf\Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isFontSubsettingEnabled', false);
+            $options->set('defaultFont', 'Helvetica');
+            $options->set('chroot', ROOT_PATH);
+            $options->set('tempDir', sys_get_temp_dir());
+
+            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $pdfBinary = $dompdf->output();
+
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
+            header_remove();
+            header("Content-Type: application/pdf");
+            header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+            header("Access-Control-Expose-Headers: Content-Disposition");
+            header("Content-Length: " . strlen($pdfBinary));
+            header("Cache-Control: private, max-age=0, must-revalidate");
+            header("Pragma: public");
+
+            echo $pdfBinary;
+            exit;
+        } catch (\Throwable $e) {
+            error_log("PdfController outputPdf Error: " . $e->getMessage());
+
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
+            http_response_code(500);
+            header("Content-Type: application/json");
+            echo json_encode(["error" => "PDF Generation Failed: " . $e->getMessage()]);
+            exit;
         }
-
-        $options = new \Dompdf\Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isFontSubsettingEnabled', false);
-        $options->set('defaultFont', 'Helvetica');
-        $options->set('chroot', [ROOT_PATH, sys_get_temp_dir()]);
-        $options->set('tempDir', sys_get_temp_dir());
-
-        $dompdf = new \Dompdf\Dompdf($options);
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        $pdfBinary = $dompdf->output();
-
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-
-        header_remove();
-        header("Content-Type: application/pdf");
-        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-        header("Access-Control-Expose-Headers: Content-Disposition");
-        header("Content-Length: " . strlen($pdfBinary));
-        header("Cache-Control: private, max-age=0, must-revalidate");
-        header("Pragma: public");
-
-        echo $pdfBinary;
-        exit;
     }
 
     private function buildTicketsPdfHtml($tickets, $filters, $organizations, $users, $agents)
