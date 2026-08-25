@@ -20,13 +20,14 @@
 
                 </div>
 
-                <a
-                    href="<?= BASE_URL ?>/reports/tickets/pdf?<?= http_build_query($filters); ?>"
+                <button
+                    type="button"
                     id="printReportBtn"
+                    onclick="const form = document.getElementById('ticketReportFilterForm'); const query = form ? new URLSearchParams(new FormData(form)).toString() : ''; triggerBackgroundPdfDownload('<?= BASE_URL ?>/reports/tickets/pdf?' + query, this)"
                     class="btn btn-primary-custom">
                     <i class="bi bi-file-earmark-pdf-fill me-1"></i>
                     Download PDF
-                </a>
+                </button>
 
             </div>
 

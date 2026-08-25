@@ -38,12 +38,13 @@
                 </div>
 
                 <?php if($ticket): ?>
-                    <a
-                        href="<?= BASE_URL ?>/reports/ticket-detail/pdf/<?= $ticket['id']; ?>"
+                    <button
+                        type="button"
+                        onclick="triggerBackgroundPdfDownload('<?= BASE_URL ?>/reports/ticket-detail/pdf/<?= $ticket['id']; ?>', this)"
                         class="btn btn-primary-custom">
                         <i class="bi bi-file-earmark-pdf-fill me-1"></i>
                         Download PDF
-                    </a>
+                    </button>
                 <?php endif; ?>
             </div>
 

@@ -117,6 +117,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     );
 });
+
+function triggerBackgroundPdfDownload(url, btn) {
+    if (!btn) return;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Downloading...';
+    btn.disabled = true;
+
+    let iframe = document.getElementById('hiddenDownloadIframe');
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'hiddenDownloadIframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
+
+    iframe.src = url;
+
+    setTimeout(function() {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 2500);
+}
 </script>
 
 </body>
