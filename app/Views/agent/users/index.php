@@ -74,8 +74,17 @@
 
             <?php if (isset($_SESSION['success'])): ?>
                 <div class="alert alert-success">
+                    <i class="bi bi-check-circle me-2"></i>
                     <?= htmlspecialchars($_SESSION['success']); ?>
                     <?php unset($_SESSION['success']); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <?= htmlspecialchars($_SESSION['error']); ?>
+                    <?php unset($_SESSION['error']); ?>
                 </div>
             <?php endif; ?>
 
@@ -90,7 +99,7 @@
                             <th>Role</th>
                             <th>Organization</th>
                             <th>Status</th>
-                            <th width="220">Actions</th>
+                            <th width="240">Actions</th>
                         </tr>
                     </thead>
 
@@ -150,11 +159,11 @@
 
                                 <td>
 
-                                    <?php if ($user['role'] !== 'agent'): ?>
+                                    <?php if ($user['role'] !== 'agent' && $user['role'] !== 'admin'): ?>
 
                                         <a
                                             href="<?= BASE_URL ?>/agent/users/edit/<?= $user['id']; ?>"
-                                            class="action-link">
+                                            class="action-link me-1">
                                             Edit
                                         </a>
 
@@ -162,7 +171,7 @@
 
                                             <a
                                                 href="<?= BASE_URL ?>/agent/users/disable/<?= $user['id']; ?>"
-                                                class="action-link"
+                                                class="action-link me-1"
                                                 onclick="return confirm('Are you sure you want to disable this user?')">
                                                 Disable
                                             </a>
@@ -171,16 +180,57 @@
 
                                             <a
                                                 href="<?= BASE_URL ?>/agent/users/disable/<?= $user['id']; ?>"
-                                                class="action-link"
+                                                class="action-link me-1"
                                                 onclick="return confirm('Are you sure you want to enable this user?')">
                                                 Enable
                                             </a>
 
                                         <?php endif; ?>
 
+                                        <button
+                                            type="button"
+                                            class="action-link text-danger border-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteAgentUserModal<?= $user['id']; ?>"
+                                            title="Delete User">
+                                            Delete
+                                        </button>
+
+                                        <!-- Delete Confirmation Modal -->
+                                        <div class="modal fade text-start" id="deleteAgentUserModal<?= $user['id']; ?>" tabindex="-1" aria-labelledby="deleteAgentUserModalLabel<?= $user['id']; ?>" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content border-0 shadow card-radius">
+                                                    <div class="modal-header border-bottom-0 pb-0">
+                                                        <h5 class="modal-title fw-bold text-danger" id="deleteAgentUserModalLabel<?= $user['id']; ?>">
+                                                            <i class="bi bi-exclamation-triangle-fill me-2"></i> Delete User Everywhere
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body py-3">
+                                                        <p class="mb-3 fs-6">
+                                                            Are you sure you want to permanently delete user <strong class="text-dark"><?= htmlspecialchars($user['full_name']); ?></strong> (<code><?= htmlspecialchars($user['email']); ?></code>)?
+                                                        </p>
+                                                        <div class="alert alert-danger bg-danger-subtle text-danger border-0 p-3 mb-0 rounded-3 small">
+                                                            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                                                            <strong>Warning:</strong> This will delete this user <strong>everywhere in the system</strong>, including all created tickets and replies. This action cannot be undone.
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-top-0 pt-0 gap-2">
+                                                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="<?= BASE_URL ?>/agent/users/delete/<?= $user['id']; ?>" method="POST" class="d-inline">
+                                                            <?= Csrf::field(); ?>
+                                                            <button type="submit" class="btn btn-danger px-4 fw-bold">
+                                                                <i class="bi bi-trash-fill me-1"></i> Confirm & Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     <?php else: ?>
 
-                                        <span class="text-muted">
+                                        <span class="text-muted small">
                                             Protected
                                         </span>
 

@@ -210,4 +210,35 @@ class OrganizationUserController extends Controller
 
         exit;
     }
+
+    public function delete($id)
+    {
+        $adminUser = $this->organizationAdminGuard();
+
+        $userModel = new User();
+        $targetUser = $userModel->findById($id);
+
+        if (!$targetUser || (int)$targetUser['organization_id'] !== (int)$adminUser['organization_id']) {
+            $_SESSION['error'] = "User not found in your organization.";
+            header("Location: " . BASE_URL . "/organization-users");
+            exit;
+        }
+
+        if ((int)$targetUser['id'] === (int)$adminUser['id']) {
+            $_SESSION['error'] = "You cannot delete your own account.";
+            header("Location: " . BASE_URL . "/organization-users");
+            exit;
+        }
+
+        $deleted = $userModel->deleteUserCompletely($id);
+
+        if ($deleted) {
+            $_SESSION['success'] = "User '" . htmlspecialchars($targetUser['full_name']) . "' deleted successfully.";
+        } else {
+            $_SESSION['error'] = "Unable to delete user.";
+        }
+
+        header("Location: " . BASE_URL . "/organization-users");
+        exit;
+    }
 }

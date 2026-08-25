@@ -196,6 +196,20 @@ $totalActive = count(array_filter(
 
     <?php endif; ?>
 
+    <?php if (isset($_SESSION['error'])): ?>
+
+        <div class="alert alert-danger mb-4">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            <?= htmlspecialchars($_SESSION['error']); ?>
+
+        </div>
+
+        <?php unset($_SESSION['error']); ?>
+
+    <?php endif; ?>
+
 
     <!-- =======================================================
          USER TABLE
@@ -422,7 +436,7 @@ $totalActive = count(array_filter(
                                             <a
                                                 href="<?= BASE_URL ?>/admin/users/edit/<?= $user['id']; ?>"
                                                 class="table-action-btn table-action-edit"
-                                                title="Edit">
+                                                title="Edit User">
 
                                                 <i class="bi bi-pencil-fill"></i>
 
@@ -430,13 +444,84 @@ $totalActive = count(array_filter(
 
                                             <a
                                                 href="<?= BASE_URL ?>/admin/users/disable/<?= $user['id']; ?>"
-                                                class="table-action-btn table-action-delete"
-                                                onclick="return confirm('Disable this user?')"
-                                                title="Disable">
+                                                class="table-action-btn"
+                                                style="color: #ea580c; border-color: #ffedd5;"
+                                                onclick="return confirm('<?= $user['is_active'] ? 'Disable' : 'Enable' ?> this user?')"
+                                                title="<?= $user['is_active'] ? 'Disable' : 'Enable' ?> User">
 
-                                                <i class="bi bi-person-x-fill"></i>
+                                                <i class="bi bi-slash-circle-fill"></i>
 
                                             </a>
+
+                                            <button
+                                                type="button"
+                                                class="table-action-btn table-action-delete"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteUserModal<?= $user['id']; ?>"
+                                                title="Delete User Everywhere">
+
+                                                <i class="bi bi-trash-fill"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                        <!-- Delete Confirmation Modal -->
+                                        <div class="modal fade text-start" id="deleteUserModal<?= $user['id']; ?>" tabindex="-1" aria-labelledby="deleteUserModalLabel<?= $user['id']; ?>" aria-hidden="true">
+
+                                            <div class="modal-dialog modal-dialog-centered">
+
+                                                <div class="modal-content border-0 shadow card-radius">
+
+                                                    <div class="modal-header border-bottom-0 pb-0">
+
+                                                        <h5 class="modal-title fw-bold text-danger" id="deleteUserModalLabel<?= $user['id']; ?>">
+
+                                                            <i class="bi bi-exclamation-triangle-fill me-2"></i> Delete User Everywhere
+
+                                                        </h5>
+
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                                                    </div>
+
+                                                    <div class="modal-body py-3">
+
+                                                        <p class="mb-3 fs-6">
+                                                            Are you sure you want to permanently delete user <strong class="text-dark"><?= htmlspecialchars($user['full_name']); ?></strong> (<code><?= htmlspecialchars($user['email']); ?></code>)?
+                                                        </p>
+
+                                                        <div class="alert alert-danger bg-danger-subtle text-danger border-0 p-3 mb-0 rounded-3 small">
+
+                                                            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+
+                                                            <strong>Critical Warning:</strong> This will delete this user <strong>everywhere in the system</strong>, including all created tickets, ticket replies, activity logs, MFA credentials, and user permissions. This action cannot be undone.
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="modal-footer border-top-0 pt-0 gap-2">
+
+                                                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+
+                                                        <form action="<?= BASE_URL ?>/admin/users/delete/<?= $user['id']; ?>" method="POST" class="d-inline">
+
+                                                            <?= Csrf::field(); ?>
+
+                                                            <button type="submit" class="btn btn-danger px-4 fw-bold">
+
+                                                                <i class="bi bi-trash-fill me-1"></i> Confirm & Delete User
+
+                                                            </button>
+
+                                                        </form>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
 
                                         </div>
 

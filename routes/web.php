@@ -70,6 +70,8 @@ $router->get('/admin/users/edit/{id}', 'AdminUserController@edit');
 $router->post('/admin/users/update/{id}', 'AdminUserController@update');
 
 $router->get('/admin/users/disable/{id}', 'AdminUserController@disable');
+$router->get('/admin/users/delete/{id}', 'AdminUserController@delete');
+$router->post('/admin/users/delete/{id}', 'AdminUserController@delete');
 
 $router->get('/admin/organizations', 'AdminOrganizationController@index');
 $router->get('/admin/organizations/create', 'AdminOrganizationController@create');
@@ -114,6 +116,11 @@ $router->get('/agent/users/edit/{id}', 'AgentUserController@edit');
 $router->post('/agent/users/update/{id}', 'AgentUserController@update');
 
 $router->get('/agent/users/disable/{id}', 'AgentUserController@disable');
+$router->get('/agent/users/delete/{id}', 'AgentUserController@delete');
+$router->post('/agent/users/delete/{id}', 'AgentUserController@delete');
+
+$router->get('/organization-users/delete/{id}', 'OrganizationUserController@delete');
+$router->post('/organization-users/delete/{id}', 'OrganizationUserController@delete');
 
 $router->get('/reports/ticket-search', 'ReportController@searchTickets');
 $router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketDetail');

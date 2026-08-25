@@ -262,4 +262,35 @@ class AgentUserController extends Controller
     header("Location: " . BASE_URL . "/agent/users");
     exit;
 }
+
+    public function delete($id)
+    {
+        $this->agentGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: " . BASE_URL . "/agent/users");
+            exit;
+        }
+
+        if ($user['role'] !== 'user') {
+            $_SESSION['error'] = "Only end-user accounts can be deleted.";
+            header("Location: " . BASE_URL . "/agent/users");
+            exit;
+        }
+
+        $deleted = $userModel->deleteUserCompletely($id);
+
+        if ($deleted) {
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' and all associated data deleted successfully.";
+        } else {
+            $_SESSION['error'] = "Unable to delete user.";
+        }
+
+        header("Location: " . BASE_URL . "/agent/users");
+        exit;
+    }
 }

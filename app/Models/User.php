@@ -559,4 +559,85 @@ class User extends Model
 
         return $stmt->fetch();
     }
+
+    public function deleteUserCompletely($userId)
+    {
+        $userId = (int)$userId;
+        if ($userId <= 0) {
+            return false;
+        }
+
+        $user = $this->findById($userId);
+        if (!$user || $user['role'] === 'admin') {
+            return false;
+        }
+
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM authenticator_secrets WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM mfa_recovery_otps WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM login_otps WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            if (!empty($user['email'])) {
+                $stmt = $this->db->prepare("DELETE FROM password_reset_otps WHERE email = ?");
+                $stmt->execute([$user['email']]);
+            }
+
+            $stmt = $this->db->prepare("DELETE FROM activity_logs WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM reply_attachments WHERE uploaded_by = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM ticket_attachments WHERE uploaded_by = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM ticket_replies WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM ticket_status_history WHERE changed_by = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("SELECT id FROM tickets WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $ticketIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            if (!empty($ticketIds)) {
+                $inClause = implode(',', array_map('intval', $ticketIds));
+
+                $this->db->exec("DELETE FROM reply_attachments WHERE ticket_id IN ($inClause)");
+                $this->db->exec("DELETE FROM ticket_attachments WHERE ticket_id IN ($inClause)");
+                $this->db->exec("DELETE FROM ticket_replies WHERE ticket_id IN ($inClause)");
+                $this->db->exec("DELETE FROM ticket_status_history WHERE ticket_id IN ($inClause)");
+
+                $stmt = $this->db->prepare("DELETE FROM tickets WHERE user_id = ?");
+                $stmt->execute([$userId]);
+            }
+
+            $stmt = $this->db->prepare("UPDATE tickets SET closed_by_agent_id = NULL WHERE closed_by_agent_id = ?");
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM users WHERE id = ? AND role != 'admin'");
+            $result = $stmt->execute([$userId]);
+
+            $this->db->commit();
+            return $result;
+
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Error deleting user {$userId}: " . $e->getMessage());
+            return false;
+        }
+    }
 }

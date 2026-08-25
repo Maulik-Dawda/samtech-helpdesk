@@ -361,4 +361,41 @@ class AdminUserController extends Controller
         header("Location: " . BASE_URL . "/admin/users");
         exit;
     }
+
+    public function delete($id)
+    {
+        $this->adminGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: " . BASE_URL . "/admin/users");
+            exit;
+        }
+
+        if ($user['role'] === 'admin') {
+            $_SESSION['error'] = "Protected administrator accounts cannot be deleted.";
+            header("Location: " . BASE_URL . "/admin/users");
+            exit;
+        }
+
+        if ((int)$user['id'] === (int)($_SESSION['auth_user_id'] ?? 0)) {
+            $_SESSION['error'] = "You cannot delete your own logged-in account.";
+            header("Location: " . BASE_URL . "/admin/users");
+            exit;
+        }
+
+        $deleted = $userModel->deleteUserCompletely($id);
+
+        if ($deleted) {
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' and all associated data deleted successfully from the system.";
+        } else {
+            $_SESSION['error'] = "Unable to delete user from the system.";
+        }
+
+        header("Location: " . BASE_URL . "/admin/users");
+        exit;
+    }
 }
