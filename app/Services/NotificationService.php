@@ -22,7 +22,7 @@ class NotificationService
             ];
         }
 
-        $db = Database::getInstance()->getConnection();
+        $db = Database::connect();
         $notifications = [];
 
         // 1. SLA OVERDUE ALERTS
