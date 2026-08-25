@@ -48,4 +48,14 @@ class AuthenticatorSecret extends Model
 
         return $stmt->execute([$newSecret, $userId]);
     }
+
+    public function deleteByUserId($userId)
+    {
+        $stmt = $this->db->prepare("
+            DELETE FROM authenticator_secrets
+            WHERE user_id = ?
+        ");
+
+        return $stmt->execute([$userId]);
+    }
 }

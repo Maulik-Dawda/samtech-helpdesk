@@ -27,7 +27,7 @@ class ProfileController extends Controller
         $this->authGuard();
 
         $userModel = new User();
-        $permissionModel = new Permission();
+        $activityLogModel = new ActivityLog();
 
         $user = $userModel->findByIdWithOrganization(
             $_SESSION['auth_user_id']
@@ -39,17 +39,39 @@ class ProfileController extends Controller
             exit;
         }
 
-        $permissions = [];
-
-        if ($user['role'] !== 'admin') {
-            $permissions = $permissionModel->getUserPermissions($user['id']);
-        }
+        $activities = $activityLogModel->getRecentByUser($_SESSION['auth_user_id'], 5);
 
         $this->view('profile/index', [
             'user' => $user,
-            'permissions' => $permissions
+            'activities' => $activities
         ]);
     }
+
+    public function resetAuthenticator()
+    {
+        $this->authGuard();
+
+        require_once ROOT_PATH . "/app/Models/AuthenticatorSecret.php";
+        $secretModel = new AuthenticatorSecret();
+        $secretModel->deleteByUserId($_SESSION['auth_user_id']);
+
+        $userModel = new User();
+        $userModel->resetMfa($_SESSION['auth_user_id']);
+
+        $activityLog = new ActivityLog();
+        $activityLog->create(
+            $_SESSION['auth_user_id'],
+            'Reset Authenticator (2FA)',
+            $_SERVER['REMOTE_ADDR'] ?? null,
+            $_SERVER['HTTP_USER_AGENT'] ?? null
+        );
+
+        $_SESSION['success'] = 'Authenticator has been reset successfully.';
+
+        header('Location: ' . BASE_URL . '/profile');
+        exit;
+    }
+
     public function changePassword()
     {
         $this->authGuard();

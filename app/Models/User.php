@@ -676,4 +676,15 @@ class User extends Model
 
         return $grouped;
     }
+
+    public function resetMfa($userId)
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET mfa_secret = NULL
+            WHERE id = ?
+        ");
+
+        return $stmt->execute([$userId]);
+    }
 }

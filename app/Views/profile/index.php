@@ -146,26 +146,6 @@ $mfaEnabled = !empty($user['mfa_secret']);
                         <div class="profile-summary-item">
 
                             <div class="profile-summary-icon">
-                                <i class="bi bi-hash"></i>
-                            </div>
-
-                            <div class="text-start">
-
-                                <span class="profile-summary-label">
-                                    User ID
-                                </span>
-
-                                <strong class="profile-summary-value">
-                                    #<?= htmlspecialchars((string) $userId); ?>
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                        <div class="profile-summary-item">
-
-                            <div class="profile-summary-icon">
                                 <i class="bi bi-calendar-check"></i>
                             </div>
 
@@ -318,30 +298,6 @@ $mfaEnabled = !empty($user['mfa_secret']);
                             <div class="profile-info-card">
 
                                 <div class="profile-info-icon">
-                                    <i class="bi bi-hash"></i>
-                                </div>
-
-                                <div>
-
-                                    <span class="profile-info-label">
-                                        User ID
-                                    </span>
-
-                                    <div class="profile-info-value">
-                                        #<?= htmlspecialchars((string) $userId); ?>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="profile-info-card">
-
-                                <div class="profile-info-icon">
                                     <i class="bi bi-calendar3"></i>
                                 </div>
 
@@ -469,13 +425,16 @@ $mfaEnabled = !empty($user['mfa_secret']);
                                         Reset and configure your authenticator on a new device.
                                     </p>
 
-                                    <a
-                                        href="<?= BASE_URL ?>/mfa-recovery"
-                                        class="btn btn-outline-warning w-100"
-                                    >
-                                        <i class="bi bi-arrow-repeat me-2"></i>
-                                        Reset Authenticator
-                                    </a>
+                                    <form method="POST" action="<?= BASE_URL ?>/profile/reset-authenticator" onsubmit="return confirm('Are you sure you want to reset your Authenticator (2FA)?');">
+                                        <?= Csrf::field(); ?>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-outline-warning w-100"
+                                        >
+                                            <i class="bi bi-arrow-repeat me-2"></i>
+                                            Reset Authenticator
+                                        </button>
+                                    </form>
 
                                 </div>
 
@@ -488,59 +447,6 @@ $mfaEnabled = !empty($user['mfa_secret']);
                 </div>
 
             </div>
-
-            <!-- Assigned permissions -->
-            <?php if (!empty($permissions)): ?>
-
-                <div class="ui-panel mb-4">
-
-                    <div class="ui-panel-header">
-
-                        <div>
-
-                            <h5 class="ui-panel-title">
-                                <i class="bi bi-check2-square me-2"></i>
-                                Assigned Permissions
-                            </h5>
-
-                            <p class="ui-panel-subtitle mb-0">
-                                Access permissions currently assigned to your account.
-                            </p>
-
-                        </div>
-
-                        <span class="app-badge app-badge-neutral">
-                            <?= count($permissions); ?>
-                            Permission<?= count($permissions) === 1 ? '' : 's'; ?>
-                        </span>
-
-                    </div>
-
-                    <div class="ui-panel-body">
-
-                        <div class="permission-list">
-
-                            <?php foreach ($permissions as $permission): ?>
-
-                                <span class="permission-badge">
-
-                                    <i class="bi bi-check-circle-fill"></i>
-
-                                    <?= htmlspecialchars(
-                                        $permission['permission_name'] ?? ''
-                                    ); ?>
-
-                                </span>
-
-                            <?php endforeach; ?>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            <?php endif; ?>
 
             <!-- Recent activity -->
             <div class="ui-panel">

@@ -38,6 +38,25 @@ class ActivityLog extends Model
         return $stmt->fetchAll();
     }
 
+    public function getRecentByUser($userId, $limit = 5)
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                activity_logs.*,
+                users.full_name,
+                users.role
+            FROM activity_logs
+            LEFT JOIN users ON users.id = activity_logs.user_id
+            WHERE activity_logs.user_id = ?
+            ORDER BY activity_logs.created_at DESC
+            LIMIT " . (int)$limit
+        );
+
+        $stmt->execute([$userId]);
+
+        return $stmt->fetchAll();
+    }
+
     private function buildFilterQuery($filters, &$params)
     {
         $sql = "
