@@ -7,7 +7,7 @@
 .ui-panel,
 .card {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
 }
@@ -20,9 +20,9 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
 
-    padding: 20px 22px;
+    padding: 12px 16px;
 
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
@@ -37,39 +37,39 @@
 
     color: var(--color-dark);
 
-    font-size: 17px;
+    font-size: 15px;
     line-height: 1.3;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .ui-panel-subtitle {
-    margin: 5px 0 0;
+    margin: 3px 0 0;
 
     color: var(--color-muted);
 
-    font-size: 12px;
-    line-height: 1.55;
+    font-size: 11.5px;
+    line-height: 1.45;
 }
 
 .ui-panel-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     flex-shrink: 0;
 }
 
 .ui-panel-body {
-    padding: 22px;
+    padding: 14px 16px;
 }
 
 .ui-panel-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
 
-    padding: 14px 22px;
+    padding: 10px 16px;
 
     border-top: 1px solid var(--color-border);
     background: #fbfcfd;
@@ -84,21 +84,21 @@
 .metric-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: 12px;
 }
 
 .metric-card {
     position: relative;
 
     min-width: 0;
-    min-height: 148px;
+    min-height: 95px;
 
-    padding: 20px;
+    padding: 12px 14px;
 
     overflow: hidden;
 
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
 
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
@@ -110,7 +110,7 @@
 }
 
 .metric-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     border-color: var(--color-border-dark);
     box-shadow: var(--shadow-md);
 }
@@ -119,11 +119,11 @@
     content: "";
 
     position: absolute;
-    top: -40px;
-    right: -40px;
+    top: -30px;
+    right: -30px;
 
-    width: 110px;
-    height: 110px;
+    width: 80px;
+    height: 80px;
 
     border-radius: 50%;
 
@@ -137,12 +137,12 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
 }
 
 .metric-card-icon {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
 
     display: inline-flex;
     align-items: center;
@@ -150,44 +150,44 @@
 
     flex-shrink: 0;
 
-    border-radius: 13px;
+    border-radius: var(--radius-md);
 
     background: var(--color-primary-soft);
     color: var(--color-primary-deep);
 
-    font-size: 18px;
+    font-size: 15px;
 }
 
 .metric-card-label {
-    margin-top: 18px;
-
-    color: var(--color-muted);
-
-    font-size: 12px;
-    line-height: 1.4;
-    font-weight: 700;
-}
-
-.metric-card-value {
-    margin-top: 5px;
-
-    color: var(--color-dark);
-
-    font-size: 30px;
-    line-height: 1.1;
-    font-weight: 900;
-}
-
-.metric-card-meta {
-    margin-top: 12px;
-
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    margin-top: 8px;
 
     color: var(--color-muted);
 
     font-size: 11px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.metric-card-value {
+    margin-top: 2px;
+
+    color: var(--color-dark);
+
+    font-size: 22px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.metric-card-meta {
+    margin-top: 6px;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    color: var(--color-muted);
+
+    font-size: 10.5px;
     font-weight: 600;
 }
 
@@ -230,12 +230,12 @@
 */
 
 .chart-card {
-    min-height: 360px;
+    min-height: 280px;
 
-    padding: 20px;
+    padding: 14px 16px;
 
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
 
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
@@ -245,9 +245,9 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 14px;
+    gap: 12px;
 
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
 .chart-card-title {
