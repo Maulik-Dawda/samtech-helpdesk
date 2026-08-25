@@ -186,8 +186,8 @@ class Ticket extends Model
         $sql = "
             SELECT 
                 tickets.*,
-                users.full_name AS customer_name,
-                users.email AS customer_email,
+                COALESCE(users.full_name, organizations.name) AS customer_name,
+                COALESCE(users.email, organizations.email, '') AS customer_email,
                 organizations.name AS organization_name,
                 assigned_agent.full_name AS assigned_agent_name
             FROM tickets
@@ -227,13 +227,16 @@ class Ticket extends Model
         $stmt = $this->db->prepare("
         SELECT 
             tickets.*,
-            users.full_name AS customer_name,
-            users.email AS customer_email,
-            closed_agent.full_name AS closed_by_agent_name
+            COALESCE(users.full_name, organizations.name) AS customer_name,
+            COALESCE(users.email, organizations.email, '') AS customer_email,
+            organizations.name AS organization_name,
+            closed_agent.full_name AS closed_by_agent_name,
+            assigned_agent.full_name AS assigned_agent_name
         FROM tickets
-        JOIN users ON users.id = tickets.user_id
-        LEFT JOIN users AS closed_agent 
-            ON closed_agent.id = tickets.closed_by_agent_id
+        LEFT JOIN users ON users.id = tickets.user_id
+        LEFT JOIN organizations ON organizations.id = tickets.organization_id
+        LEFT JOIN users AS closed_agent ON closed_agent.id = tickets.closed_by_agent_id
+        LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE tickets.id = ?
         LIMIT 1
     ");
@@ -329,8 +332,8 @@ class Ticket extends Model
         $sql = "
         SELECT 
             tickets.*,
-            users.full_name AS customer_name,
-            users.email AS customer_email,
+            COALESCE(users.full_name, organizations.name) AS customer_name,
+            COALESCE(users.email, organizations.email, '') AS customer_email,
             organizations.name AS organization_name,
             closed_agent.full_name AS closed_by_agent_name,
             assigned_agent.full_name AS assigned_agent_name
@@ -391,14 +394,16 @@ class Ticket extends Model
         $stmt = $this->db->prepare("
         SELECT 
             tickets.*,
-            users.full_name AS customer_name,
-            users.email AS customer_email,
+            COALESCE(users.full_name, organizations.name) AS customer_name,
+            COALESCE(users.email, organizations.email, '') AS customer_email,
             organizations.name AS organization_name,
-            closed_agent.full_name AS closed_by_agent_name
+            closed_agent.full_name AS closed_by_agent_name,
+            assigned_agent.full_name AS assigned_agent_name
         FROM tickets
         LEFT JOIN users ON users.id = tickets.user_id
         LEFT JOIN organizations ON organizations.id = tickets.organization_id
         LEFT JOIN users AS closed_agent ON closed_agent.id = tickets.closed_by_agent_id
+        LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE tickets.id = ?
         LIMIT 1
     ");
@@ -440,7 +445,7 @@ class Ticket extends Model
         $sql = "
         SELECT 
             tickets.*,
-            users.full_name AS customer_name,
+            COALESCE(users.full_name, organizations.name) AS customer_name,
             organizations.name AS organization_name
         FROM tickets
         LEFT JOIN users ON users.id = tickets.user_id

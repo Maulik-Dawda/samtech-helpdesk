@@ -648,4 +648,32 @@ class User extends Model
 
         return $stmt->fetchAll();
     }
+
+    public function getAllActiveUsersByOrganization()
+    {
+        $stmt = $this->db->prepare("
+            SELECT id, full_name, email, organization_id
+            FROM users
+            WHERE organization_id IS NOT NULL AND is_active = 1
+            ORDER BY full_name ASC
+        ");
+
+        $stmt->execute();
+        $users = $stmt->fetchAll();
+
+        $grouped = [];
+        foreach ($users as $u) {
+            $orgId = (int)$u['organization_id'];
+            if (!isset($grouped[$orgId])) {
+                $grouped[$orgId] = [];
+            }
+            $grouped[$orgId][] = [
+                'id' => (int)$u['id'],
+                'full_name' => $u['full_name'],
+                'email' => $u['email']
+            ];
+        }
+
+        return $grouped;
+    }
 }

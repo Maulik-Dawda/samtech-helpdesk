@@ -309,10 +309,12 @@ class AgentTicketController extends Controller
 
         $organizations = $organizationModel->getAllActive();
         $agents = $userModel->getRegularAgents();
+        $orgUsersGrouped = $userModel->getAllActiveUsersByOrganization();
 
         $this->view('agent/tickets/create', [
             'organizations' => $organizations,
-            'agents' => $agents
+            'agents' => $agents,
+            'orgUsersGrouped' => $orgUsersGrouped
         ]);
     }
 
@@ -328,6 +330,7 @@ class AgentTicketController extends Controller
         }
 
         $organizationId = (int)($_POST['organization_id'] ?? 0);
+        $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : null;
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
@@ -349,7 +352,7 @@ class AgentTicketController extends Controller
 
         $created = $ticketModel->create([
             'ticket_no' => $ticketNo,
-            'user_id' => $_SESSION['auth_user_id'],
+            'user_id' => $userId,
             'organization_id' => $organizationId,
             'assigned_agent_id' => $assignedAgentId,
             'created_by' => $_SESSION['auth_user_id'],

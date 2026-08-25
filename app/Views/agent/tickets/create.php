@@ -133,6 +133,7 @@ $organizations = is_array($organizations ?? null)
 
                     <select
                         name="organization_id"
+                        id="organizationSelect"
                         class="form-select"
                         required>
 
@@ -152,6 +153,36 @@ $organizations = is_array($organizations ?? null)
                         <?php endforeach; ?>
 
                     </select>
+
+                </div>
+
+
+                <!-- On Behalf Of User (Optional) -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        On Behalf Of User (Optional)
+
+                    </label>
+
+                    <select
+                        name="user_id"
+                        id="orgUserSelect"
+                        class="form-select">
+
+                        <option value="">
+                            Select User (Defaults to Organization Name)
+                        </option>
+
+                    </select>
+
+                    <div class="form-text">
+
+                        Select a user from this company, or leave blank to attribute ticket to company name.
+
+                    </div>
 
                 </div>
 
@@ -373,5 +404,36 @@ $organizations = is_array($organizations ?? null)
     </section>
 
 </div>
+
+<script>
+const orgUsersMap = <?= json_encode($orgUsersGrouped ?? []); ?>;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const orgSelect = document.getElementById('organizationSelect');
+    const userSelect = document.getElementById('orgUserSelect');
+
+    function updateOrgUsers() {
+        if (!orgSelect || !userSelect) return;
+
+        const selectedOrgId = orgSelect.value;
+        userSelect.innerHTML = '<option value="">Select User (Defaults to Organization Name)</option>';
+
+        if (selectedOrgId && orgUsersMap[selectedOrgId]) {
+            const users = orgUsersMap[selectedOrgId];
+            users.forEach(function(user) {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = user.full_name + ' (' + user.email + ')';
+                userSelect.appendChild(option);
+            });
+        }
+    }
+
+    if (orgSelect) {
+        orgSelect.addEventListener('change', updateOrgUsers);
+        updateOrgUsers();
+    }
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
