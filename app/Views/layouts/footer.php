@@ -123,23 +123,55 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 });
 
-function downloadDirectServerPdf(downloadUrl, btn) {
+async function downloadDirectServerPdf(downloadUrl, btn) {
     if (!btn) return;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Downloading PDF...';
     btn.disabled = true;
 
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.setAttribute('download', '');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+        const response = await fetch(downloadUrl, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
 
-    setTimeout(function() {
+        if (!response.ok) {
+            throw new Error('HTTP error ' + response.status);
+        }
+
+        const blob = await response.blob();
+        if (blob.size === 0) {
+            throw new Error('Received 0-byte PDF blob');
+        }
+
+        let filename = 'Samtech-Helpdesk-Report.pdf';
+        const disposition = response.headers.get('Content-Disposition');
+        if (disposition && disposition.includes('filename=')) {
+            const match = disposition.match(/filename=["']?([^"';]+)["']?/);
+            if (match && match[1]) {
+                filename = match[1];
+            }
+        }
+
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(function() {
+            window.URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(a);
+        }, 200);
+
+    } catch (err) {
+        console.error('PDF Fetch Error:', err);
+        alert('Failed to download PDF. Please try again.');
+    } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
-    }, 2000);
+    }
 }
 
 async function downloadElementAsPdf(elementId, filename, btn, headerTitle) {

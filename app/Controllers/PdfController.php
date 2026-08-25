@@ -115,6 +115,7 @@ class PdfController extends Controller
 
         header("Content-Type: application/pdf");
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Access-Control-Expose-Headers: Content-Disposition");
         header("Content-Length: " . strlen($pdfBinary));
         header("Cache-Control: private, max-age=0, must-revalidate");
         header("Pragma: public");
