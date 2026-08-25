@@ -145,13 +145,28 @@ $logoSrc = file_exists($logoPath)
         }
 
         @media print {
-            .print-btn {
+            .print-btn, .print-actions {
                 display: none !important;
             }
 
-            body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            html, body {
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                color: #111827 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            table, table.header-table, table.info-table, table.reply-header-table {
+                width: 100% !important;
+                display: table !important;
+            }
+
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
             }
         }
     </style>
@@ -308,8 +323,27 @@ $logoSrc = file_exists($logoPath)
 
     <?php if (empty($isPdfDownload)): ?>
     <script>
-        window.onload = function() {
-            window.print();
+        function triggerSafePrint() {
+            var images = Array.from(document.images);
+            var promises = images.map(function(img) {
+                if (img.complete) return Promise.resolve();
+                return new Promise(function(resolve) {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            });
+
+            Promise.all(promises).then(function() {
+                setTimeout(function() {
+                    window.print();
+                }, 350);
+            });
+        }
+
+        if (document.readyState === "complete") {
+            triggerSafePrint();
+        } else {
+            window.addEventListener("load", triggerSafePrint);
         }
     </script>
     <?php endif; ?>
