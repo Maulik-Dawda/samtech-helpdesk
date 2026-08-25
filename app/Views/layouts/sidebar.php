@@ -245,15 +245,15 @@ if ($isAdmin) {
                     <span class="sidebar-link-text">Users &amp; Agents</span>
                 </a>
 
-                <a
-                    class="sidebar-link <?= sidebarActive('/admin/activity-logs'); ?>"
-                    href="<?= BASE_URL ?>/admin/activity-logs"
-                >
-                    <i class="bi bi-clock-history sidebar-link-icon"></i>
-                    <span class="sidebar-link-text">Activity Logs</span>
-                </a>
-
                 <?php if ($isAdmin): ?>
+
+                    <a
+                        class="sidebar-link <?= sidebarActive('/admin/activity-logs'); ?>"
+                        href="<?= BASE_URL ?>/admin/activity-logs"
+                    >
+                        <i class="bi bi-clock-history sidebar-link-icon"></i>
+                        <span class="sidebar-link-text">Activity Logs</span>
+                    </a>
 
                     <a
                         class="sidebar-link <?= sidebarActive('/admin/permissions'); ?>"
