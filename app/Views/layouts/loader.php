@@ -97,6 +97,8 @@
 </div>
 
 <script>
+    let samtechLoaderTimer = null;
+
     function showSamtechLoader(message = 'Processing your request...') {
         const loader = document.getElementById('samtechLoaderOverlay');
         const text = document.getElementById('samtechLoaderText');
@@ -108,6 +110,14 @@
         if (loader) {
             loader.classList.add('show');
         }
+
+        // Auto-hide fallback after 5 seconds
+        if (samtechLoaderTimer) {
+            clearTimeout(samtechLoaderTimer);
+        }
+        samtechLoaderTimer = setTimeout(function() {
+            hideSamtechLoader();
+        }, 5000);
     }
 
     function hideSamtechLoader() {
@@ -116,7 +126,37 @@
         if (loader) {
             loader.classList.remove('show');
         }
+
+        if (samtechLoaderTimer) {
+            clearTimeout(samtechLoaderTimer);
+            samtechLoaderTimer = null;
+        }
     }
+
+    // Always hide loader on load, DOMContentLoaded, pageshow (BFCache), and popstate
+    document.addEventListener('DOMContentLoaded', hideSamtechLoader);
+    window.addEventListener('load', hideSamtechLoader);
+    window.addEventListener('pageshow', function() {
+        hideSamtechLoader();
+    });
+    window.addEventListener('popstate', function() {
+        hideSamtechLoader();
+    });
+
+    // Dashboard root navigation lock (Prevents back-navigation to login pages from Dashboard)
+    (function() {
+        const currentPath = window.location.pathname;
+        const isDashboardPage = currentPath.includes('dashboard');
+
+        if (isDashboardPage && window.history && window.history.pushState) {
+            window.history.pushState(null, "", window.location.href);
+
+            window.addEventListener('popstate', function(e) {
+                hideSamtechLoader();
+                window.history.pushState(null, "", window.location.href);
+            });
+        }
+    })();
 
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -126,7 +166,11 @@
                 return;
             }
 
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function(e) {
+
+                if (e.defaultPrevented) {
+                    return;
+                }
 
                 let message = 'Processing your request...';
 
@@ -146,6 +190,8 @@
                     message = 'Processing ticket...';
                 } else if (action.includes('reports')) {
                     message = 'Preparing report...';
+                } else if (action.includes('delete')) {
+                    message = 'Deleting user...';
                 }
 
                 showSamtechLoader(message);
@@ -155,18 +201,22 @@
 
         document.querySelectorAll('a').forEach(function(link) {
 
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function(e) {
 
                 const href = link.getAttribute('href');
 
                 if (
                     !href ||
                     href === '#' ||
+                    href.startsWith('#') ||
                     href.startsWith('javascript:') ||
                     link.hasAttribute('data-bs-toggle') ||
-                    link.hasAttribute('target') ||
+                    link.hasAttribute('data-bs-dismiss') ||
+                    link.hasAttribute('download') ||
+                    link.getAttribute('target') === '_blank' ||
                     href.startsWith('mailto:') ||
-                    href.startsWith('tel:')
+                    href.startsWith('tel:') ||
+                    e.defaultPrevented
                 ) {
                     return;
                 }
