@@ -38,13 +38,13 @@
                 </div>
 
                 <?php if($ticket): ?>
-                    <a
-                        href="<?= BASE_URL ?>/reports/ticket-detail/print/<?= $ticket['id']; ?>"
-                        target="_blank"
+                    <button
+                        type="button"
+                        onclick="downloadElementAsPdf('ticketDetailReportContent', 'Samtech-Helpdesk-<?= htmlspecialchars($ticket['ticket_no'] ?? $ticket['id']); ?>.pdf', this, 'Ticket Detail Report')"
                         class="btn btn-primary-custom">
-                        <i class="bi bi-printer me-1"></i>
-                        Print Report
-                    </a>
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i>
+                        Download PDF
+                    </button>
                 <?php endif; ?>
             </div>
 
@@ -84,6 +84,7 @@
             };
         ?>
 
+        <div id="ticketDetailReportContent">
         <div class="row">
 
             <div class="col-lg-8">
@@ -289,6 +290,7 @@
 
             </div>
 
+        </div>
         </div>
 
     <?php elseif(!empty($ticketId)): ?>

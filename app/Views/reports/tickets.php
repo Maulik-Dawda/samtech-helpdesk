@@ -20,14 +20,14 @@
 
                 </div>
 
-                <a
-                    href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
-                    target="_blank"
+                <button
+                    type="button"
                     id="printReportBtn"
+                    onclick="downloadCurrentReportPdf(this)"
                     class="btn btn-primary-custom">
-                    <i class="bi bi-printer me-1"></i>
-                    Print Report
-                </a>
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>
+                    Download PDF
+                </button>
 
             </div>
 
@@ -217,6 +217,12 @@
 </div>
 
 <script>
+function downloadCurrentReportPdf(btn) {
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    const filename = "Samtech-Helpdesk-" + randomNum + ".pdf";
+    downloadElementAsPdf("ticketReportTable", filename, btn, "Ticket Report");
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 
     const form = document.getElementById("ticketReportFilterForm");
