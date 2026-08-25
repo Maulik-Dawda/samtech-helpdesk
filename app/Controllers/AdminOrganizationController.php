@@ -2,6 +2,8 @@
 
 require_once ROOT_PATH . "/app/Core/Controller.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
+require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/Ticket.php";
 
 class AdminOrganizationController extends Controller
 {
@@ -180,5 +182,49 @@ class AdminOrganizationController extends Controller
 
         header("Location: " . BASE_URL . "/organizations");
         exit;
+    }
+
+    public function show($id)
+    {
+        $this->staffGuard();
+
+        $organizationModel = new Organization();
+        $userModel = new User();
+        $ticketModel = new Ticket();
+
+        $organization = $organizationModel->findById($id);
+
+        if (!$organization) {
+            http_response_code(404);
+            echo "Organization not found.";
+            exit;
+        }
+
+        $users = $userModel->getOrganizationUsers($id);
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) {
+            $page = 1;
+        }
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $totalTickets = $ticketModel->countOrganizationTickets($id);
+        $totalPages = (int)ceil($totalTickets / $limit);
+        if ($totalPages < 1) {
+            $totalPages = 1;
+        }
+
+        $tickets = $ticketModel->getOrganizationTicketsPaginated($id, $limit, $offset);
+
+        $this->view('admin/organizations/show', [
+            'organization' => $organization,
+            'users' => $users,
+            'tickets' => $tickets,
+            'totalTickets' => $totalTickets,
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'limit' => $limit
+        ]);
     }
 }

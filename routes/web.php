@@ -101,6 +101,9 @@ $router->get('/organizations', 'AdminOrganizationController@index');
 $router->get('/organizations/create', 'AdminOrganizationController@create');
 $router->post('/organizations/create', 'AdminOrganizationController@store');
 
+$router->get('/organizations/show/{id}', 'AdminOrganizationController@show');
+$router->get('/admin/organizations/show/{id}', 'AdminOrganizationController@show');
+
 $router->get('/organizations/edit/{id}', 'AdminOrganizationController@edit');
 $router->post('/organizations/update/{id}', 'AdminOrganizationController@update');
 

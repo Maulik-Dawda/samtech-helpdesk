@@ -444,10 +444,14 @@ class Ticket extends Model
     ) {
         $stmt = $this->db->prepare(
             "
-        SELECT *
+        SELECT 
+            tickets.*,
+            users.full_name AS customer_name,
+            users.email AS customer_email
         FROM tickets
-        WHERE organization_id = ?
-        ORDER BY created_at DESC
+        LEFT JOIN users ON users.id = tickets.user_id
+        WHERE tickets.organization_id = ?
+        ORDER BY tickets.created_at DESC
         LIMIT " . (int)$limit . "
         OFFSET " . (int)$offset
         );

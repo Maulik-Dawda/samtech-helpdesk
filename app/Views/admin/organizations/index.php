@@ -485,15 +485,29 @@ $totalUserCapacity = array_sum(array_map(
                                         data-label="Action"
                                         class="text-end">
 
-                                        <a
-                                            href="<?= BASE_URL ?>/admin/organizations/edit/<?= $organizationId; ?>"
-                                            class="table-action-btn table-action-edit ms-auto"
-                                            title="Edit organization"
-                                            aria-label="Edit organization">
+                                        <div class="d-inline-flex gap-2">
 
-                                            <i class="bi bi-pencil-fill"></i>
+                                            <a
+                                                href="<?= BASE_URL ?>/organizations/show/<?= $organizationId; ?>"
+                                                class="table-action-btn table-action-view"
+                                                title="View Details"
+                                                aria-label="View Details">
 
-                                        </a>
+                                                <i class="bi bi-eye-fill"></i>
+
+                                            </a>
+
+                                            <a
+                                                href="<?= BASE_URL ?>/admin/organizations/edit/<?= $organizationId; ?>"
+                                                class="table-action-btn table-action-edit"
+                                                title="Edit Organization"
+                                                aria-label="Edit Organization">
+
+                                                <i class="bi bi-pencil-fill"></i>
+
+                                            </a>
+
+                                        </div>
 
                                     </td>
 
