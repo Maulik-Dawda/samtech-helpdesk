@@ -127,6 +127,6 @@ $router->post('/organization-users/delete/{id}', 'OrganizationUserController@del
 
 $router->get('/reports/ticket-search', 'ReportController@searchTickets');
 $router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketDetail');
-$router->get('/reports/tickets/pdf', 'ReportController@downloadTicketsPdf');
-$router->get('/reports/ticket-detail/pdf/{id}', 'ReportController@downloadTicketDetailPdf');
+$router->get('/reports/tickets/pdf', 'PdfController@downloadTicketsPdf');
+$router->get('/reports/ticket-detail/pdf/{id}', 'PdfController@downloadTicketDetailPdf');
 
