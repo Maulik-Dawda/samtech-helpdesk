@@ -9,10 +9,14 @@ class ActivityLogController extends Controller
     private function adminGuard()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('admin');
-
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+
+        if (!PermissionHelper::canViewActivityLogs()) {
+            http_response_code(403);
+            require_once ROOT_PATH . "/app/Views/errors/403.php";
+            exit;
         }
     }
 

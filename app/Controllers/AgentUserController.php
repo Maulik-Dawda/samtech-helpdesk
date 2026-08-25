@@ -9,7 +9,7 @@ class AgentUserController extends Controller
     private function agentGuard()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

@@ -24,9 +24,12 @@ class DashboardController extends Controller
     public function admin()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('admin');
-
         $this->startSession();
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if ($role !== 'admin') {
+            AuthMiddleware::redirectByRole($role);
+            exit;
+        }
 
         $ticketModel = new Ticket();
         $userModel = new User();
@@ -63,9 +66,12 @@ class DashboardController extends Controller
     public function adminAgent()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('admin_agent');
-
         $this->startSession();
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if (!in_array($role, ['admin', 'agent'])) {
+            AuthMiddleware::redirectByRole($role);
+            exit;
+        }
 
         $ticketModel = new Ticket();
         $userModel = new User();
@@ -102,9 +108,12 @@ class DashboardController extends Controller
     public function agent()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
-
         $this->startSession();
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if (!in_array($role, ['admin', 'agent'])) {
+            AuthMiddleware::redirectByRole($role);
+            exit;
+        }
 
         $ticketModel = new Ticket();
 
@@ -132,9 +141,12 @@ class DashboardController extends Controller
     public function user()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('user');
-
         $this->startSession();
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if (in_array($role, ['admin', 'agent'])) {
+            AuthMiddleware::redirectByRole($role);
+            exit;
+        }
 
         $ticketModel = new Ticket();
         $userModel = new User();

@@ -14,7 +14,14 @@ class TicketController extends Controller
     public function create()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('user');
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if (in_array($role, ['admin', 'agent'])) {
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
 
         $userModel = new User();
         $agents = $userModel->getRegularAgents();
@@ -142,10 +149,13 @@ class TicketController extends Controller
     public function index()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('user');
-
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if (in_array($role, ['admin', 'agent'])) {
+            header("Location: " . BASE_URL . "/agent/tickets");
+            exit;
         }
 
         $userModel = new User();
@@ -192,10 +202,13 @@ class TicketController extends Controller
     public function show($id)
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('user');
-
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if (in_array($role, ['admin', 'agent'])) {
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
         }
 
         $userModel = new User();

@@ -209,7 +209,7 @@ if ($isAdmin) {
 
             <?php endif; ?>
 
-            <?php if ($isAgent): ?>
+            <?php if ($isAgent || $isAdmin): ?>
 
                 <a
                     class="sidebar-link <?= sidebarActive('/agent/tickets/create', true); ?>"
@@ -251,7 +251,7 @@ if ($isAdmin) {
                     <span class="sidebar-link-text">Users &amp; Agents</span>
                 </a>
 
-                <?php if ($isAdmin): ?>
+                <?php if ($isAdmin || $isAdminAgent): ?>
 
                     <a
                         class="sidebar-link <?= sidebarActive('/admin/activity-logs'); ?>"
@@ -260,6 +260,10 @@ if ($isAdmin) {
                         <i class="bi bi-clock-history sidebar-link-icon"></i>
                         <span class="sidebar-link-text">Activity Logs</span>
                     </a>
+
+                <?php endif; ?>
+
+                <?php if ($isAdmin): ?>
 
                     <a
                         class="sidebar-link <?= sidebarActive('/admin/permissions'); ?>"
@@ -272,6 +276,10 @@ if ($isAdmin) {
                 <?php endif; ?>
 
             </div>
+
+        <?php endif; ?>
+
+        <?php if ($isAdmin || $isAgent): ?>
 
             <div class="sidebar-section">
 

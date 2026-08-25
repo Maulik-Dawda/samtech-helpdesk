@@ -15,7 +15,7 @@ class AgentTicketController extends Controller
     public function index()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         $search = trim($_GET['search'] ?? $_GET['q'] ?? '');
 
@@ -52,7 +52,7 @@ class AgentTicketController extends Controller
     public function show($id)
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         $ticketModel = new Ticket();
         $ticket = $ticketModel->findForAgent($id);
@@ -87,7 +87,7 @@ class AgentTicketController extends Controller
         Csrf::verify();
 
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -179,7 +179,7 @@ class AgentTicketController extends Controller
         Csrf::verify();
 
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -302,7 +302,7 @@ class AgentTicketController extends Controller
     public function create()
     {
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         $organizationModel = new Organization();
         $userModel = new User();
@@ -323,7 +323,7 @@ class AgentTicketController extends Controller
         Csrf::verify();
 
         AuthMiddleware::timeout();
-        AuthMiddleware::check('agent');
+        AuthMiddleware::check(['admin', 'agent']);
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
