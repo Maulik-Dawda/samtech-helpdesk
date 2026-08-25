@@ -572,59 +572,51 @@ class User extends Model
             return false;
         }
 
+        $safeDelete = function($sql, $params = []) {
+            try {
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute($params);
+            } catch (Throwable $e) {
+                error_log("User deletion cleanup notice ($sql): " . $e->getMessage());
+            }
+        };
+
         try {
             $this->db->beginTransaction();
 
-            $stmt = $this->db->prepare("DELETE FROM user_permissions WHERE user_id = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("DELETE FROM authenticator_secrets WHERE user_id = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("DELETE FROM mfa_recovery_otps WHERE user_id = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("DELETE FROM login_otps WHERE user_id = ?");
-            $stmt->execute([$userId]);
+            $safeDelete("DELETE FROM user_permissions WHERE user_id = ?", [$userId]);
+            $safeDelete("DELETE FROM authenticator_secrets WHERE user_id = ?", [$userId]);
+            $safeDelete("DELETE FROM mfa_recovery_otps WHERE user_id = ?", [$userId]);
+            $safeDelete("DELETE FROM login_otps WHERE user_id = ?", [$userId]);
 
             if (!empty($user['email'])) {
-                $stmt = $this->db->prepare("DELETE FROM password_reset_otps WHERE email = ?");
-                $stmt->execute([$user['email']]);
+                $safeDelete("DELETE FROM password_reset_otps WHERE email = ?", [$user['email']]);
             }
 
-            $stmt = $this->db->prepare("DELETE FROM activity_logs WHERE user_id = ?");
-            $stmt->execute([$userId]);
+            $safeDelete("DELETE FROM activity_logs WHERE user_id = ?", [$userId]);
+            $safeDelete("DELETE FROM reply_attachments WHERE uploaded_by = ?", [$userId]);
+            $safeDelete("DELETE FROM ticket_attachments WHERE uploaded_by = ?", [$userId]);
+            $safeDelete("DELETE FROM ticket_replies WHERE user_id = ?", [$userId]);
+            $safeDelete("DELETE FROM ticket_status_history WHERE changed_by = ?", [$userId]);
 
-            $stmt = $this->db->prepare("DELETE FROM reply_attachments WHERE uploaded_by = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("DELETE FROM ticket_attachments WHERE uploaded_by = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("DELETE FROM ticket_replies WHERE user_id = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("DELETE FROM ticket_status_history WHERE changed_by = ?");
-            $stmt->execute([$userId]);
-
-            $stmt = $this->db->prepare("SELECT id FROM tickets WHERE user_id = ?");
-            $stmt->execute([$userId]);
-            $ticketIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-            if (!empty($ticketIds)) {
-                $inClause = implode(',', array_map('intval', $ticketIds));
-
-                $this->db->exec("DELETE FROM reply_attachments WHERE ticket_id IN ($inClause)");
-                $this->db->exec("DELETE FROM ticket_attachments WHERE ticket_id IN ($inClause)");
-                $this->db->exec("DELETE FROM ticket_replies WHERE ticket_id IN ($inClause)");
-                $this->db->exec("DELETE FROM ticket_status_history WHERE ticket_id IN ($inClause)");
-
-                $stmt = $this->db->prepare("DELETE FROM tickets WHERE user_id = ?");
+            try {
+                $stmt = $this->db->prepare("SELECT id FROM tickets WHERE user_id = ?");
                 $stmt->execute([$userId]);
+                $ticketIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($ticketIds)) {
+                    $inClause = implode(',', array_map('intval', $ticketIds));
+                    $safeDelete("DELETE FROM reply_attachments WHERE ticket_id IN ($inClause)");
+                    $safeDelete("DELETE FROM ticket_attachments WHERE ticket_id IN ($inClause)");
+                    $safeDelete("DELETE FROM ticket_replies WHERE ticket_id IN ($inClause)");
+                    $safeDelete("DELETE FROM ticket_status_history WHERE ticket_id IN ($inClause)");
+                    $safeDelete("DELETE FROM tickets WHERE user_id = ?", [$userId]);
+                }
+            } catch (Throwable $e) {
+                error_log("Ticket cleanup notice: " . $e->getMessage());
             }
 
-            $stmt = $this->db->prepare("UPDATE tickets SET closed_by_agent_id = NULL WHERE closed_by_agent_id = ?");
-            $stmt->execute([$userId]);
+            $safeDelete("UPDATE tickets SET closed_by_agent_id = NULL WHERE closed_by_agent_id = ?", [$userId]);
 
             $stmt = $this->db->prepare("DELETE FROM users WHERE id = ? AND role != 'admin'");
             $result = $stmt->execute([$userId]);
