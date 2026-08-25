@@ -186,9 +186,11 @@
                 <div class="search-box">
 
                     <input
-                        type="text"
+                        type="search"
+                        id="orgUsersSearchInput"
                         class="form-control"
-                        placeholder="Search users...">
+                        placeholder="Search users..."
+                        autocomplete="off">
 
                 </div>
 
@@ -243,7 +245,7 @@
 
                         </thead>
 
-                        <tbody>
+                        <tbody id="orgUsersTableBody">
 
                         <?php foreach($organizationUsers as $user): ?>
 
@@ -373,5 +375,22 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('orgUsersSearchInput');
+    const tbody = document.getElementById('orgUsersTableBody');
+    if (!input || !tbody) return;
+
+    input.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

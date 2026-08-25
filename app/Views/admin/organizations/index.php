@@ -244,12 +244,24 @@ $totalUserCapacity = array_sum(array_map(
 
             </div>
 
-            <div class="app-badge app-badge-primary">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                <i class="bi bi-building"></i>
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 14px;"></i>
+                    <input
+                        type="search"
+                        id="orgDirectorySearchInput"
+                        class="form-control ps-5"
+                        style="min-width: 260px;"
+                        placeholder="Search organizations..."
+                        autocomplete="off">
+                </div>
 
-                <?= $totalOrganizations; ?>
-                <?= $totalOrganizations === 1 ? 'Organization' : 'Organizations'; ?>
+                <div class="app-badge app-badge-primary">
+                    <i class="bi bi-building"></i>
+                    <?= $totalOrganizations; ?>
+                    <?= $totalOrganizations === 1 ? 'Organization' : 'Organizations'; ?>
+                </div>
 
             </div>
 
@@ -293,7 +305,7 @@ $totalUserCapacity = array_sum(array_map(
 
                 <div class="table-responsive">
 
-                    <table class="table">
+                    <table class="table" id="orgDirectoryTable">
 
                         <thead>
 
@@ -307,7 +319,7 @@ $totalUserCapacity = array_sum(array_map(
 
                         </thead>
 
-                        <tbody>
+                        <tbody id="orgDirectoryTableBody">
 
                             <?php foreach ($organizations as $organization): ?>
 
@@ -552,5 +564,22 @@ $totalUserCapacity = array_sum(array_map(
     </section>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('orgDirectorySearchInput');
+    const tbody = document.getElementById('orgDirectoryTableBody');
+    if (!input || !tbody) return;
+
+    input.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

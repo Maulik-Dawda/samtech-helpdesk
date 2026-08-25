@@ -48,7 +48,7 @@
 
     <div class="card border-0 shadow-sm card-radius">
 
-        <div class="card-header bg-white p-4 d-flex justify-content-between">
+        <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
 
             <div>
                 <h4 class="fw-bold mb-1">
@@ -60,11 +60,24 @@
                 </div>
             </div>
 
-            <a
-                href="<?= BASE_URL ?>/agent/users/create"
-                class="btn btn-primary-custom">
-                Create User
-            </a>
+            <div class="d-flex align-items-center gap-3">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 14px;"></i>
+                    <input
+                        type="search"
+                        id="agentUserSearchInput"
+                        class="form-control ps-5"
+                        style="min-width: 240px;"
+                        placeholder="Search users..."
+                        autocomplete="off">
+                </div>
+
+                <a
+                    href="<?= BASE_URL ?>/agent/users/create"
+                    class="btn btn-primary-custom">
+                    Create User
+                </a>
+            </div>
 
         </div>
 
@@ -103,7 +116,7 @@
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="agentUserTableBody">
 
                         <?php foreach ($users as $user): ?>
 
@@ -253,5 +266,22 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('agentUserSearchInput');
+    const tbody = document.getElementById('agentUserTableBody');
+    if (!input || !tbody) return;
+
+    input.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

@@ -189,6 +189,20 @@
 
             <hr>
 
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h5 class="fw-bold mb-0">Report Results</h5>
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 14px;"></i>
+                    <input
+                        type="search"
+                        id="reportSearchInput"
+                        class="form-control ps-5"
+                        style="min-width: 250px;"
+                        placeholder="Search report items..."
+                        autocomplete="off">
+                </div>
+            </div>
+
             <div id="ticketReportTable">
 
                 <?php require ROOT_PATH . "/app/Views/reports/partials/ticket-table.php"; ?>
@@ -207,6 +221,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("ticketReportFilterForm");
     const table = document.getElementById("ticketReportTable");
     const printBtn = document.getElementById("printReportBtn");
+    const searchInput = document.getElementById("reportSearchInput");
+
+    function bindLiveSearch() {
+        const input = document.getElementById("reportSearchInput");
+        const tbody = document.getElementById("ticketReportTableBody");
+        if (!input || !tbody) return;
+
+        input.oninput = function() {
+            const query = this.value.toLowerCase().trim();
+            const rows = tbody.querySelectorAll("tr");
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? "" : "none";
+            });
+        };
+    }
+
+    bindLiveSearch();
 
     if (!form || !table) {
         return;
@@ -235,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(function(html) {
             table.innerHTML = html;
+            bindLiveSearch();
 
             if (printBtn) {
                 printBtn.href = "<?= BASE_URL ?>/reports/tickets/print?" + query;

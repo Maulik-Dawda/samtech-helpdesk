@@ -229,7 +229,14 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
 
                     </div>
 
-                    <div class="ui-panel-actions">
+                    <div class="ui-panel-actions d-flex align-items-center gap-2">
+                        <input
+                            type="search"
+                            id="orgUserSearchShow"
+                            class="form-control form-control-sm"
+                            style="width: 170px;"
+                            placeholder="Search users..."
+                            autocomplete="off">
                         <span class="app-badge app-badge-primary">
                             <i class="bi bi-person me-1"></i> <?= $userCount; ?> / <?= $maxUsers; ?>
                         </span>
@@ -271,7 +278,7 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                <tbody id="orgUsersShowBody">
 
                                     <?php foreach ($users as $user): ?>
 
@@ -366,9 +373,22 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
 
             </div>
 
-            <div class="app-badge app-badge-primary">
-                <i class="bi bi-ticket-perforated me-1"></i>
-                <?= $totalTickets; ?> <?= $totalTickets === 1 ? 'Ticket' : 'Tickets'; ?>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 14px;"></i>
+                    <input
+                        type="search"
+                        id="orgTicketSearchShow"
+                        class="form-control ps-5"
+                        style="min-width: 220px;"
+                        placeholder="Search tickets..."
+                        autocomplete="off">
+                </div>
+
+                <div class="app-badge app-badge-primary">
+                    <i class="bi bi-ticket-perforated me-1"></i>
+                    <?= $totalTickets; ?> <?= $totalTickets === 1 ? 'Ticket' : 'Tickets'; ?>
+                </div>
             </div>
 
         </div>
@@ -413,7 +433,7 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
 
                         </thead>
 
-                        <tbody>
+                        <tbody id="orgTicketsShowBody">
 
                             <?php foreach ($tickets as $ticket): ?>
 
@@ -557,5 +577,27 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
     </section>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function bindSearch(inputId, tbodyId) {
+        const input = document.getElementById(inputId);
+        const tbody = document.getElementById(tbodyId);
+        if (!input || !tbody) return;
+
+        input.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+    }
+
+    bindSearch('orgUserSearchShow', 'orgUsersShowBody');
+    bindSearch('orgTicketSearchShow', 'orgTicketsShowBody');
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

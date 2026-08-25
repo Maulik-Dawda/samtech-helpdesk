@@ -15,7 +15,7 @@
             </tr>
         </thead>
 
-        <tbody>
+        <tbody id="ticketReportTableBody">
 
             <?php if (empty($tickets)): ?>
 

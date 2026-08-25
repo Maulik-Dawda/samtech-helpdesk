@@ -235,11 +235,23 @@ $totalActive = count(array_filter(
 
             </div>
 
-            <div class="app-badge app-badge-primary">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                <i class="bi bi-people"></i>
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 14px;"></i>
+                    <input
+                        type="search"
+                        id="adminUserSearchInput"
+                        class="form-control ps-5"
+                        style="min-width: 260px;"
+                        placeholder="Search users..."
+                        autocomplete="off">
+                </div>
 
-                <?= $totalUsers; ?>
+                <div class="app-badge app-badge-primary">
+                    <i class="bi bi-people"></i>
+                    <?= $totalUsers; ?>
+                </div>
 
             </div>
 
@@ -286,7 +298,7 @@ $totalActive = count(array_filter(
 
                 <div class="table-responsive">
 
-                    <table class="table">
+                    <table class="table" id="adminUserTable">
 
                         <thead>
 
@@ -310,7 +322,7 @@ $totalActive = count(array_filter(
 
                         </thead>
 
-                        <tbody>
+                        <tbody id="adminUserTableBody">
 
                         <?php foreach ($users as $user): ?>
 
@@ -576,5 +588,22 @@ $totalActive = count(array_filter(
     </section>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('adminUserSearchInput');
+    const tbody = document.getElementById('adminUserTableBody');
+    if (!input || !tbody) return;
+
+    input.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
