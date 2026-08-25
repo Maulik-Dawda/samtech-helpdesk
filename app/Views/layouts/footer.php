@@ -3,6 +3,11 @@
 require_once ROOT_PATH .
     "/app/Views/layouts/loader.php";
 
+$footerLogoPath = ROOT_PATH . '/public/assets/images/samtech-logo-report.png';
+$footerLogoBase64 = file_exists($footerLogoPath)
+    ? 'data:image/png;base64,' . base64_encode(file_get_contents($footerLogoPath))
+    : '';
+
 ?>
 
     </main>
@@ -145,12 +150,15 @@ async function downloadElementAsPdf(elementId, filename, btn, headerTitle) {
         printWrapper.style.zIndex = "999999";
         printWrapper.style.boxShadow = "0 0 30px rgba(0,0,0,0.15)";
 
-        const logoUrl = "<?= BASE_URL ?>/assets/images/samtech-logo-report.png";
+        const logoBase64 = "<?= $footerLogoBase64 ?>";
+        const logoHtml = logoBase64 !== ""
+            ? `<img src="${logoBase64}" style="width:180px; height:auto; display:block;" alt="Samtech">`
+            : `<div style="font-size:22px; font-weight:bold; color:#111827;">Samtech Solutions</div>`;
 
         printWrapper.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #b1e96f; padding-bottom:12px; margin-bottom:18px;">
                 <div>
-                    <img src="${logoUrl}" style="width:180px; height:auto; display:block;" alt="Samtech">
+                    ${logoHtml}
                     <div style="font-size:22px; font-weight:bold; color:#111827; margin-top:6px;">${headerTitle}</div>
                     <div style="color:#64748b; font-size:11px; margin-top:2px;">Samtech Helpdesk Management System</div>
                 </div>
@@ -172,13 +180,16 @@ async function downloadElementAsPdf(elementId, filename, btn, headerTitle) {
 
         document.body.appendChild(printWrapper);
 
-        const images = printWrapper.querySelectorAll('img');
-        await Promise.all(Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+        const images = Array.from(printWrapper.querySelectorAll('img'));
+        await Promise.all(images.map(img => {
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
         }));
 
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise(resolve => setTimeout(resolve, 350));
 
         const opt = {
             margin:       [8, 8, 8, 8],
@@ -187,6 +198,7 @@ async function downloadElementAsPdf(elementId, filename, btn, headerTitle) {
             html2canvas:  { 
                 scale: 2, 
                 useCORS: true, 
+                allowTaint: true,
                 logging: false, 
                 scrollX: 0, 
                 scrollY: 0,
