@@ -254,47 +254,26 @@ class ReportController extends Controller
         $randomNum = rand(100000, 900000);
         $filename = "Samtech-Helpdesk-" . $randomNum . ".pdf";
 
-        if (class_exists('Dompdf\Dompdf')) {
-            try {
-                $options = new \Dompdf\Options();
-                $options->set('isRemoteEnabled', true);
-                $options->set('isHtml5ParserEnabled', true);
-                $options->set('defaultFont', 'sans-serif');
-                $dompdf = new \Dompdf\Dompdf($options);
-                $dompdf->loadHtml($html);
-                $dompdf->setPaper('A4', 'portrait');
-                $dompdf->render();
+        $options = new \Dompdf\Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont', 'sans-serif');
 
-                while (ob_get_level()) {
-                    ob_end_clean();
-                }
-
-                $dompdf->stream($filename, ["Attachment" => true]);
-                exit;
-            } catch (\Throwable $e) {
-                error_log("Dompdf error: " . $e->getMessage());
-            }
-        }
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
 
         while (ob_get_level()) {
             ob_end_clean();
         }
-        echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Downloading PDF...</title>';
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>';
-        echo '</head><body><div id="pdfContent">' . $html . '</div>';
-        echo '<script>
-            window.onload = function() {
-                var element = document.getElementById("pdfContent");
-                var opt = {
-                    margin: [8, 8, 8, 8],
-                    filename: "' . $filename . '",
-                    image: { type: "jpeg", quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, logging: false },
-                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-                };
-                html2pdf().set(opt).from(element).save();
-            };
-        </script></body></html>';
+
+        header("Content-Type: application/pdf");
+        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Cache-Control: private, max-age=0, must-revalidate");
+        header("Pragma: public");
+
+        echo $dompdf->output();
         exit;
     }
 
@@ -333,47 +312,26 @@ class ReportController extends Controller
         $ticketIdentifier = !empty($ticket['ticket_no']) ? $ticket['ticket_no'] : $ticket['id'];
         $filename = "Samtech-Helpdesk-" . $ticketIdentifier . ".pdf";
 
-        if (class_exists('Dompdf\Dompdf')) {
-            try {
-                $options = new \Dompdf\Options();
-                $options->set('isRemoteEnabled', true);
-                $options->set('isHtml5ParserEnabled', true);
-                $options->set('defaultFont', 'sans-serif');
-                $dompdf = new \Dompdf\Dompdf($options);
-                $dompdf->loadHtml($html);
-                $dompdf->setPaper('A4', 'portrait');
-                $dompdf->render();
+        $options = new \Dompdf\Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont', 'sans-serif');
 
-                while (ob_get_level()) {
-                    ob_end_clean();
-                }
-
-                $dompdf->stream($filename, ["Attachment" => true]);
-                exit;
-            } catch (\Throwable $e) {
-                error_log("Dompdf error: " . $e->getMessage());
-            }
-        }
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
 
         while (ob_get_level()) {
             ob_end_clean();
         }
-        echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Downloading PDF...</title>';
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>';
-        echo '</head><body><div id="pdfContent">' . $html . '</div>';
-        echo '<script>
-            window.onload = function() {
-                var element = document.getElementById("pdfContent");
-                var opt = {
-                    margin: [8, 8, 8, 8],
-                    filename: "' . $filename . '",
-                    image: { type: "jpeg", quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, logging: false },
-                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-                };
-                html2pdf().set(opt).from(element).save();
-            };
-        </script></body></html>';
+
+        header("Content-Type: application/pdf");
+        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Cache-Control: private, max-age=0, must-revalidate");
+        header("Pragma: public");
+
+        echo $dompdf->output();
         exit;
     }
 }

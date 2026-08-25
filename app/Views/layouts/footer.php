@@ -123,6 +123,25 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 });
 
+function downloadDirectServerPdf(downloadUrl, btn) {
+    if (!btn) return;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Downloading PDF...';
+    btn.disabled = true;
+
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.setAttribute('download', '');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(function() {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 2000);
+}
+
 async function downloadElementAsPdf(elementId, filename, btn, headerTitle) {
     headerTitle = headerTitle || "Ticket Report";
     const element = document.getElementById(elementId);

@@ -218,9 +218,18 @@
 
 <script>
 function downloadCurrentReportPdf(btn) {
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
-    const filename = "Samtech-Helpdesk-" + randomNum + ".pdf";
-    downloadElementAsPdf("ticketReportTable", filename, btn, "Ticket Report");
+    const form = document.getElementById("ticketReportFilterForm");
+    const searchInput = document.getElementById("reportSearchInput");
+
+    let formData = form ? new FormData(form) : new FormData();
+    if (searchInput && searchInput.value.trim() !== "") {
+        formData.set("search", searchInput.value.trim());
+    }
+
+    const query = new URLSearchParams(formData).toString();
+    const downloadUrl = "<?= BASE_URL ?>/reports/tickets/pdf?" + query;
+
+    downloadDirectServerPdf(downloadUrl, btn);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
