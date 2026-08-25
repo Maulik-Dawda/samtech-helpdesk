@@ -307,7 +307,7 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
                                     accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
 
                                 <small class="text-muted">
-                                    Maximum 3 files, 5MB per file.
+                                    Multiple files allowed, 5MB per file.
                                 </small>
                             </div>
 

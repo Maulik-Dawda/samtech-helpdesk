@@ -327,8 +327,7 @@ $organizations = is_array($organizations ?? null)
 
                         <br>
 
-                        Maximum:
-                        <strong>3 files</strong>,
+                        <strong>Multiple files allowed</strong>,
                         <strong>5 MB</strong> each.
 
                     </div>

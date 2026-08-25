@@ -53,7 +53,7 @@
                     accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
 
                 <small class="text-muted">
-                    Allowed files: JPG, PNG, PDF, Word, Excel, TXT, ZIP, RAR. Maximum 3 files, 5MB per file.
+                    Allowed files: JPG, PNG, PDF, Word, Excel, TXT, ZIP, RAR. Multiple files allowed, up to 5MB per file.
                 </small>
             </div>
 

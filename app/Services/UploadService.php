@@ -59,20 +59,24 @@ class UploadService
 
     private static $maxSize = 5242880; // 5MB
 
-    public static function uploadMultiple($files, $folder)
+    public static function uploadMultiple($files, $folder, $maxFiles = 20)
     {
         $uploadedFiles = [];
+
+        if (empty($files['name']) || !is_array($files['name'])) {
+            return [];
+        }
 
         $actualFileCount = 0;
 
         foreach ($files['name'] as $index => $name) {
-            if ($files['error'][$index] !== UPLOAD_ERR_NO_FILE) {
+            if (isset($files['error'][$index]) && $files['error'][$index] !== UPLOAD_ERR_NO_FILE) {
                 $actualFileCount++;
             }
         }
 
-        if ($actualFileCount > 3) {
-            throw new Exception("Maximum 3 files can be uploaded.");
+        if ($maxFiles > 0 && $actualFileCount > $maxFiles) {
+            throw new Exception("Maximum {$maxFiles} files can be uploaded at once.");
         }
 
         foreach ($files['name'] as $index => $name) {
