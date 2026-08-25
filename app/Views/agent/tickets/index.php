@@ -297,19 +297,21 @@ function getAgentTicketPriorityClass(string $priority): string
 
             <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                <div class="ticket-search-wrapper">
+                <form method="GET" action="<?= BASE_URL ?>/agent/tickets" class="ticket-search-wrapper position-relative">
 
                     <i class="bi bi-search ticket-search-icon"></i>
 
                     <input
                         type="search"
+                        name="search"
                         id="ticketSearch"
                         class="form-control ticket-search-input"
                         placeholder="Search tickets..."
+                        value="<?= htmlspecialchars($search ?? ''); ?>"
                         autocomplete="off"
                         aria-label="Search tickets">
 
-                </div>
+                </form>
 
                 <div class="app-badge app-badge-primary">
 
@@ -641,7 +643,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchValue === '' ||
                 rowText.includes(searchValue);
 
-            row.classList.toggle('ticket-row-hidden', !isVisible);
+            row.style.display = isVisible ? '' : 'none';
 
             if (isVisible) {
                 visibleRows++;
@@ -649,8 +651,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         });
 
-        table.closest('.table-responsive')
-            .classList.toggle('d-none', visibleRows === 0);
+        const tableWrapper = table.closest('.table-responsive');
+        if (tableWrapper) {
+            tableWrapper.classList.toggle('d-none', visibleRows === 0);
+        }
 
         if (noResults) {
             noResults.classList.toggle('d-none', visibleRows !== 0);
@@ -677,9 +681,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         clearButton.addEventListener('click', function () {
 
-            searchInput.value = '';
-            filterTickets();
-            searchInput.focus();
+            window.location.href = '<?= BASE_URL ?>/agent/tickets';
 
         });
 

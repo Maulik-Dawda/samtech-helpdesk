@@ -105,35 +105,74 @@ class Ticket extends Model
 
         return $stmt->fetchAll();
     }
-    public function countAllTicketsForAgent()
+    public function countAllTicketsForAgent($search = '')
     {
-        $stmt = $this->db->prepare("
-        SELECT COUNT(*) AS total
-        FROM tickets
-    ");
+        $sql = "
+            SELECT COUNT(*) AS total
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            WHERE 1=1
+        ";
+        $params = [];
 
-        $stmt->execute();
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ?
+                OR tickets.subject LIKE ?
+                OR tickets.description LIKE ?
+                OR tickets.status LIKE ?
+                OR tickets.priority LIKE ?
+                OR users.full_name LIKE ?
+                OR users.email LIKE ?
+                OR organizations.name LIKE ?
+            )";
+            $params = [$term, $term, $term, $term, $term, $term, $term, $term];
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
 
         $row = $stmt->fetch();
 
         return (int)($row['total'] ?? 0);
     }
 
-    public function getAllTicketsForAgentPaginated($limit, $offset)
+    public function getAllTicketsForAgentPaginated($limit, $offset, $search = '')
     {
-        $stmt = $this->db->prepare(
-            "
-        SELECT 
-            tickets.*,
-            users.full_name AS customer_name
-        FROM tickets
-        JOIN users ON users.id = tickets.user_id
-        ORDER BY tickets.created_at DESC
-        LIMIT " . (int)$limit . "
-        OFFSET " . (int)$offset
-        );
+        $sql = "
+            SELECT 
+                tickets.*,
+                users.full_name AS customer_name,
+                users.email AS customer_email,
+                organizations.name AS organization_name
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            WHERE 1=1
+        ";
+        $params = [];
 
-        $stmt->execute();
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ?
+                OR tickets.subject LIKE ?
+                OR tickets.description LIKE ?
+                OR tickets.status LIKE ?
+                OR tickets.priority LIKE ?
+                OR users.full_name LIKE ?
+                OR users.email LIKE ?
+                OR organizations.name LIKE ?
+            )";
+            $params = [$term, $term, $term, $term, $term, $term, $term, $term];
+        }
+
+        $sql .= " ORDER BY tickets.created_at DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }

@@ -17,13 +17,15 @@ class AgentTicketController extends Controller
         AuthMiddleware::timeout();
         AuthMiddleware::check('agent');
 
+        $search = trim($_GET['search'] ?? $_GET['q'] ?? '');
+
         $page = max(1, (int)($_GET['page'] ?? 1));
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
 
         $ticketModel = new Ticket();
 
-        $totalRecords = $ticketModel->countAllTicketsForAgent();
+        $totalRecords = $ticketModel->countAllTicketsForAgent($search);
         $totalPages = max(1, ceil($totalRecords / $perPage));
 
         if ($page > $totalPages) {
@@ -33,7 +35,8 @@ class AgentTicketController extends Controller
 
         $tickets = $ticketModel->getAllTicketsForAgentPaginated(
             $perPage,
-            $offset
+            $offset,
+            $search
         );
 
         $this->view('agent/tickets/index', [
@@ -41,7 +44,8 @@ class AgentTicketController extends Controller
             'page' => $page,
             'perPage' => $perPage,
             'totalRecords' => $totalRecords,
-            'totalPages' => $totalPages
+            'totalPages' => $totalPages,
+            'search' => $search
         ]);
     }
 
