@@ -229,6 +229,8 @@ function userDashboardPriorityClass(string $priority): string
 
     </section>
 
+    <?php require ROOT_PATH . "/app/Views/partials/sla-overdue-alert.php"; ?>
+
 
     <!-- =========================================================
          TICKET METRICS

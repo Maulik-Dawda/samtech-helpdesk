@@ -40,6 +40,7 @@ class DashboardController extends Controller
         $recentActivities = $activityModel->getRecent(8);
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
+        $overdueTickets = $ticketModel->getOverdueSlaTickets();
 
         $this->view('dashboards/admin', [
             'ticketCounts' => $ticketCounts,
@@ -48,7 +49,8 @@ class DashboardController extends Controller
             'organizationCount' => $organizationCount,
             'recentActivities' => $recentActivities,
             'monthlyTickets' => $monthlyTickets,
-            'organizationTickets' => $organizationTickets
+            'organizationTickets' => $organizationTickets,
+            'overdueTickets' => $overdueTickets
         ]);
     }
 
@@ -77,6 +79,7 @@ class DashboardController extends Controller
         $recentActivities = $activityModel->getRecent(8);
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
+        $overdueTickets = $ticketModel->getOverdueSlaTickets();
 
         $this->view('dashboards/admin-agent', [
             'ticketCounts' => $ticketCounts,
@@ -85,7 +88,8 @@ class DashboardController extends Controller
             'organizationCount' => $organizationCount,
             'recentActivities' => $recentActivities,
             'monthlyTickets' => $monthlyTickets,
-            'organizationTickets' => $organizationTickets
+            'organizationTickets' => $organizationTickets,
+            'overdueTickets' => $overdueTickets
         ]);
     }
 
@@ -108,12 +112,14 @@ class DashboardController extends Controller
         $recentTickets = $ticketModel->getRecentTickets(8);
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
+        $overdueTickets = $ticketModel->getOverdueSlaTickets();
 
         $this->view('dashboards/agent', [
             'ticketCounts' => $ticketCounts,
             'recentTickets' => $recentTickets,
             'monthlyTickets' => $monthlyTickets,
-            'organizationTickets' => $organizationTickets
+            'organizationTickets' => $organizationTickets,
+            'overdueTickets' => $overdueTickets
         ]);
     }
 
@@ -150,6 +156,7 @@ class DashboardController extends Controller
 
             $monthlyTickets = [];
             $recentTickets = [];
+            $overdueTickets = [];
 
         } else {
 
@@ -165,13 +172,18 @@ class DashboardController extends Controller
             $monthlyTickets = $ticketModel->getMonthlyTicketCounts(
                 $user['organization_id']
             );
+
+            $overdueTickets = $ticketModel->getOverdueSlaTickets(
+                $user['organization_id']
+            );
         }
 
         $this->view('dashboards/user', [
             'ticketCounts' => $ticketCounts,
             'recentTickets' => $recentTickets,
             'user' => $user,
-            'monthlyTickets' => $monthlyTickets
+            'monthlyTickets' => $monthlyTickets,
+            'overdueTickets' => $overdueTickets
         ]);
     }
 }

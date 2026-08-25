@@ -467,6 +467,43 @@ class Ticket extends Model
 
         return $stmt->fetchAll();
     }
+
+    public function getOverdueSlaTickets($organizationId = null)
+    {
+        $sql = "
+            SELECT 
+                tickets.*,
+                COALESCE(users.full_name, organizations.name) AS customer_name,
+                organizations.name AS organization_name,
+                assigned_agent.full_name AS assigned_agent_name,
+                DATEDIFF(NOW(), tickets.created_at) AS days_open
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
+            WHERE tickets.status NOT IN ('resolved', 'closed')
+              AND (
+                (tickets.priority = 'low' AND tickets.created_at <= DATE_SUB(NOW(), INTERVAL 7 DAY)) OR
+                (tickets.priority = 'medium' AND tickets.created_at <= DATE_SUB(NOW(), INTERVAL 5 DAY)) OR
+                (tickets.priority = 'high' AND tickets.created_at <= DATE_SUB(NOW(), INTERVAL 3 DAY)) OR
+                (tickets.priority = 'urgent' AND tickets.created_at <= DATE_SUB(NOW(), INTERVAL 1 DAY))
+              )
+        ";
+
+        $params = [];
+
+        if ($organizationId) {
+            $sql .= " AND tickets.organization_id = ?";
+            $params[] = $organizationId;
+        }
+
+        $sql .= " ORDER BY CASE tickets.priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 END, tickets.created_at ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
     public function getMonthlyTicketCounts($organizationId = null)
     {
         $sql = "
