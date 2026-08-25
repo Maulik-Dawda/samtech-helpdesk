@@ -38,13 +38,13 @@
                 </div>
 
                 <?php if($ticket): ?>
-                    <button
-                        type="button"
-                        onclick="downloadDirectServerPdf('<?= BASE_URL ?>/reports/ticket-detail/pdf/<?= $ticket['id']; ?>', this)"
+                    <a
+                        href="<?= BASE_URL ?>/reports/ticket-detail/print/<?= $ticket['id']; ?>"
+                        target="_blank"
                         class="btn btn-primary-custom">
-                        <i class="bi bi-file-earmark-pdf-fill me-1"></i>
-                        Download PDF
-                    </button>
+                        <i class="bi bi-printer me-1"></i>
+                        Print Report
+                    </a>
                 <?php endif; ?>
             </div>
 

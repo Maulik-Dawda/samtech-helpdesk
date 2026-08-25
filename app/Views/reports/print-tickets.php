@@ -304,32 +304,13 @@ $logoSrc = file_exists($logoPath)
 
 </div>
 
-<?php if (empty($isPdfDownload)): ?>
 <script>
-    function triggerSafePrint() {
-        var images = Array.from(document.images);
-        var promises = images.map(function(img) {
-            if (img.complete) return Promise.resolve();
-            return new Promise(function(resolve) {
-                img.onload = resolve;
-                img.onerror = resolve;
-            });
-        });
-
-        Promise.all(promises).then(function() {
-            setTimeout(function() {
-                window.print();
-            }, 350);
-        });
-    }
-
-    if (document.readyState === "complete") {
-        triggerSafePrint();
-    } else {
-        window.addEventListener("load", triggerSafePrint);
-    }
+    window.addEventListener("load", function () {
+        setTimeout(function() {
+            window.print();
+        }, 250);
+    });
 </script>
-<?php endif; ?>
 
 </body>
 </html>

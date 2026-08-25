@@ -20,14 +20,14 @@
 
                 </div>
 
-                <button
-                    type="button"
+                <a
+                    href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
+                    target="_blank"
                     id="printReportBtn"
-                    onclick="downloadCurrentReportPdf(this)"
                     class="btn btn-primary-custom">
-                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>
-                    Download PDF
-                </button>
+                    <i class="bi bi-printer me-1"></i>
+                    Print Report
+                </a>
 
             </div>
 
@@ -217,21 +217,6 @@
 </div>
 
 <script>
-function downloadCurrentReportPdf(btn) {
-    const form = document.getElementById("ticketReportFilterForm");
-    const searchInput = document.getElementById("reportSearchInput");
-
-    let formData = form ? new FormData(form) : new FormData();
-    if (searchInput && searchInput.value.trim() !== "") {
-        formData.set("search", searchInput.value.trim());
-    }
-
-    const query = new URLSearchParams(formData).toString();
-    const downloadUrl = "<?= BASE_URL ?>/reports/tickets/pdf?" + query;
-
-    downloadDirectServerPdf(downloadUrl, btn);
-}
-
 document.addEventListener("DOMContentLoaded", function() {
 
     const form = document.getElementById("ticketReportFilterForm");
