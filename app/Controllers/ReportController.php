@@ -36,7 +36,8 @@ class ReportController extends Controller
             'status' => trim($_GET['status'] ?? ''),
             'priority' => trim($_GET['priority'] ?? ''),
             'date_from' => trim($_GET['date_from'] ?? ''),
-            'date_to' => trim($_GET['date_to'] ?? '')
+            'date_to' => trim($_GET['date_to'] ?? ''),
+            'search' => trim($_GET['search'] ?? '')
         ];
     }
 

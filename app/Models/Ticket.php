@@ -358,7 +358,8 @@ class Ticket extends Model
         }
 
         if (!empty($filters['agent_id'])) {
-            $sql .= " AND tickets.closed_by_agent_id = ?";
+            $sql .= " AND (tickets.assigned_agent_id = ? OR tickets.closed_by_agent_id = ?)";
+            $params[] = $filters['agent_id'];
             $params[] = $filters['agent_id'];
         }
 
@@ -380,6 +381,20 @@ class Ticket extends Model
         if (!empty($filters['date_to'])) {
             $sql .= " AND DATE(tickets.created_at) <= ?";
             $params[] = $filters['date_to'];
+        }
+
+        if (!empty($filters['search'])) {
+            $search = '%' . trim($filters['search']) . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ? OR
+                tickets.subject LIKE ? OR
+                tickets.description LIKE ? OR
+                users.full_name LIKE ? OR
+                organizations.name LIKE ? OR
+                assigned_agent.full_name LIKE ? OR
+                closed_agent.full_name LIKE ?
+            )";
+            array_push($params, $search, $search, $search, $search, $search, $search, $search);
         }
 
         $sql .= " ORDER BY tickets.created_at DESC";

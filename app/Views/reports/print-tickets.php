@@ -222,6 +222,10 @@ $logoSrc = file_exists($logoPath)
         if (!empty($filters['date_to'])) {
             $criteria[] = '<span class="criteria-label">To:</span> ' . htmlspecialchars($filters['date_to']);
         }
+
+        if (!empty($filters['search'])) {
+            $criteria[] = '<span class="criteria-label">Search:</span> ' . htmlspecialchars($filters['search']);
+        }
     ?>
 
     <?php if (!empty($criteria)): ?>
@@ -233,14 +237,14 @@ $logoSrc = file_exists($logoPath)
     <table class="data-table">
         <thead>
             <tr>
-                <th class="ticket-no">Ticket No</th>
-                <th class="org">Organization</th>
-                <th class="user">User</th>
-                <th class="subject">Subject</th>
-                <th class="priority">Priority</th>
-                <th class="status">Status</th>
-                <th class="created">Created</th>
-                <th class="closed-by">Closed By</th>
+                <th style="width: 12%;">Ticket No</th>
+                <th style="width: 13%;">Organization</th>
+                <th style="width: 11%;">User</th>
+                <th style="width: 11%;">Assigned Agent</th>
+                <th style="width: 25%;">Subject</th>
+                <th style="width: 7%;">Priority</th>
+                <th style="width: 9%;">Status</th>
+                <th style="width: 12%;">Created</th>
             </tr>
         </thead>
         <tbody>
@@ -258,11 +262,11 @@ $logoSrc = file_exists($logoPath)
                     <td class="ticket-no"><strong><?= htmlspecialchars($ticket['ticket_no'] ?? '-'); ?></strong></td>
                     <td class="org"><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
                     <td class="user"><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
+                    <td class="agent"><?= htmlspecialchars($ticket['assigned_agent_name'] ?? '-'); ?></td>
                     <td class="subject"><?= htmlspecialchars($ticket['subject'] ?? '-'); ?></td>
                     <td class="priority"><?= htmlspecialchars(ucfirst($ticket['priority'] ?? '')); ?></td>
                     <td class="status"><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status'] ?? ''))); ?></td>
                     <td class="created"><?= !empty($ticket['created_at']) ? date('Y-m-d H:i', strtotime($ticket['created_at'])) : '-'; ?></td>
-                    <td class="closed-by"><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
                 </tr>
             <?php endforeach; ?>
 

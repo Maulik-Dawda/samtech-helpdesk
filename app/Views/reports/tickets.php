@@ -23,7 +23,7 @@
                 <button
                     type="button"
                     id="printReportBtn"
-                    onclick="const form = document.getElementById('ticketReportFilterForm'); const query = form ? new URLSearchParams(new FormData(form)).toString() : ''; triggerBackgroundPdfDownload('<?= BASE_URL ?>/reports/tickets/pdf?' + query, this)"
+                    onclick="downloadCurrentReportPdf(this)"
                     class="btn btn-primary-custom">
                     <i class="bi bi-file-earmark-pdf-fill me-1"></i>
                     Download PDF
@@ -217,11 +217,23 @@
 </div>
 
 <script>
+function downloadCurrentReportPdf(btn) {
+    const form = document.getElementById("ticketReportFilterForm");
+    const searchInput = document.getElementById("reportSearchInput");
+
+    let formData = form ? new FormData(form) : new FormData();
+    if (searchInput && searchInput.value.trim() !== "") {
+        formData.set("search", searchInput.value.trim());
+    }
+
+    const query = new URLSearchParams(formData).toString();
+    triggerBackgroundPdfDownload("<?= BASE_URL ?>/reports/tickets/pdf?" + query, btn);
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 
     const form = document.getElementById("ticketReportFilterForm");
     const table = document.getElementById("ticketReportTable");
-    const printBtn = document.getElementById("printReportBtn");
     const searchInput = document.getElementById("reportSearchInput");
 
     function bindLiveSearch() {
@@ -269,10 +281,6 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(function(html) {
             table.innerHTML = html;
             bindLiveSearch();
-
-            if (printBtn) {
-                printBtn.href = "<?= BASE_URL ?>/reports/tickets/print?" + query;
-            }
 
             if (typeof hideSamtechLoader === 'function') {
                 hideSamtechLoader();
