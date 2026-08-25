@@ -145,9 +145,11 @@
 
 <body>
 
+    <?php if (empty($isPdfDownload)): ?>
     <button onclick="window.print()" class="print-btn">
         Print / Save PDF
     </button>
+    <?php endif; ?>
 
     <div class="header">
 
@@ -403,6 +405,7 @@
 
     </div>
 
+    <?php if (empty($isPdfDownload)): ?>
     <script>
         window.onload = function() {
 
@@ -410,6 +413,7 @@
 
         }
     </script>
+    <?php endif; ?>
 
 </body>
 

@@ -227,4 +227,100 @@ class ReportController extends Controller
             'replyAttachments' => $replyAttachments
         ]);
     }
+
+    public function downloadTicketsPdf()
+    {
+        $this->reportGuard();
+
+        $filters = $this->getFilters();
+        $ticketModel = new Ticket();
+        $userModel = new User();
+        $organizationModel = new Organization();
+
+        $tickets = $ticketModel->getReportTickets($filters);
+
+        ob_start();
+        $this->view('reports/print-tickets', [
+            'tickets' => $tickets,
+            'filters' => $filters,
+            'organizations' => $organizationModel->getAllActive(),
+            'users' => $userModel->getUsersByRole('user'),
+            'agents' => $userModel->getUsersByRole('agent'),
+            'isPdfDownload' => true
+        ]);
+        $html = ob_get_clean();
+
+        $randomNum = rand(100000, 900000);
+        $filename = "Samtech-Helpdesk-" . $randomNum . ".pdf";
+
+        if (class_exists('Dompdf\Dompdf')) {
+            $options = new \Dompdf\Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit;
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $html;
+        exit;
+    }
+
+    public function downloadTicketDetailPdf($id)
+    {
+        $this->reportGuard();
+
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->findByIdForReport($id);
+
+        if (!$ticket) {
+            http_response_code(404);
+            exit('Ticket not found');
+        }
+
+        $replyModel = new TicketReply();
+        $historyModel = new TicketStatusHistory();
+        $attachmentModel = new Attachment();
+
+        $replies = $replyModel->getByTicketId($ticket['id']);
+        $statusHistory = $historyModel->getByTicketId($ticket['id']);
+        $attachments = $attachmentModel->getTicketAttachments($ticket['id']);
+        $replyAttachments = $attachmentModel->getReplyAttachmentsByTicketId($ticket['id']);
+
+        ob_start();
+        $this->view('reports/print-ticket-detail', [
+            'ticket' => $ticket,
+            'replies' => $replies,
+            'statusHistory' => $statusHistory,
+            'attachments' => $attachments,
+            'replyAttachments' => $replyAttachments,
+            'isPdfDownload' => true
+        ]);
+        $html = ob_get_clean();
+
+        $ticketIdentifier = !empty($ticket['ticket_no']) ? $ticket['ticket_no'] : $ticket['id'];
+        $filename = "Samtech-Helpdesk-" . $ticketIdentifier . ".pdf";
+
+        if (class_exists('Dompdf\Dompdf')) {
+            $options = new \Dompdf\Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit;
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $html;
+        exit;
+    }
 }

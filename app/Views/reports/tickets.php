@@ -21,12 +21,12 @@
                 </div>
 
                 <a
-    href="<?= BASE_URL ?>/reports/tickets/print?<?= http_build_query($filters); ?>"
-    target="_blank"
-    id="printReportBtn"
-    class="btn btn-primary-custom">
-    Print Report
-</a>
+                    href="<?= BASE_URL ?>/reports/tickets/pdf?<?= http_build_query($filters); ?>"
+                    id="printReportBtn"
+                    class="btn btn-primary-custom">
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>
+                    Download PDF
+                </a>
 
             </div>
 

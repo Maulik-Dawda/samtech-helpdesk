@@ -168,11 +168,13 @@
 
 <div class="page">
 
+    <?php if (empty($isPdfDownload)): ?>
     <div class="print-actions">
         <button onclick="window.print()" class="print-btn">
             Print / Save PDF
         </button>
     </div>
+    <?php endif; ?>
 
     <div class="report-header">
 
@@ -312,11 +314,13 @@
 
 </div>
 
+<?php if (empty($isPdfDownload)): ?>
 <script>
     window.addEventListener("load", function () {
         window.print();
     });
 </script>
+<?php endif; ?>
 
 </body>
 </html>

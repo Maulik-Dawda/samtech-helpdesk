@@ -39,11 +39,10 @@
 
                 <?php if($ticket): ?>
                     <a
-                        href="<?= BASE_URL ?>/reports/ticket-detail/print/<?= $ticket['id']; ?>"
-                        target="_blank"
+                        href="<?= BASE_URL ?>/reports/ticket-detail/pdf/<?= $ticket['id']; ?>"
                         class="btn btn-primary-custom">
-                        <i class="bi bi-printer me-1"></i>
-                        Print Report
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i>
+                        Download PDF
                     </a>
                 <?php endif; ?>
             </div>
