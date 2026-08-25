@@ -237,21 +237,22 @@ $logoSrc = file_exists($logoPath)
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 12%;">Ticket No</th>
-                <th style="width: 13%;">Organization</th>
-                <th style="width: 11%;">User</th>
-                <th style="width: 11%;">Assigned Agent</th>
-                <th style="width: 25%;">Subject</th>
+                <th style="width: 11%;">Ticket No</th>
+                <th style="width: 12%;">Organization</th>
+                <th style="width: 10%;">User</th>
+                <th style="width: 10%;">Assigned Agent</th>
+                <th style="width: 22%;">Subject</th>
                 <th style="width: 7%;">Priority</th>
-                <th style="width: 9%;">Status</th>
-                <th style="width: 12%;">Created</th>
+                <th style="width: 8%;">Status</th>
+                <th style="width: 10%;">Created</th>
+                <th style="width: 10%;">Closed By</th>
             </tr>
         </thead>
         <tbody>
 
         <?php if (empty($tickets)): ?>
             <tr>
-                <td colspan="8" style="text-align: center; padding: 18px; color: #64748b;">
+                <td colspan="9" style="text-align: center; padding: 18px; color: #64748b;">
                     No tickets found matching the selected report criteria.
                 </td>
             </tr>
@@ -267,6 +268,7 @@ $logoSrc = file_exists($logoPath)
                     <td class="priority"><?= htmlspecialchars(ucfirst($ticket['priority'] ?? '')); ?></td>
                     <td class="status"><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status'] ?? ''))); ?></td>
                     <td class="created"><?= !empty($ticket['created_at']) ? date('Y-m-d H:i', strtotime($ticket['created_at'])) : '-'; ?></td>
+                    <td class="closed-by"><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
                 </tr>
             <?php endforeach; ?>
 
