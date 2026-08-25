@@ -27,14 +27,19 @@ $logoSrc = file_exists($logoPath)
             font-size: 11px;
         }
 
+        .print-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
         .print-btn {
             background: #b1e96f;
             border: none;
-            padding: 10px 18px;
+            padding: 9px 16px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 18px;
         }
 
         .header-table {
@@ -43,6 +48,8 @@ $logoSrc = file_exists($logoPath)
             padding-bottom: 12px;
             margin-bottom: 18px;
             border-collapse: collapse;
+            page-break-before: avoid !important;
+            page-break-inside: avoid !important;
         }
 
         .logo {
@@ -72,6 +79,7 @@ $logoSrc = file_exists($logoPath)
 
         .section {
             margin-bottom: 20px;
+            page-break-inside: auto;
         }
 
         .section-title {
@@ -86,6 +94,7 @@ $logoSrc = file_exists($logoPath)
         table.info-table {
             width: 100%;
             border-collapse: collapse;
+            page-break-before: avoid !important;
         }
 
         table.info-table th {
@@ -114,6 +123,7 @@ $logoSrc = file_exists($logoPath)
             border: 1px solid #dbe3ed;
             border-radius: 8px;
             margin-bottom: 14px;
+            page-break-inside: avoid;
         }
 
         .reply-header-table {
@@ -147,9 +157,15 @@ $logoSrc = file_exists($logoPath)
         @media print {
             .print-btn, .print-actions {
                 display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             html, body {
+                margin: 0 !important;
+                padding: 0 !important;
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
@@ -159,14 +175,8 @@ $logoSrc = file_exists($logoPath)
                 print-color-adjust: exact !important;
             }
 
-            table, table.header-table, table.info-table, table.reply-header-table {
-                width: 100% !important;
-                display: table !important;
-            }
-
-            tr {
-                page-break-inside: avoid !important;
-                page-break-after: auto !important;
+            table.header-table, .section, table.info-table {
+                page-break-before: avoid !important;
             }
         }
     </style>
@@ -175,9 +185,11 @@ $logoSrc = file_exists($logoPath)
 <body>
 
     <?php if (empty($isPdfDownload)): ?>
-    <button onclick="window.print()" class="print-btn">
-        Print / Save PDF
-    </button>
+    <div class="print-actions">
+        <button onclick="window.print()" class="print-btn">
+            Print / Save PDF
+        </button>
+    </div>
     <?php endif; ?>
 
     <table class="header-table">

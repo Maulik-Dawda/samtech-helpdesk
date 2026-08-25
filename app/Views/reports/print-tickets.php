@@ -32,7 +32,9 @@ $logoSrc = file_exists($logoPath)
         }
 
         .print-actions {
-            margin: 12px 0;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
 
         .print-btn {
@@ -50,6 +52,8 @@ $logoSrc = file_exists($logoPath)
             padding-bottom: 10px;
             margin-bottom: 12px;
             border-collapse: collapse;
+            page-break-before: avoid !important;
+            page-break-inside: avoid !important;
         }
 
         .logo {
@@ -95,6 +99,7 @@ $logoSrc = file_exists($logoPath)
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            page-break-before: avoid !important;
         }
 
         table.data-table th {
@@ -128,21 +133,28 @@ $logoSrc = file_exists($logoPath)
             text-align: center;
         }
 
-        .ticket-no { width: 13%; }
-        .org { width: 13%; }
-        .user { width: 11%; }
-        .subject { width: 28%; }
+        .ticket-no { width: 11%; }
+        .org { width: 12%; }
+        .user { width: 10%; }
+        .agent { width: 10%; }
+        .subject { width: 22%; }
         .priority { width: 7%; }
-        .status { width: 10%; }
+        .status { width: 8%; }
         .created { width: 10%; }
-        .closed-by { width: 8%; }
+        .closed-by { width: 10%; }
 
         @media print {
             .print-actions, .print-btn {
                 display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             html, body {
+                margin: 0 !important;
+                padding: 0 !important;
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
@@ -152,14 +164,8 @@ $logoSrc = file_exists($logoPath)
                 print-color-adjust: exact !important;
             }
 
-            .page, table.header-table, table.data-table {
-                width: 100% !important;
-                display: table !important;
-            }
-
-            tr {
-                page-break-inside: avoid !important;
-                page-break-after: auto !important;
+            table.header-table, .criteria, table.data-table {
+                page-break-before: avoid !important;
             }
         }
     </style>
