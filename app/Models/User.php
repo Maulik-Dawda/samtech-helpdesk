@@ -632,4 +632,20 @@ class User extends Model
             return false;
         }
     }
+
+    public function getRegularAgents()
+    {
+        $stmt = $this->db->prepare("
+            SELECT id, full_name, email, role, is_admin_agent
+            FROM users
+            WHERE role = 'agent' 
+              AND (is_admin_agent IS NULL OR is_admin_agent = 0)
+              AND is_active = 1
+            ORDER BY full_name ASC
+        ");
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
 }

@@ -305,13 +305,17 @@ class AgentTicketController extends Controller
         AuthMiddleware::check('agent');
 
         $organizationModel = new Organization();
+        $userModel = new User();
 
         $organizations = $organizationModel->getAllActive();
+        $agents = $userModel->getRegularAgents();
 
         $this->view('agent/tickets/create', [
-            'organizations' => $organizations
+            'organizations' => $organizations,
+            'agents' => $agents
         ]);
     }
+
     public function store()
     {
         Csrf::verify();
@@ -327,6 +331,7 @@ class AgentTicketController extends Controller
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
+        $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : null;
 
         if (
             empty($organizationId) ||
@@ -346,6 +351,7 @@ class AgentTicketController extends Controller
             'ticket_no' => $ticketNo,
             'user_id' => $_SESSION['auth_user_id'],
             'organization_id' => $organizationId,
+            'assigned_agent_id' => $assignedAgentId,
             'created_by' => $_SESSION['auth_user_id'],
             'created_by_role' => 'agent',
             'subject' => $subject,

@@ -210,6 +210,45 @@ $organizations = is_array($organizations ?? null)
                 </div>
 
 
+                <!-- Assign Agent (Do Not Include Admin Agent) -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Assign Agent
+
+                    </label>
+
+                    <select
+                        name="assigned_agent_id"
+                        class="form-select">
+
+                        <option value="">
+                            Select Agent (Unassigned)
+                        </option>
+
+                        <?php foreach (($agents ?? []) as $agentItem): ?>
+
+                            <option value="<?= $agentItem['id']; ?>">
+
+                                <?= htmlspecialchars($agentItem['full_name']); ?> (<?= htmlspecialchars($agentItem['email']); ?>)
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                    <div class="form-text">
+
+                        Select a support agent to handle this ticket (Admin agents excluded).
+
+                    </div>
+
+                </div>
+
+
 
                 <!-- Subject -->
 

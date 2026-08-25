@@ -16,7 +16,12 @@ class TicketController extends Controller
         AuthMiddleware::timeout();
         AuthMiddleware::check('user');
 
-        $this->view('tickets/create');
+        $userModel = new User();
+        $agents = $userModel->getRegularAgents();
+
+        $this->view('tickets/create', [
+            'agents' => $agents
+        ]);
     }
 
     public function store()
@@ -33,6 +38,7 @@ class TicketController extends Controller
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
+        $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : null;
 
         if (empty($subject) || empty($description)) {
             $_SESSION['error'] = "Subject and description are required.";
@@ -72,6 +78,7 @@ class TicketController extends Controller
             'ticket_no' => $ticketNo,
             'user_id' => $user['id'],
             'organization_id' => $user['organization_id'],
+            'assigned_agent_id' => $assignedAgentId,
             'created_by' => $user['id'],
             'created_by_role' => $user['role'],
             'subject' => $subject,

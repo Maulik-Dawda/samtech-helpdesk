@@ -11,36 +11,73 @@ class Ticket extends Model
 
     public function create($data)
     {
-        $stmt = $this->db->prepare("
-        INSERT INTO tickets
-        (
-            ticket_no,
-            user_id,
-            organization_id,
-            created_by,
-            created_by_role,
-            subject,
-            description,
-            priority,
-            status
-        )
-        VALUES
-        (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?
-        )
-    ");
+        $assignedAgentId = !empty($data['assigned_agent_id']) ? (int)$data['assigned_agent_id'] : null;
 
-        return $stmt->execute([
-            $data['ticket_no'],
-            $data['user_id'],
-            $data['organization_id'],
-            $data['created_by'],
-            $data['created_by_role'],
-            $data['subject'],
-            $data['description'],
-            $data['priority'],
-            $data['status']
-        ]);
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO tickets
+                (
+                    ticket_no,
+                    user_id,
+                    organization_id,
+                    assigned_agent_id,
+                    created_by,
+                    created_by_role,
+                    subject,
+                    description,
+                    priority,
+                    status
+                )
+                VALUES
+                (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )
+            ");
+
+            return $stmt->execute([
+                $data['ticket_no'],
+                $data['user_id'],
+                $data['organization_id'],
+                $assignedAgentId,
+                $data['created_by'],
+                $data['created_by_role'],
+                $data['subject'],
+                $data['description'],
+                $data['priority'],
+                $data['status']
+            ]);
+        } catch (Throwable $e) {
+            $stmt = $this->db->prepare("
+                INSERT INTO tickets
+                (
+                    ticket_no,
+                    user_id,
+                    organization_id,
+                    created_by,
+                    created_by_role,
+                    subject,
+                    description,
+                    priority,
+                    status
+                )
+                VALUES
+                (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )
+            ");
+
+            return $stmt->execute([
+                $data['ticket_no'],
+                $data['user_id'],
+                $data['organization_id'],
+                $data['created_by'],
+                $data['created_by_role'],
+                $data['subject'],
+                $data['description'],
+                $data['priority'],
+                $data['status']
+            ]);
+        }
     }
 
     public function getUserTickets($userId)

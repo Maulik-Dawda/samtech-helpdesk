@@ -57,14 +57,30 @@
                 </small>
             </div>
 
-            <div class="mb-4">
-                <label class="form-label">Priority</label>
-                <select name="priority" class="form-select" required>
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
-                </select>
+            <?php $agents = is_array($agents ?? null) ? $agents : []; ?>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Priority</label>
+                    <select name="priority" class="form-select" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Assign Agent (Optional)</label>
+                    <select name="assigned_agent_id" class="form-select">
+                        <option value="">Select Agent (Unassigned)</option>
+                        <?php foreach ($agents as $agentItem): ?>
+                            <option value="<?= $agentItem['id']; ?>">
+                                <?= htmlspecialchars($agentItem['full_name']); ?> (<?= htmlspecialchars($agentItem['email']); ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary-custom px-4">
