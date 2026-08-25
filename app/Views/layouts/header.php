@@ -197,15 +197,107 @@ function assetVersion(string $relativePath): string
 
                 <?php if (isset($_SESSION['auth_user_id'])): ?>
 
+                    <?php
+                    require_once ROOT_PATH . "/app/Services/NotificationService.php";
+                    $notifData = NotificationService::getHeaderNotifications();
+                    $headerNotifications = $notifData['notifications'];
+                    $unreadCount = $notifData['unreadCount'];
+                    ?>
+
                     <div class="top-navbar-actions">
 
-                        <button
-                            type="button"
-                            class="topbar-icon-btn"
-                            aria-label="Notifications"
-                            title="Notifications">
-                            <i class="bi bi-bell"></i>
-                        </button>
+                        <div class="dropdown me-2">
+
+                            <button
+                                type="button"
+                                class="topbar-icon-btn position-relative dropdown-toggle"
+                                id="notificationDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                title="Notifications">
+
+                                <i class="bi bi-bell"></i>
+
+                                <?php if ($unreadCount > 0): ?>
+
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 10px;">
+                                        <?= $unreadCount > 9 ? '9+' : $unreadCount; ?>
+                                    </span>
+
+                                <?php endif; ?>
+
+                            </button>
+
+                            <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0 rounded-4" style="width: 360px; max-width: 90vw; margin-top: 10px;" aria-labelledby="notificationDropdown">
+
+                                <div class="p-3 bg-dark text-white rounded-top-4 d-flex align-items-center justify-content-between">
+
+                                    <div class="fw-bold">
+                                        <i class="bi bi-bell-fill me-2 text-warning"></i>
+                                        Notifications
+                                    </div>
+
+                                    <span class="badge bg-primary rounded-pill"><?= count($headerNotifications); ?> recent</span>
+
+                                </div>
+
+                                <div class="notification-list" style="max-height: 380px; overflow-y: auto;">
+
+                                    <?php if (empty($headerNotifications)): ?>
+
+                                        <div class="p-4 text-center text-muted">
+                                            <i class="bi bi-bell-slash fs-3 d-block mb-2"></i>
+                                            No notifications at this time.
+                                        </div>
+
+                                    <?php else: ?>
+
+                                        <?php foreach ($headerNotifications as $notif): ?>
+
+                                            <a href="<?= $notif['link']; ?>" class="dropdown-item p-3 border-bottom text-wrap d-flex align-items-start gap-3 hover-bg-light" style="white-space: normal;">
+
+                                                <div class="rounded-circle p-2 flex-shrink-0" style="background:#f1f5f9;">
+
+                                                    <i class="bi <?= $notif['icon']; ?> fs-6 text-<?= $notif['color']; ?>"></i>
+
+                                                </div>
+
+                                                <div class="flex-grow-1">
+
+                                                    <div class="fw-bold text-dark small mb-1">
+                                                        <?= htmlspecialchars($notif['title']); ?>
+                                                    </div>
+
+                                                    <div class="text-secondary small mb-1">
+                                                        <?= htmlspecialchars($notif['message']); ?>
+                                                    </div>
+
+                                                    <div class="text-muted" style="font-size: 11px;">
+                                                        <i class="bi bi-clock me-1"></i>
+                                                        <?= date('M d, g:i A', strtotime($notif['time'])); ?>
+                                                    </div>
+
+                                                </div>
+
+                                            </a>
+
+                                        <?php endforeach; ?>
+
+                                    <?php endif; ?>
+
+                                </div>
+
+                                <div class="p-2 bg-light text-center rounded-bottom-4 border-top">
+
+                                    <a href="<?= ($role === 'user') ? (BASE_URL . '/tickets') : (BASE_URL . '/agent/tickets'); ?>" class="small text-decoration-none fw-bold text-primary">
+                                        View All Tickets &rarr;
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
                         <div class="dropdown">
 
