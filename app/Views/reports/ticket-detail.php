@@ -40,7 +40,7 @@
                 <?php if($ticket): ?>
                     <button
                         type="button"
-                        onclick="triggerBackgroundPdfDownload('<?= BASE_URL ?>/reports/ticket-detail/pdf/<?= $ticket['id']; ?>', this)"
+                        onclick="generateDirectPdf('<?= BASE_URL ?>/reports/ticket-detail/print/<?= $ticket['id']; ?>', 'Samtech-Helpdesk-<?= htmlspecialchars($ticket['ticket_no'] ?? $ticket['id']); ?>.pdf', this)"
                         class="btn btn-primary-custom">
                         <i class="bi bi-file-earmark-pdf-fill me-1"></i>
                         Download PDF

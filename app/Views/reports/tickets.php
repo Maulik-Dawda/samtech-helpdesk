@@ -227,7 +227,11 @@ function downloadCurrentReportPdf(btn) {
     }
 
     const query = new URLSearchParams(formData).toString();
-    triggerBackgroundPdfDownload("<?= BASE_URL ?>/reports/tickets/pdf?" + query, btn);
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    const filename = "Samtech-Helpdesk-" + randomNum + ".pdf";
+    const printUrl = "<?= BASE_URL ?>/reports/tickets/print?" + query;
+
+    generateDirectPdf(printUrl, filename, btn);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
