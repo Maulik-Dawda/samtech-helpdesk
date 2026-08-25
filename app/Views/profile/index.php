@@ -37,10 +37,10 @@ $mfaEnabled = !empty($user['mfa_secret']);
 
 ?>
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-2 px-0">
 
     <!-- Page header -->
-    <div class="page-header mb-4">
+    <div class="page-header mb-3">
 
         <div>
             <h1 class="page-title mb-1">

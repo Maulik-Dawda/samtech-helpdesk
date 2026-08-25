@@ -1,18 +1,18 @@
 <?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-2 px-0">
 
     <div class="card border-0 shadow-sm">
 
-        <div class="card-header bg-white p-4">
+        <div class="card-header bg-white p-3">
 
             <div class="d-flex justify-content-between align-items-center">
 
                 <div>
 
-                    <h4 class="fw-bold mb-1">
+                    <h5 class="fw-bold mb-0">
                         Ticket Reports
-                    </h4>
+                    </h5>
 
                     <small class="text-muted">
                         Filter and print ticket reports.
@@ -33,11 +33,11 @@
 
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-3">
 
             <form id="ticketReportFilterForm" data-no-loader="true">
 
-                <div class="row g-3">
+                <div class="row g-2">
 
                     <div class="col-md-3">
 

@@ -49,7 +49,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <!-- =========================================================
          PAGE HEADER
     ========================================================== -->
-    <section class="ui-panel mb-4">
+    <section class="ui-panel mb-3">
 
         <div class="ui-panel-body">
 
@@ -57,7 +57,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-3">
+                    <div class="app-badge app-badge-primary mb-2">
 
                         <i class="bi bi-ticket-perforated-fill"></i>
 

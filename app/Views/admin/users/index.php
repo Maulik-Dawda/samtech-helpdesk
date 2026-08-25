@@ -38,7 +38,7 @@ $totalActive = count(array_filter(
          PAGE HEADER
     ======================================================== -->
 
-    <section class="ui-panel mb-4">
+    <section class="ui-panel mb-3">
 
         <div class="ui-panel-body">
 
@@ -46,7 +46,7 @@ $totalActive = count(array_filter(
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-3">
+                    <div class="app-badge app-badge-primary mb-2">
 
                         <i class="bi bi-people-fill"></i>
 
@@ -70,7 +70,7 @@ $totalActive = count(array_filter(
                         href="<?= BASE_URL ?>/admin/users/create"
                         class="btn btn-primary-custom">
 
-                        <i class="bi bi-person-plus-fill me-2"></i>
+                        <i class="bi bi-person-plus-fill me-1"></i>
 
                         Create User
 

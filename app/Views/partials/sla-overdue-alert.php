@@ -8,24 +8,24 @@ $ticketIndexBase = $isCustomerUser ? (BASE_URL . '/tickets') : (BASE_URL . '/age
 
 <?php if ($overdueCount > 0): ?>
 
-    <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 p-4" style="background: #fef2f2; border-left: 5px solid #ef4444 !important;">
+    <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-3 p-3" style="background: #fef2f2; border-left: 4px solid #ef4444 !important;">
 
-        <div class="d-flex align-items-start gap-3 flex-wrap flex-md-nowrap">
+        <div class="d-flex align-items-start gap-2 flex-wrap flex-md-nowrap">
 
-            <div class="flex-shrink-0 text-danger fs-3">
+            <div class="flex-shrink-0 text-danger fs-4">
                 <i class="bi bi-exclamation-triangle-fill"></i>
             </div>
 
             <div class="flex-grow-1 w-100">
 
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
 
-                    <h5 class="fw-bold text-danger mb-0">
-                        <i class="bi bi-clock-history me-2"></i>
+                    <h6 class="fw-bold text-danger mb-0">
+                        <i class="bi bi-clock-history me-1"></i>
                         SLA Overdue Alert: <?= $overdueCount; ?> Ticket<?= $overdueCount === 1 ? '' : 's'; ?> Exceeded SLA Timeframe
-                    </h5>
+                    </h6>
 
-                    <span class="badge bg-danger text-white rounded-pill px-3 py-2">
+                    <span class="badge bg-danger text-white rounded-pill px-2 py-1">
                         <i class="bi bi-exclamation-octagon-fill me-1"></i> Immediate Attention Required
                     </span>
 
