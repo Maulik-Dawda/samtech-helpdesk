@@ -637,6 +637,7 @@ function dashboardActivityIcon(string $action): string
                                 <th>Ticket</th>
                                 <th>Organization</th>
                                 <th>Customer</th>
+                                <th>Assigned Agent</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created</th>
@@ -700,6 +701,17 @@ function dashboardActivityIcon(string $action): string
                                         <?= htmlspecialchars(
                                             $ticket['customer_name'] ?? '-'
                                         ); ?>
+                                    </td>
+
+                                    <td data-label="Assigned Agent">
+                                        <?php if (!empty($ticket['assigned_agent_name'])): ?>
+                                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:600;">
+                                                <i class="bi bi-person-badge me-1"></i>
+                                                <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">Unassigned</span>
+                                        <?php endif; ?>
                                     </td>
 
                                     <td data-label="Priority">

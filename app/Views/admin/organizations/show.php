@@ -425,6 +425,7 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                                 <th>Ticket No</th>
                                 <th>Subject</th>
                                 <th>Customer</th>
+                                <th>Assigned Agent</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created Date</th>
@@ -481,6 +482,19 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                                                 </div>
                                             <?php endif; ?>
                                         </div>
+                                    </td>
+
+                                    <td>
+                                        <?php if (!empty($ticket['assigned_agent_name'])): ?>
+                                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
+                                                <i class="bi bi-person-badge me-1"></i>
+                                                <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">
+                                                Unassigned
+                                            </span>
+                                        <?php endif; ?>
                                     </td>
 
                                     <td>

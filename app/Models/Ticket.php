@@ -83,10 +83,13 @@ class Ticket extends Model
     public function getUserTickets($userId)
     {
         $stmt = $this->db->prepare("
-            SELECT *
+            SELECT 
+                tickets.*,
+                assigned_agent.full_name AS assigned_agent_name
             FROM tickets
-            WHERE user_id = ?
-            ORDER BY created_at DESC
+            LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
+            WHERE tickets.user_id = ?
+            ORDER BY tickets.created_at DESC
         ");
 
         $stmt->execute([$userId]);
@@ -149,6 +152,7 @@ class Ticket extends Model
             FROM tickets
             LEFT JOIN users ON users.id = tickets.user_id
             LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
             WHERE 1=1
         ";
         $params = [];
@@ -164,8 +168,9 @@ class Ticket extends Model
                 OR users.full_name LIKE ?
                 OR users.email LIKE ?
                 OR organizations.name LIKE ?
+                OR assigned_agent.full_name LIKE ?
             )";
-            $params = [$term, $term, $term, $term, $term, $term, $term, $term];
+            $params = [$term, $term, $term, $term, $term, $term, $term, $term, $term];
         }
 
         $stmt = $this->db->prepare($sql);
@@ -183,10 +188,12 @@ class Ticket extends Model
                 tickets.*,
                 users.full_name AS customer_name,
                 users.email AS customer_email,
-                organizations.name AS organization_name
+                organizations.name AS organization_name,
+                assigned_agent.full_name AS assigned_agent_name
             FROM tickets
             LEFT JOIN users ON users.id = tickets.user_id
             LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
             WHERE 1=1
         ";
         $params = [];
@@ -202,8 +209,9 @@ class Ticket extends Model
                 OR users.full_name LIKE ?
                 OR users.email LIKE ?
                 OR organizations.name LIKE ?
+                OR assigned_agent.full_name LIKE ?
             )";
-            $params = [$term, $term, $term, $term, $term, $term, $term, $term];
+            $params = [$term, $term, $term, $term, $term, $term, $term, $term, $term];
         }
 
         $sql .= " ORDER BY tickets.created_at DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
@@ -324,11 +332,13 @@ class Ticket extends Model
             users.full_name AS customer_name,
             users.email AS customer_email,
             organizations.name AS organization_name,
-            closed_agent.full_name AS closed_by_agent_name
+            closed_agent.full_name AS closed_by_agent_name,
+            assigned_agent.full_name AS assigned_agent_name
         FROM tickets
         LEFT JOIN users ON users.id = tickets.user_id
         LEFT JOIN organizations ON organizations.id = tickets.organization_id
         LEFT JOIN users AS closed_agent ON closed_agent.id = tickets.closed_by_agent_id
+        LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE 1=1
     ";
 
@@ -523,9 +533,11 @@ class Ticket extends Model
         SELECT 
             tickets.*,
             users.full_name AS customer_name,
-            users.email AS customer_email
+            users.email AS customer_email,
+            assigned_agent.full_name AS assigned_agent_name
         FROM tickets
         LEFT JOIN users ON users.id = tickets.user_id
+        LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE tickets.organization_id = ?
         ORDER BY tickets.created_at DESC
         LIMIT " . (int)$limit . "

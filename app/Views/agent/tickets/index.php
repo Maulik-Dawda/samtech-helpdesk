@@ -371,6 +371,7 @@ function getAgentTicketPriorityClass(string $priority): string
                             <tr>
                                 <th>Ticket</th>
                                 <th>Customer</th>
+                                <th>Assigned Agent</th>
                                 <th>Subject</th>
                                 <th>Priority</th>
                                 <th>Status</th>
@@ -395,6 +396,10 @@ function getAgentTicketPriorityClass(string $priority): string
 
                                 $customerName = trim(
                                     (string) ($ticket['customer_name'] ?? '')
+                                );
+
+                                $assignedAgentName = trim(
+                                    (string) ($ticket['assigned_agent_name'] ?? '')
                                 );
 
                                 $subject = trim(
@@ -469,6 +474,31 @@ function getAgentTicketPriorityClass(string $priority): string
                                             </div>
 
                                         </div>
+
+                                    </td>
+
+
+                                    <td data-label="Assigned Agent">
+
+                                        <?php if ($assignedAgentName !== ''): ?>
+
+                                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
+
+                                                <i class="bi bi-person-badge me-1"></i>
+
+                                                <?= htmlspecialchars($assignedAgentName); ?>
+
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="text-muted small">
+
+                                                Unassigned
+
+                                            </span>
+
+                                        <?php endif; ?>
 
                                     </td>
 

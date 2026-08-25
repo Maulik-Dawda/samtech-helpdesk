@@ -7,6 +7,7 @@
                 <th>Ticket No</th>
                 <th>Organization</th>
                 <th>User</th>
+                <th>Assigned Agent</th>
                 <th>Subject</th>
                 <th>Priority</th>
                 <th>Status</th>
@@ -20,7 +21,7 @@
             <?php if (empty($tickets)): ?>
 
                 <tr>
-                    <td colspan="8" class="text-center text-muted py-4">
+                    <td colspan="9" class="text-center text-muted py-4">
                         No records found.
                     </td>
                 </tr>
@@ -40,6 +41,17 @@
 
                         <td>
                             <?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?>
+                        </td>
+
+                        <td>
+                            <?php if (!empty($ticket['assigned_agent_name'])): ?>
+                                <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:600;">
+                                    <i class="bi bi-person-badge me-1"></i>
+                                    <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-muted small">Unassigned</span>
+                            <?php endif; ?>
                         </td>
 
                         <td>
