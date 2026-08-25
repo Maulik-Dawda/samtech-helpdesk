@@ -131,21 +131,33 @@ async function generateDirectPdf(printUrl, filename, btn) {
         const htmlText = await response.text();
 
         const container = document.createElement('div');
-        container.style.position = 'absolute';
-        container.style.left = '-9999px';
+        container.id = 'pdfRenderTempContainer';
+        container.style.position = 'fixed';
         container.style.top = '0';
-        container.style.width = '790px';
+        container.style.left = '0';
+        container.style.width = '100vw';
+        container.style.height = '100vh';
+        container.style.overflowY = 'auto';
         container.style.background = '#ffffff';
-        container.style.color = '#111827';
-        container.style.fontFamily = 'Arial, sans-serif';
-        container.innerHTML = htmlText;
+        container.style.zIndex = '999999';
+        container.style.padding = '20px';
+        container.style.boxSizing = 'border-box';
 
-        const removeTargets = container.querySelectorAll('.print-btn, .print-actions, script');
+        const pageBox = document.createElement('div');
+        pageBox.style.width = '790px';
+        pageBox.style.margin = '0 auto';
+        pageBox.style.background = '#ffffff';
+        pageBox.style.color = '#111827';
+        pageBox.style.fontFamily = 'Arial, Helvetica, sans-serif';
+        pageBox.innerHTML = htmlText;
+
+        const removeTargets = pageBox.querySelectorAll('.print-btn, .print-actions, script');
         removeTargets.forEach(el => el.remove());
 
+        container.appendChild(pageBox);
         document.body.appendChild(container);
 
-        const images = container.querySelectorAll('img');
+        const images = pageBox.querySelectorAll('img');
         const imagePromises = Array.from(images).map(img => {
             if (img.complete) return Promise.resolve();
             return new Promise(resolve => {
@@ -155,15 +167,23 @@ async function generateDirectPdf(printUrl, filename, btn) {
         });
         await Promise.all(imagePromises);
 
+        await new Promise(resolve => setTimeout(resolve, 250));
+
         const opt = {
             margin:       [8, 8, 8, 8],
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false, width: 790 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                logging: false, 
+                scrollX: 0, 
+                scrollY: 0 
+            },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        await html2pdf().set(opt).from(container).save();
+        await html2pdf().set(opt).from(pageBox).save();
         document.body.removeChild(container);
 
     } catch (err) {
