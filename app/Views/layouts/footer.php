@@ -137,12 +137,18 @@ async function downloadDirectServerPdf(downloadUrl, btn) {
         });
 
         if (!response.ok) {
-            throw new Error('HTTP error ' + response.status);
+            alert('Failed to generate PDF (Server returned status ' + response.status + ')');
+            return;
         }
 
+        const contentType = response.headers.get('Content-Type') || '';
         const blob = await response.blob();
-        if (blob.size === 0) {
-            throw new Error('Received 0-byte PDF blob');
+
+        if (blob.size === 0 || contentType.includes('text/html') || contentType.includes('application/json')) {
+            const text = await blob.text();
+            console.error('Server error response:', text);
+            alert('Unable to download PDF. Server returned invalid file format.');
+            return;
         }
 
         let filename = 'Samtech-Helpdesk-Report.pdf';
@@ -165,7 +171,7 @@ async function downloadDirectServerPdf(downloadUrl, btn) {
         setTimeout(function() {
             window.URL.revokeObjectURL(blobUrl);
             document.body.removeChild(a);
-        }, 200);
+        }, 250);
 
     } catch (err) {
         console.error('PDF Fetch Error:', err);

@@ -94,6 +94,9 @@ class PdfController extends Controller
 
     private function outputPdf($html, $filename)
     {
+        error_reporting(0);
+        ini_set('display_errors', '0');
+
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
@@ -113,6 +116,11 @@ class PdfController extends Controller
 
         $pdfBinary = $dompdf->output();
 
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        header_remove();
         header("Content-Type: application/pdf");
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
         header("Access-Control-Expose-Headers: Content-Disposition");
