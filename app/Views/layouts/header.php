@@ -171,27 +171,13 @@ function assetVersion(string $relativePath): string
                         <i class="bi bi-list"></i>
                     </button>
 
-                    <div class="top-navbar-brand">
+                    <span class="top-navbar-title-brand">
+                        Samtech Helpdesk
+                    </span>
 
-                        <img
-                            src="<?= BASE_URL ?>/assets/images/samtech-icon.png"
-                            alt="Samtech"
-                            class="top-navbar-icon"
-                            width="40"
-                            height="40">
-
-                        <div class="top-navbar-brand-text">
-
-                            <div class="top-navbar-title">
-                                Samtech Helpdesk
-                            </div>
-
-                            <div class="top-navbar-subtitle">
-                                Support Management System
-                            </div>
-
-                        </div>
-
+                    <div class="top-navbar-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search Tickets, Clients..." class="form-control" id="globalSearchInput">
                     </div>
 
                 </div>
@@ -207,11 +193,11 @@ function assetVersion(string $relativePath): string
 
                     <div class="top-navbar-actions">
 
-                        <div class="dropdown me-2">
+                        <div class="dropdown me-1">
 
                             <button
                                 type="button"
-                                class="topbar-icon-btn position-relative dropdown-toggle"
+                                class="topbar-icon-btn position-relative"
                                 id="notificationDropdown"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
@@ -221,7 +207,7 @@ function assetVersion(string $relativePath): string
 
                                 <?php if ($unreadCount > 0): ?>
 
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 10px;">
+                                    <span class="topbar-badge-count">
                                         <?= $unreadCount > 9 ? '9+' : $unreadCount; ?>
                                     </span>
 
@@ -258,14 +244,12 @@ function assetVersion(string $relativePath): string
                                             <a href="<?= $notif['link']; ?>" class="dropdown-item p-3 border-bottom text-wrap d-flex align-items-start gap-3 hover-bg-light" style="white-space: normal;">
 
                                                 <div class="rounded-circle p-2 flex-shrink-0" style="background:#f1f5f9;">
-
-                                                    <i class="bi <?= $notif['icon']; ?> fs-6 text-<?= $notif['color']; ?>"></i>
-
+                                                    <i class="bi bi-bell text-primary"></i>
                                                 </div>
 
                                                 <div class="flex-grow-1">
 
-                                                    <div class="fw-bold text-dark small mb-1">
+                                                    <div class="fw-bold text-dark mb-1 small">
                                                         <?= htmlspecialchars($notif['title']); ?>
                                                     </div>
 
@@ -303,29 +287,20 @@ function assetVersion(string $relativePath): string
                         <div class="dropdown">
 
                             <button
-                                class="user-card-btn dropdown-toggle"
+                                class="user-card-btn"
                                 type="button"
                                 id="profileDropdown"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
 
-                                <span class="avatar-circle">
+                                <span class="user-info text-end">
+                                    <span class="user-label-sub">My Profile</span>
+                                    <span class="user-name"><?= htmlspecialchars($fullName); ?></span>
+                                </span>
+
+                                <span class="avatar-circle ms-1">
                                     <?= htmlspecialchars($initials); ?>
                                 </span>
-
-                                <span class="user-info">
-
-                                    <span class="user-name">
-                                        <?= htmlspecialchars($fullName); ?>
-                                    </span>
-
-                                    <span class="user-role">
-                                        <?= htmlspecialchars($roleLabel); ?>
-                                    </span>
-
-                                </span>
-
-                                <i class="bi bi-chevron-down user-menu-arrow"></i>
 
                             </button>
 
