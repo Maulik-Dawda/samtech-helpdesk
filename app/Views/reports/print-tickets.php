@@ -1,3 +1,9 @@
+<?php
+$logoPath = ROOT_PATH . '/public/assets/images/samtech-logo-report.png';
+$logoSrc = file_exists($logoPath)
+    ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+    : BASE_URL . '/assets/images/samtech-logo-report.png';
+?>
 <!DOCTYPE html>
 <html>
 
@@ -7,16 +13,15 @@
 
     <style>
         @page {
-            size: Letter portrait;
-            margin: 9mm;
+            size: A4 landscape;
+            margin: 8mm;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             color: #111827;
             background: #ffffff;
             font-size: 10px;
@@ -39,55 +44,46 @@
             cursor: pointer;
         }
 
-        .report-header {
+        .header-table {
+            width: 100%;
             border-bottom: 3px solid #b1e96f;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
             margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            border-collapse: collapse;
         }
 
         .logo {
-            width: 185px;
+            width: 180px;
             height: auto;
-            display: block;
-            background: #ffffff;
         }
 
         .report-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
-            margin-top: 8px;
+            margin-top: 6px;
             color: #111827;
         }
 
         .report-subtitle {
             color: #64748b;
-            font-size: 11px;
-            margin-top: 3px;
+            font-size: 10px;
+            margin-top: 2px;
         }
 
         .meta {
             text-align: right;
             color: #475569;
-            font-size: 10px;
-            line-height: 1.6;
+            font-size: 9.5px;
+            line-height: 1.5;
         }
 
         .criteria {
-            margin: 0 0 14px 0;
-            padding-bottom: 10px;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
             border-bottom: 1px solid #e5e7eb;
             color: #374151;
-            font-size: 10.5px;
-            line-height: 1.8;
-        }
-
-        .criteria-row {
-            display: inline-block;
-            margin-right: 18px;
-            white-space: nowrap;
+            font-size: 10px;
+            line-height: 1.6;
         }
 
         .criteria-label {
@@ -95,65 +91,55 @@
             color: #111827;
         }
 
-        table {
+        table.data-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            page-break-inside: auto;
         }
 
-        thead {
-            display: table-header-group;
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-
-        th {
+        table.data-table th {
             background: #111827;
             color: #ffffff;
             text-align: left;
-            padding: 7px 5px;
+            padding: 7px 6px;
             border: 1px solid #111827;
             font-size: 9.5px;
             font-weight: 800;
         }
 
-        td {
-            padding: 6px 5px;
+        table.data-table td {
+            padding: 6px;
             border: 1px solid #d1d5db;
             vertical-align: top;
             font-size: 9px;
             word-wrap: break-word;
         }
 
-        tbody tr:nth-child(even) {
+        table.data-table tbody tr:nth-child(even) {
             background: #f8fafc;
         }
 
         .footer-note {
-            margin-top: 14px;
-            padding-top: 8px;
+            margin-top: 12px;
+            padding-top: 6px;
             border-top: 1px solid #e5e7eb;
             color: #64748b;
-            font-size: 9px;
+            font-size: 8.5px;
             text-align: center;
         }
 
-        .ticket-no { width: 12%; }
+        .ticket-no { width: 13%; }
         .org { width: 13%; }
         .user { width: 11%; }
-        .subject { width: 29%; }
-        .priority { width: 8%; }
+        .subject { width: 28%; }
+        .priority { width: 7%; }
         .status { width: 10%; }
-        .created { width: 12%; }
-        .closed-by { width: 9%; }
+        .created { width: 10%; }
+        .closed-by { width: 8%; }
 
         @media print {
             .print-actions {
-                display: none;
+                display: none !important;
             }
 
             body {
@@ -176,95 +162,75 @@
     </div>
     <?php endif; ?>
 
-    <div class="report-header">
-
-        <div>
-            <img
-                src="<?= BASE_URL ?>/assets/images/samtech-logo-report.png"
-                class="logo"
-                alt="Samtech">
-
-            <div class="report-title">
-                Ticket Report
-            </div>
-
-            <div class="report-subtitle">
-                Samtech Helpdesk Management System
-            </div>
-        </div>
-
-        <div class="meta">
-            <strong>Generated On</strong><br>
-            <?= date('d M Y, h:i A'); ?><br><br>
-
-            <strong>Generated By</strong><br>
-            <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'System'); ?><br><br>
-
-            <strong>Total Records</strong><br>
-            <?= count($tickets); ?>
-        </div>
-
-    </div>
+    <table class="header-table">
+        <tr>
+            <td style="border:none; vertical-align:top; text-align:left; padding:0;">
+                <img src="<?= $logoSrc; ?>" class="logo" alt="Samtech">
+                <div class="report-title">Ticket Report</div>
+                <div class="report-subtitle">Samtech Helpdesk Management System</div>
+            </td>
+            <td style="border:none; vertical-align:top; text-align:right; padding:0;" class="meta">
+                <strong>Generated On:</strong> <?= date('d M Y, h:i A'); ?><br>
+                <strong>Generated By:</strong> <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'System'); ?><br>
+                <strong>Total Records:</strong> <?= count($tickets); ?>
+            </td>
+        </tr>
+    </table>
 
     <?php
         $criteria = [];
 
         if (!empty($filters['organization_id']) && !empty($organizations)) {
-            foreach ($organizations as $organization) {
-                if ($organization['id'] == $filters['organization_id']) {
-                    $criteria['Organization'] = $organization['name'];
+            foreach ($organizations as $o) {
+                if ($o['id'] == $filters['organization_id']) {
+                    $criteria[] = '<span class="criteria-label">Organization:</span> ' . htmlspecialchars($o['name']);
                     break;
                 }
             }
         }
 
         if (!empty($filters['user_id']) && !empty($users)) {
-            foreach ($users as $user) {
-                if ($user['id'] == $filters['user_id']) {
-                    $criteria['User'] = $user['full_name'];
+            foreach ($users as $u) {
+                if ($u['id'] == $filters['user_id']) {
+                    $criteria[] = '<span class="criteria-label">User:</span> ' . htmlspecialchars($u['full_name']);
                     break;
                 }
             }
         }
 
         if (!empty($filters['agent_id']) && !empty($agents)) {
-            foreach ($agents as $agent) {
-                if ($agent['id'] == $filters['agent_id']) {
-                    $criteria['Agent'] = $agent['full_name'];
+            foreach ($agents as $a) {
+                if ($a['id'] == $filters['agent_id']) {
+                    $criteria[] = '<span class="criteria-label">Agent:</span> ' . htmlspecialchars($a['full_name']);
                     break;
                 }
             }
         }
 
         if (!empty($filters['status'])) {
-            $criteria['Status'] = ucwords(str_replace('_', ' ', $filters['status']));
+            $criteria[] = '<span class="criteria-label">Status:</span> ' . htmlspecialchars(ucwords(str_replace('_', ' ', $filters['status'])));
         }
 
         if (!empty($filters['priority'])) {
-            $criteria['Priority'] = ucfirst($filters['priority']);
+            $criteria[] = '<span class="criteria-label">Priority:</span> ' . htmlspecialchars(ucfirst($filters['priority']));
         }
 
         if (!empty($filters['date_from'])) {
-            $criteria['From'] = date('d M Y', strtotime($filters['date_from']));
+            $criteria[] = '<span class="criteria-label">From:</span> ' . htmlspecialchars($filters['date_from']);
         }
 
         if (!empty($filters['date_to'])) {
-            $criteria['To'] = date('d M Y', strtotime($filters['date_to']));
+            $criteria[] = '<span class="criteria-label">To:</span> ' . htmlspecialchars($filters['date_to']);
         }
     ?>
 
     <?php if (!empty($criteria)): ?>
         <div class="criteria">
-            <?php foreach ($criteria as $label => $value): ?>
-                <span class="criteria-row">
-                    <span class="criteria-label"><?= htmlspecialchars($label); ?>:</span>
-                    <?= htmlspecialchars($value); ?>
-                </span>
-            <?php endforeach; ?>
+            <?= implode(' &nbsp;|&nbsp; ', $criteria); ?>
         </div>
     <?php endif; ?>
 
-    <table>
+    <table class="data-table">
         <thead>
             <tr>
                 <th class="ticket-no">Ticket No</th>
@@ -277,29 +243,26 @@
                 <th class="closed-by">Closed By</th>
             </tr>
         </thead>
-
         <tbody>
 
         <?php if (empty($tickets)): ?>
-
             <tr>
-                <td colspan="8" style="text-align:center;">
-                    No records found.
+                <td colspan="8" style="text-align: center; padding: 18px; color: #64748b;">
+                    No tickets found matching the selected report criteria.
                 </td>
             </tr>
-
         <?php else: ?>
 
             <?php foreach ($tickets as $ticket): ?>
                 <tr>
-                    <td><?= htmlspecialchars($ticket['ticket_no']); ?></td>
-                    <td><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
-                    <td><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
-                    <td><?= htmlspecialchars($ticket['subject']); ?></td>
-                    <td><?= htmlspecialchars(ucfirst($ticket['priority'])); ?></td>
-                    <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?></td>
-                    <td><?= htmlspecialchars($ticket['created_at']); ?></td>
-                    <td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
+                    <td class="ticket-no"><strong><?= htmlspecialchars($ticket['ticket_no'] ?? '-'); ?></strong></td>
+                    <td class="org"><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
+                    <td class="user"><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
+                    <td class="subject"><?= htmlspecialchars($ticket['subject'] ?? '-'); ?></td>
+                    <td class="priority"><?= htmlspecialchars(ucfirst($ticket['priority'] ?? '')); ?></td>
+                    <td class="status"><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status'] ?? ''))); ?></td>
+                    <td class="created"><?= !empty($ticket['created_at']) ? date('Y-m-d H:i', strtotime($ticket['created_at'])) : '-'; ?></td>
+                    <td class="closed-by"><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
                 </tr>
             <?php endforeach; ?>
 

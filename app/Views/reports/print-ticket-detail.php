@@ -1,22 +1,29 @@
+<?php
+$logoPath = ROOT_PATH . '/public/assets/images/samtech-logo-report.png';
+$logoSrc = file_exists($logoPath)
+    ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+    : BASE_URL . '/assets/images/samtech-logo-report.png';
+?>
 <!DOCTYPE html>
 <html>
 
 <head>
-
     <meta charset="UTF-8">
-
     <title>Ticket Detail Report</title>
 
     <style>
         @page {
-            size: Letter portrait;
+            size: A4 portrait;
             margin: 10mm;
         }
 
-        body {
+        html, body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            width: 100%;
+            font-family: Arial, Helvetica, sans-serif;
             color: #111827;
+            background: #ffffff;
             font-size: 11px;
         }
 
@@ -27,120 +34,127 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .header-table {
+            width: 100%;
             border-bottom: 3px solid #b1e96f;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+            border-collapse: collapse;
         }
 
         .logo {
-            width: 190px;
+            width: 180px;
+            height: auto;
         }
 
         .title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
+            margin-top: 6px;
+            color: #111827;
         }
 
         .subtitle {
             color: #64748b;
-            margin-top: 4px;
+            font-size: 11px;
+            margin-top: 2px;
         }
 
         .meta {
             text-align: right;
-            font-size: 11px;
+            font-size: 10px;
             color: #64748b;
+            line-height: 1.5;
         }
 
         .section {
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
         .section-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-left: 5px solid #b1e96f;
-            padding-left: 10px;
+            padding-left: 8px;
+            color: #111827;
         }
 
-        table {
+        table.info-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        th {
-            width: 28%;
+        table.info-table th {
+            width: 25%;
             background: #f8fafc;
             text-align: left;
-            padding: 10px;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            font-weight: bold;
+        }
+
+        table.info-table td {
+            padding: 8px 10px;
             border: 1px solid #d1d5db;
         }
 
-        td {
-            padding: 10px;
-            border: 1px solid #d1d5db;
-        }
-
-        .description {
+        .description-box {
             border: 1px solid #d1d5db;
             background: #fafafa;
-            padding: 15px;
-            line-height: 1.7;
+            padding: 12px;
+            line-height: 1.6;
+            border-radius: 6px;
         }
 
-        .reply {
+        .reply-card {
             border: 1px solid #dbe3ed;
-            border-radius: 10px;
-            margin-bottom: 18px;
+            border-radius: 8px;
+            margin-bottom: 14px;
         }
 
-        .reply-header {
+        .reply-header-table {
+            width: 100%;
             background: #f8fafc;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
+            border-collapse: collapse;
         }
 
         .reply-body {
-            padding: 14px;
+            padding: 12px;
+            line-height: 1.6;
         }
 
-        .timeline {
+        .timeline-item {
             border-left: 3px solid #b1e96f;
-            padding-left: 16px;
-            margin-bottom: 18px;
+            padding-left: 12px;
+            margin-bottom: 14px;
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 25px;
             text-align: center;
             color: #64748b;
-            font-size: 10px;
+            font-size: 9.5px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
         }
 
         @media print {
-
             .print-btn {
-                display: none;
+                display: none !important;
             }
 
             body {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-
         }
     </style>
-
 </head>
 
 <body>
@@ -151,270 +165,154 @@
     </button>
     <?php endif; ?>
 
-    <div class="header">
-
-        <div>
-
-            <img
-                src="<?= BASE_URL ?>/assets/images/samtech-logo-report.png"
-                class="logo">
-
-            <div class="title">
-                Ticket Detail Report
-            </div>
-
-            <div class="subtitle">
-                Samtech Helpdesk Management System
-            </div>
-
-        </div>
-
-        <div class="meta">
-
-            <strong>Generated On</strong><br>
-
-            <?= date('d M Y h:i A'); ?>
-
-            <br><br>
-
-            <strong>Generated By</strong><br>
-
-            <?= htmlspecialchars($_SESSION['auth_user_name']); ?>
-
-        </div>
-
-    </div>
+    <table class="header-table">
+        <tr>
+            <td style="border:none; vertical-align:top; text-align:left; padding:0;">
+                <img src="<?= $logoSrc; ?>" class="logo" alt="Samtech">
+                <div class="title">Ticket Detail Report</div>
+                <div class="subtitle">Samtech Helpdesk Management System</div>
+            </td>
+            <td style="border:none; vertical-align:top; text-align:right; padding:0;" class="meta">
+                <strong>Generated On:</strong> <?= date('d M Y h:i A'); ?><br><br>
+                <strong>Generated By:</strong> <?= htmlspecialchars($_SESSION['auth_user_name'] ?? 'System'); ?>
+            </td>
+        </tr>
+    </table>
 
     <div class="section">
-
-        <div class="section-title">
-            Ticket Information
-        </div>
-
-        <table>
-
+        <div class="section-title">Ticket Information</div>
+        <table class="info-table">
             <tr>
                 <th>Ticket Number</th>
-                <td><?= htmlspecialchars($ticket['ticket_no']); ?></td>
+                <td><strong><?= htmlspecialchars($ticket['ticket_no'] ?? '-'); ?></strong></td>
             </tr>
-
             <tr>
                 <th>Organization</th>
-                <td><?= htmlspecialchars($ticket['organization_name']); ?></td>
+                <td><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
             </tr>
-
             <tr>
-                <th>User</th>
-                <td><?= htmlspecialchars($ticket['customer_name']); ?></td>
+                <th>User / Customer</th>
+                <td><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
             </tr>
-
             <tr>
                 <th>Email</th>
-                <td><?= htmlspecialchars($ticket['customer_email']); ?></td>
+                <td><?= htmlspecialchars($ticket['customer_email'] ?? '-'); ?></td>
             </tr>
-
             <tr>
                 <th>Subject</th>
-                <td><?= htmlspecialchars($ticket['subject']); ?></td>
+                <td><?= htmlspecialchars($ticket['subject'] ?? '-'); ?></td>
             </tr>
-
             <tr>
                 <th>Status</th>
-                <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?></td>
+                <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status'] ?? ''))); ?></td>
             </tr>
-
             <tr>
                 <th>Priority</th>
-                <td><?= htmlspecialchars(ucfirst($ticket['priority'])); ?></td>
+                <td><?= htmlspecialchars(ucfirst($ticket['priority'] ?? '')); ?></td>
             </tr>
-
             <tr>
-                <th>Created</th>
-                <td><?= htmlspecialchars($ticket['created_at']); ?></td>
+                <th>Created Date</th>
+                <td><?= htmlspecialchars($ticket['created_at'] ?? '-'); ?></td>
             </tr>
-
             <tr>
-                <th>Closed</th>
-                <td><?= $ticket['closed_at'] ?: '-'; ?></td>
+                <th>Closed Date</th>
+                <td><?= !empty($ticket['closed_at']) ? $ticket['closed_at'] : '-'; ?></td>
             </tr>
-
             <tr>
                 <th>Closed By</th>
                 <td><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
             </tr>
-
         </table>
-
     </div>
 
     <div class="section">
-
-        <div class="section-title">
-            Description
+        <div class="section-title">Description</div>
+        <div class="description-box">
+            <?= nl2br(htmlspecialchars($ticket['description'] ?? 'No description provided.')); ?>
         </div>
-
-        <div class="description">
-
-            <?= nl2br(htmlspecialchars($ticket['description'])); ?>
-
-        </div>
-
     </div>
 
     <?php if (!empty($attachments)): ?>
-
         <div class="section">
-
-            <div class="section-title">
-                Ticket Attachments
-            </div>
-
+            <div class="section-title">Ticket Attachments</div>
             <ul>
-
                 <?php foreach ($attachments as $attachment): ?>
-
-                    <li>
-
-                        <?= htmlspecialchars($attachment['original_name']); ?>
-
-                    </li>
-
+                    <li><?= htmlspecialchars($attachment['original_name']); ?></li>
                 <?php endforeach; ?>
-
             </ul>
-
         </div>
-
     <?php endif; ?>
 
     <div class="section">
-
-        <div class="section-title">
-            Conversation History
-        </div>
+        <div class="section-title">Conversation History</div>
 
         <?php if (empty($replies)): ?>
-
-            No Replies Available
-
+            <div style="color: #64748b; font-style: italic;">No Replies Available</div>
         <?php else: ?>
-
             <?php foreach ($replies as $reply): ?>
-
-                <div class="reply">
-
-                    <div class="reply-header">
-
-                        <strong>
-
-                            <?= htmlspecialchars($reply['full_name']); ?>
-
-                            (<?= ucfirst($reply['role']); ?>)
-
-                        </strong>
-
-                        <span>
-
-                            <?= htmlspecialchars($reply['created_at']); ?>
-
-                        </span>
-
-                    </div>
+                <div class="reply-card">
+                    <table class="reply-header-table">
+                        <tr>
+                            <td style="border:none; text-align:left; padding:0; font-weight:bold;">
+                                <?= htmlspecialchars($reply['full_name']); ?> (<?= ucfirst($reply['role']); ?>)
+                            </td>
+                            <td style="border:none; text-align:right; padding:0; color:#64748b; font-size:10px;">
+                                <?= htmlspecialchars($reply['created_at']); ?>
+                            </td>
+                        </tr>
+                    </table>
 
                     <div class="reply-body">
-
                         <?= nl2br(htmlspecialchars($reply['message'])); ?>
 
                         <?php if (!empty($replyAttachments[$reply['id']])): ?>
-
-                            <hr>
-
-                            <strong>Attachments</strong>
-
+                            <hr style="border:0; border-top:1px solid #e5e7eb; margin:10px 0;">
+                            <strong>Attachments:</strong>
                             <ul>
-
                                 <?php foreach ($replyAttachments[$reply['id']] as $file): ?>
-
-                                    <li>
-
-                                        <?= htmlspecialchars($file['original_name']); ?>
-
-                                    </li>
-
+                                    <li><?= htmlspecialchars($file['original_name']); ?></li>
                                 <?php endforeach; ?>
-
                             </ul>
-
                         <?php endif; ?>
-
                     </div>
-
                 </div>
-
             <?php endforeach; ?>
-
         <?php endif; ?>
-
     </div>
 
     <div class="section">
-
-        <div class="section-title">
-            Status Timeline
-        </div>
+        <div class="section-title">Status Timeline</div>
 
         <?php if (empty($statusHistory)): ?>
-
-            No Status History
-
+            <div style="color: #64748b; font-style: italic;">No Status History</div>
         <?php else: ?>
-
             <?php foreach ($statusHistory as $history): ?>
-
-                <div class="timeline">
-
+                <div class="timeline-item">
                     <strong>
-
                         <?= ucwords(str_replace('_', ' ', $history['old_status'])); ?>
-
-                        →
-
+                        &rarr;
                         <?= ucwords(str_replace('_', ' ', $history['new_status'])); ?>
-
                     </strong>
-
                     <br>
-
-                    <?= htmlspecialchars($history['full_name']); ?>
-
-                    <br>
-
-                    <?= htmlspecialchars($history['created_at']); ?>
-
+                    <span style="color:#475569;"><?= htmlspecialchars($history['full_name']); ?></span>
+                    &bull;
+                    <span style="color:#64748b; font-size:10px;"><?= htmlspecialchars($history['created_at']); ?></span>
                 </div>
-
             <?php endforeach; ?>
-
         <?php endif; ?>
-
     </div>
 
     <div class="footer">
-
         This report was automatically generated by Samtech Helpdesk.
-
     </div>
 
     <?php if (empty($isPdfDownload)): ?>
     <script>
         window.onload = function() {
-
             window.print();
-
         }
     </script>
     <?php endif; ?>
 
 </body>
-
 </html>
