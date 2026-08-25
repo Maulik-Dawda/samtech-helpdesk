@@ -73,69 +73,180 @@ function agentDashboardPriorityClass(string $priority): string
     <!-- =========================================================
          AGENT DASHBOARD HERO
     ========================================================== -->
-    <!-- Welcome Header Banner (Demo Aesthetic) -->
-    <div class="welcome-header-card">
-        <div class="welcome-title-wrap">
-            <span class="welcome-icon-pill"><i class="bi bi-activity"></i></span>
-            <h2 class="welcome-title-text">Welcome back, <?= htmlspecialchars($agentName); ?>! 👋</h2>
+    <section class="ui-panel mb-4">
+
+        <div class="ui-panel-body">
+
+            <div class="page-header mb-0">
+
+                <div class="page-header-content">
+
+                    <div class="app-badge app-badge-primary mb-3">
+                        <i class="bi bi-headset"></i>
+                        Agent Workspace
+                    </div>
+
+                    <h1 class="page-title">
+                        <?= htmlspecialchars($greeting); ?>,
+                        <?= htmlspecialchars($agentName); ?>! 👋
+                    </h1>
+
+                    <p class="page-description">
+                        Manage customer requests, monitor ticket progress and
+                        keep support operations running smoothly.
+                    </p>
+
+                </div>
+
+                <div class="page-actions">
+
+                    <div class="date-pill">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        <div>
+
+                            <div class="dashboard-date">
+                                <?= htmlspecialchars($currentDate); ?>
+                            </div>
+
+                            <div class="dashboard-time">
+                                <?= htmlspecialchars($currentTime); ?>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions-grid mt-4">
+
+                <a
+                    href="<?= BASE_URL ?>/agent/tickets/create"
+                    class="quick-action-link">
+
+                    <span class="quick-action-icon">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+
+                        <span class="quick-action-title">
+                            Create Ticket
+                        </span>
+
+                        <span class="quick-action-description">
+                            Open a new support ticket.
+                        </span>
+
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+                </a>
+
+                <a
+                    href="<?= BASE_URL ?>/agent/tickets"
+                    class="quick-action-link">
+
+                    <span class="quick-action-icon">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+
+                        <span class="quick-action-title">
+                            View All Tickets
+                        </span>
+
+                        <span class="quick-action-description">
+                            Review the complete support queue.
+                        </span>
+
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+                </a>
+
+                <a
+                    href="<?= BASE_URL ?>/organizations/create"
+                    class="quick-action-link">
+
+                    <span class="quick-action-icon">
+                        <i class="bi bi-building-add"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+
+                        <span class="quick-action-title">
+                            Create Organization
+                        </span>
+
+                        <span class="quick-action-description">
+                            Add a customer organization.
+                        </span>
+
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+                </a>
+
+                <a
+                    href="<?= BASE_URL ?>/agent/users/create"
+                    class="quick-action-link">
+
+                    <span class="quick-action-icon">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </span>
+
+                    <span class="quick-action-content">
+
+                        <span class="quick-action-title">
+                            Create User
+                        </span>
+
+                        <span class="quick-action-description">
+                            Add a user to an organization.
+                        </span>
+
+                    </span>
+
+                    <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+                </a>
+
+            </div>
+
         </div>
-        <span class="welcome-date-text"><?= htmlspecialchars($currentDate); ?> | <?= htmlspecialchars($currentTime); ?></span>
-    </div>
+
+    </section>
 
     <?php require ROOT_PATH . "/app/Views/partials/sla-overdue-alert.php"; ?>
 
-    <!-- Demo 6-Card Metric Grid (SwiftDesk Aesthetic) -->
-    <div class="demo-metric-grid">
 
-        <div class="demo-metric-card accent-blue">
-            <div class="demo-metric-header">
-                <span class="demo-metric-value"><?= (int)$ticketCounts['open_count']; ?></span>
-                <span class="demo-metric-badge badge-blue">+<?= (int)$ticketCounts['open_count']; ?> today</span>
-            </div>
-            <div class="demo-metric-label">New Tickets</div>
-        </div>
+    <!-- =========================================================
+         TICKET METRICS
+    ========================================================== -->
+    <section class="content-section">
 
-        <div class="demo-metric-card accent-orange">
-            <div class="demo-metric-header">
-                <span class="demo-metric-value"><?= (int)$ticketCounts['open_count']; ?></span>
-                <span class="demo-metric-icon-box icon-orange"><i class="bi bi-inbox-fill"></i></span>
-            </div>
-            <div class="demo-metric-label">Open Tickets</div>
-        </div>
+        <div class="metric-grid">
 
-        <div class="demo-metric-card accent-teal">
-            <div class="demo-metric-header">
-                <span class="demo-metric-value"><?= (int)$ticketCounts['in_progress_count']; ?></span>
-                <span class="demo-metric-icon-box icon-teal"><i class="bi bi-clock-history"></i></span>
-            </div>
-            <div class="demo-metric-label">In Progress</div>
-        </div>
+            <!-- Total Tickets -->
+            <a
+                href="<?= BASE_URL ?>/agent/tickets"
+                class="metric-card text-decoration-none">
 
-        <div class="demo-metric-card accent-green">
-            <div class="demo-metric-header">
-                <span class="demo-metric-value"><?= (int)$ticketCounts['resolved_count']; ?></span>
-                <span class="demo-metric-icon-box icon-green"><i class="bi bi-check-circle-fill"></i></span>
-            </div>
-            <div class="demo-metric-label">Resolved Today</div>
-        </div>
+                <div class="metric-card-header">
 
-        <div class="demo-metric-card accent-red">
-            <div class="demo-metric-header">
-                <span class="demo-metric-value"><?= (int)$ticketCounts['pending_count']; ?></span>
-                <span class="demo-metric-icon-box icon-red"><i class="bi bi-exclamation-triangle-fill"></i></span>
-            </div>
-            <div class="demo-metric-label">Urgent Tickets</div>
-        </div>
-
-        <div class="demo-metric-card accent-purple">
-            <div class="demo-metric-header">
-                <span class="demo-metric-value">4.8<small class="fs-6 text-muted">/5</small></span>
-                <span class="demo-metric-icon-box icon-purple"><i class="bi bi-star-fill"></i></span>
-            </div>
-            <div class="demo-metric-label">Client Satisfaction</div>
-        </div>
-
-    </div>
+                    <div class="metric-card-icon">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </div>
 
                     <i class="bi bi-arrow-up-right text-muted"></i>
 

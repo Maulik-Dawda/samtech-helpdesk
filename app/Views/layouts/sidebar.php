@@ -117,12 +117,17 @@ if ($isAdmin) {
 
     <div class="sidebar-header">
 
-        <a class="sidebar-brand-link" href="<?= $dashboardUrl; ?>" aria-label="Open dashboard">
-            <span class="sidebar-brand-icon">S</span>
-            <span class="sidebar-brand-text">
-                <span class="sidebar-brand-name">SWIFTDESK</span>
-                <span class="sidebar-brand-sub">Helpdesk</span>
-            </span>
+        <a
+            class="sidebar-logo"
+            href="<?= $dashboardUrl; ?>"
+            aria-label="Open dashboard"
+        >
+            <img
+                src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
+                alt="Samtech Solutions"
+                width="170"
+                height="48"
+            >
         </a>
 
         <button
