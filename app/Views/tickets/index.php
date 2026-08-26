@@ -166,18 +166,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <?php if (!empty($tickets)): ?>
 
-                    <div class="position-relative">
+                    <div class="ticket-search-wrapper">
 
-                        <i
-                            class="bi bi-search position-absolute top-50 translate-middle-y text-muted"
-                            style="left: 14px;">
-                        </i>
+                        <i class="bi bi-search ticket-search-icon"></i>
 
                         <input
                             type="search"
                             id="userTicketSearch"
-                            class="form-control ps-5"
-                            style="min-width: 280px;"
+                            class="form-control ticket-search-input"
                             placeholder="Search tickets..."
                             autocomplete="off"
                             aria-label="Search tickets">

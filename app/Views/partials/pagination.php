@@ -13,7 +13,7 @@ function paginationUrl($pageNumber, $baseQuery)
 
 <?php if ($totalPages > 1): ?>
 
-    <nav class="mt-4">
+    <div class="pagination-wrapper border-top-0 pt-3 pb-2 px-3">
         <ul class="pagination justify-content-end mb-0">
 
             <li class="page-item <?= $page <= 1 ? 'disabled' : ''; ?>">
@@ -68,6 +68,6 @@ function paginationUrl($pageNumber, $baseQuery)
             </li>
 
         </ul>
-    </nav>
+    </div>
 
 <?php endif; ?>
