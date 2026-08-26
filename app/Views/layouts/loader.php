@@ -136,11 +136,8 @@
     // Always hide loader on load, DOMContentLoaded, pageshow (BFCache), and popstate
     document.addEventListener('DOMContentLoaded', hideSamtechLoader);
     window.addEventListener('load', hideSamtechLoader);
-    window.addEventListener('pageshow', function(e) {
+    window.addEventListener('pageshow', function() {
         hideSamtechLoader();
-        if (e.persisted) {
-            window.location.reload();
-        }
     });
     window.addEventListener('popstate', function() {
         hideSamtechLoader();
