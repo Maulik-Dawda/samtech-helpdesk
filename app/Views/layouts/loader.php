@@ -162,7 +162,22 @@
 
         document.querySelectorAll('form').forEach(function(form) {
 
-            if (form.hasAttribute('data-no-loader')) {
+            const action = (form.getAttribute('action') || '').toLowerCase();
+            const currentPath = window.location.pathname.toLowerCase();
+
+            // Only activate loader for Auth screens and Auth form submissions
+            const isAuthAction =
+                action.includes('login') ||
+                action.includes('otp') ||
+                action.includes('mfa') ||
+                action.includes('forgot-password') ||
+                action.includes('reset-password') ||
+                currentPath.includes('login') ||
+                currentPath.includes('forgot-password') ||
+                currentPath.includes('reset-password') ||
+                currentPath.includes('mfa');
+
+            if (!isAuthAction) {
                 return;
             }
 
@@ -172,26 +187,16 @@
                     return;
                 }
 
-                let message = 'Processing your request...';
-
-                const action = form.getAttribute('action') || '';
+                let message = 'Verifying credentials...';
 
                 if (action.includes('admin-login')) {
                     message = 'Verifying admin access...';
-                } else if (action.includes('login')) {
-                    message = 'Verifying credentials...';
-                } else if (action.includes('otp')) {
-                    message = 'Verifying OTP...';
+                } else if (action.includes('otp') || action.includes('mfa')) {
+                    message = 'Verifying security code...';
                 } else if (action.includes('forgot-password')) {
                     message = 'Sending verification code...';
                 } else if (action.includes('reset-password')) {
                     message = 'Updating password...';
-                } else if (action.includes('tickets')) {
-                    message = 'Processing ticket...';
-                } else if (action.includes('reports')) {
-                    message = 'Preparing report...';
-                } else if (action.includes('delete')) {
-                    message = 'Deleting user...';
                 }
 
                 showSamtechLoader(message);
