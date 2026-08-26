@@ -19,6 +19,7 @@ class MailService
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();
+        $mail->Timeout = 3;
 
         /*
         |--------------------------------------------------------------------------
@@ -174,6 +175,42 @@ class MailService
                     "Exception: {$e->getMessage()}"
             );
 
+            return false;
+        }
+    }
+
+    public static function sendMultipleTicketMail(
+        array $recipients,
+        string $subject,
+        string $body
+    ): bool {
+        $validRecipients = array_filter(array_unique($recipients), function($email) {
+            return filter_var($email, FILTER_VALIDATE_EMAIL);
+        });
+
+        if (empty($validRecipients)) {
+            return false;
+        }
+
+        $mail = null;
+
+        try {
+            $mail = self::baseMailer('ticket');
+
+            $first = array_shift($validRecipients);
+            $mail->addAddress($first);
+
+            foreach ($validRecipients as $bccEmail) {
+                $mail->addBCC($bccEmail);
+            }
+
+            $mail->Subject = $subject;
+            $mail->Body = nl2br(htmlspecialchars($body));
+            $mail->AltBody = self::htmlToPlainText($body);
+
+            return $mail->send();
+        } catch (Throwable $e) {
+            error_log("MailService sendMultipleTicketMail Error: " . $e->getMessage());
             return false;
         }
     }
