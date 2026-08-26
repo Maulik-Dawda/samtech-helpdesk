@@ -73,25 +73,25 @@ function agentDashboardPriorityClass(string $priority): string
     <!-- =========================================================
          AGENT DASHBOARD HERO
     ========================================================== -->
-    <section class="ui-panel mb-4">
+    <section class="ui-panel mb-3">
 
-        <div class="ui-panel-body">
+        <div class="ui-panel-body p-3">
 
             <div class="page-header mb-0">
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-3">
+                    <div class="app-badge app-badge-primary mb-2">
                         <i class="bi bi-headset"></i>
                         Agent Workspace
                     </div>
 
-                    <h1 class="page-title">
+                    <h2 class="page-title fs-4 mb-1">
                         <?= htmlspecialchars($greeting); ?>,
                         <?= htmlspecialchars($agentName); ?>! 👋
-                    </h1>
+                    </h2>
 
-                    <p class="page-description">
+                    <p class="page-description small mb-0 text-muted">
                         Manage customer requests, monitor ticket progress and
                         keep support operations running smoothly.
                     </p>
@@ -123,7 +123,7 @@ function agentDashboardPriorityClass(string $priority): string
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions-grid mt-4">
+            <div class="quick-actions-grid mt-3">
 
                 <a
                     href="<?= BASE_URL ?>/agent/tickets/create"

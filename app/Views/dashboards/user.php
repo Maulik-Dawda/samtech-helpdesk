@@ -75,25 +75,25 @@ function userDashboardPriorityClass(string $priority): string
     <!-- =========================================================
          USER DASHBOARD HERO
     ========================================================== -->
-    <section class="ui-panel mb-4">
+    <section class="ui-panel mb-3">
 
-        <div class="ui-panel-body">
+        <div class="ui-panel-body p-3">
 
             <div class="page-header mb-0">
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-3">
+                    <div class="app-badge app-badge-primary mb-2">
                         <i class="bi bi-person-workspace"></i>
                         Customer Dashboard
                     </div>
 
-                    <h1 class="page-title">
+                    <h2 class="page-title fs-4 mb-1">
                         <?= htmlspecialchars($greeting); ?>,
                         <?= htmlspecialchars($userName); ?>! 👋
-                    </h1>
+                    </h2>
 
-                    <p class="page-description">
+                    <p class="page-description small mb-0 text-muted">
                         Create support requests, track ticket progress and
                         review updates from the support team.
                     </p>
@@ -125,7 +125,7 @@ function userDashboardPriorityClass(string $priority): string
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions-grid mt-4">
+            <div class="quick-actions-grid mt-3">
 
                 <a
                     href="<?= BASE_URL ?>/tickets/create"
