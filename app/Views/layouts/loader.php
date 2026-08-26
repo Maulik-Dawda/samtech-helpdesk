@@ -199,32 +199,5 @@
 
         });
 
-        document.querySelectorAll('a').forEach(function(link) {
-
-            link.addEventListener('click', function(e) {
-
-                const href = link.getAttribute('href');
-
-                if (
-                    !href ||
-                    href === '#' ||
-                    href.startsWith('#') ||
-                    href.startsWith('javascript:') ||
-                    link.hasAttribute('data-bs-toggle') ||
-                    link.hasAttribute('data-bs-dismiss') ||
-                    link.hasAttribute('download') ||
-                    link.getAttribute('target') === '_blank' ||
-                    href.startsWith('mailto:') ||
-                    href.startsWith('tel:') ||
-                    e.defaultPrevented
-                ) {
-                    return;
-                }
-
-                showSamtechLoader('Loading...');
-            });
-
-        });
-
     });
 </script>
