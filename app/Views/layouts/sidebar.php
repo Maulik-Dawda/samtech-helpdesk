@@ -125,8 +125,8 @@ if ($isAdmin) {
             <img
                 src="<?= BASE_URL ?>/assets/images/samtech-logo.png"
                 alt="Samtech Solutions"
-                width="185"
-                height="56"
+                width="200"
+                height="72"
             >
         </a>
 
