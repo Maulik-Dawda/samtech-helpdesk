@@ -13,6 +13,11 @@ class DashboardController extends Controller
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        if (empty($_SESSION['auth_user_id'])) {
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
     }
 
     /*
@@ -151,9 +156,8 @@ class DashboardController extends Controller
         $ticketModel = new Ticket();
         $userModel = new User();
 
-        $user = $userModel->findWithOrganization(
-            $_SESSION['auth_user_id']
-        );
+        $userId = $_SESSION['auth_user_id'] ?? 0;
+        $user = $userModel->findWithOrganization($userId);
 
         if (!$user || empty($user['organization_id'])) {
 
