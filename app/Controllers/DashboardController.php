@@ -20,6 +20,15 @@ class DashboardController extends Controller
         }
     }
 
+    public function index()
+    {
+        AuthMiddleware::timeout();
+        $this->startSession();
+        $role = $_SESSION['auth_user_role'] ?? 'user';
+        AuthMiddleware::redirectByRole($role);
+        exit;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | ADMIN DASHBOARD

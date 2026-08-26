@@ -35,6 +35,12 @@ $createdAt = !empty($user['created_at'])
 
 $mfaEnabled = !empty($user['mfa_secret']);
 
+$dashboardUrl = match ($user['role'] ?? 'user') {
+    'admin' => BASE_URL . '/admin-dashboard',
+    'agent' => BASE_URL . '/agent-dashboard',
+    default => BASE_URL . '/user-dashboard',
+};
+
 ?>
 
 <div class="container-fluid py-2 px-0">
@@ -55,7 +61,7 @@ $mfaEnabled = !empty($user['mfa_secret']);
         <div class="page-header-actions">
 
             <a
-                href="<?= BASE_URL ?>/dashboard"
+                href="<?= $dashboardUrl; ?>"
                 class="btn btn-light border"
             >
                 <i class="bi bi-arrow-left me-2"></i>

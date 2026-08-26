@@ -8,6 +8,7 @@ $router->post('/user-login', 'AuthController@processUserLogin');
 $router->get('/admin-login', 'AuthController@adminLogin');
 $router->post('/admin-login', 'AuthController@processAdminLogin');
 
+$router->get('/dashboard', 'DashboardController@index');
 $router->get('/admin-dashboard', 'DashboardController@admin');
 $router->get('/agent-dashboard', 'DashboardController@agent');
 $router->get('/admin-agent-dashboard', 'AdminAgentDashboardController@index');
