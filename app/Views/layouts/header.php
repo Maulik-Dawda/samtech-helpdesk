@@ -465,3 +465,60 @@ function assetVersion(string $relativePath): string
                 </div>
 
             <?php endif; ?>
+
+<!-- Top-Right 5-Second Toast Notifications -->
+<div id="samtechToastContainer" style="position: fixed; top: 24px; right: 24px; z-index: 999999; display: flex; flex-direction: column; gap: 10px; max-width: 420px; width: calc(100vw - 48px); pointer-events: none;">
+
+    <?php if (!empty($_SESSION['success'])): ?>
+        <?php $flashSuccess = $_SESSION['success']; unset($_SESSION['success']); ?>
+        <div class="samtech-toast samtech-toast-success" role="alert" style="pointer-events: auto; background: #ffffff; border-left: 5px solid #7fc441; border-radius: 12px; padding: 14px 18px; box-shadow: 0 12px 32px rgba(17, 24, 39, 0.15); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; transform: translateX(120%); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease; opacity: 0;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(177, 233, 111, 0.25); color: #4a8c24; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div>
+                    <div style="font-size: 13.5px; font-weight: 800; color: #111827; margin-bottom: 2px;">Success</div>
+                    <div style="font-size: 12px; color: #4b5563; line-height: 1.4;"><?= htmlspecialchars($flashSuccess); ?></div>
+                </div>
+            </div>
+            <button type="button" class="btn-close" style="font-size: 12px; flex-shrink: 0; opacity: 0.6; cursor: pointer; margin-top: 2px;" onclick="this.closest('.samtech-toast').remove()"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+        <?php $flashError = $_SESSION['error']; unset($_SESSION['error']); ?>
+        <div class="samtech-toast samtech-toast-error" role="alert" style="pointer-events: auto; background: #ffffff; border-left: 5px solid #ef4444; border-radius: 12px; padding: 14px 18px; box-shadow: 0 12px 32px rgba(17, 24, 39, 0.15); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; transform: translateX(120%); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease; opacity: 0;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div>
+                    <div style="font-size: 13.5px; font-weight: 800; color: #111827; margin-bottom: 2px;">Attention</div>
+                    <div style="font-size: 12px; color: #4b5563; line-height: 1.4;"><?= htmlspecialchars($flashError); ?></div>
+                </div>
+            </div>
+            <button type="button" class="btn-close" style="font-size: 12px; flex-shrink: 0; opacity: 0.6; cursor: pointer; margin-top: 2px;" onclick="this.closest('.samtech-toast').remove()"></button>
+        </div>
+    <?php endif; ?>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toasts = document.querySelectorAll('.samtech-toast');
+    toasts.forEach(function(toast) {
+        setTimeout(function() {
+            toast.style.transform = 'translateX(0)';
+            toast.style.opacity = '1';
+        }, 50);
+
+        setTimeout(function() {
+            toast.style.transform = 'translateX(120%)';
+            toast.style.opacity = '0';
+            setTimeout(function() {
+                if (toast.parentNode) toast.remove();
+            }, 350);
+        }, 5000);
+    });
+});
+</script>

@@ -31,45 +31,7 @@
 
     </div>
 
-    <?php if (isset($_SESSION['success'])): ?>
 
-        <div class="alert alert-success alert-dismissible fade show">
-
-            <i class="bi bi-check-circle-fill me-2"></i>
-
-            <?= htmlspecialchars($_SESSION['success']); ?>
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-            </button>
-
-        </div>
-
-        <?php unset($_SESSION['success']); ?>
-
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['error'])): ?>
-
-        <div class="alert alert-danger alert-dismissible fade show">
-
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
-            <?= htmlspecialchars($_SESSION['error']); ?>
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-            </button>
-
-        </div>
-
-        <?php unset($_SESSION['error']); ?>
-
-    <?php endif; ?>
 
     <div class="row justify-content-center">
 

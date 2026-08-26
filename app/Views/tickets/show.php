@@ -209,19 +209,7 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
 
                     <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 
-                    <?php if (isset($_SESSION['error'])): ?>
-                        <div class="alert alert-danger">
-                            <?= htmlspecialchars($_SESSION['error']); ?>
-                            <?php unset($_SESSION['error']); ?>
-                        </div>
-                    <?php endif; ?>
 
-                    <?php if (isset($_SESSION['success'])): ?>
-                        <div class="alert alert-success">
-                            <?= htmlspecialchars($_SESSION['success']); ?>
-                            <?php unset($_SESSION['success']); ?>
-                        </div>
-                    <?php endif; ?>
 
                     <?php if (empty($replies)): ?>
                         <div class="alert alert-info">No replies yet.</div>

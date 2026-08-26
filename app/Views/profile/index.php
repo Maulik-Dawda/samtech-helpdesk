@@ -72,25 +72,7 @@ $dashboardUrl = match ($user['role'] ?? 'user') {
 
     </div>
 
-    <?php if (!empty($_SESSION['success'])): ?>
 
-    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
-
-        <i class="bi bi-check-circle-fill me-2"></i>
-
-        <?= htmlspecialchars($_SESSION['success']) ?>
-
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert">
-        </button>
-
-    </div>
-
-    <?php unset($_SESSION['success']); ?>
-
-<?php endif; ?>
 
     <div class="row g-4">
 
