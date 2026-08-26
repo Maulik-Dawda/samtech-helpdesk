@@ -833,7 +833,7 @@ function getAgentReplyRoleClass(string $role): string
                                 <div class="form-text mt-2">
 
                                     JPG, PNG, PDF, Word, Excel, TXT, ZIP and RAR.
-                                    Maximum 3 files and 5 MB per file.
+                                    Multiple files allowed, 5 MB per file.
 
                                 </div>
 

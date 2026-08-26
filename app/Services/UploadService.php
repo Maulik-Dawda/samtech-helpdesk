@@ -59,7 +59,7 @@ class UploadService
 
     private static $maxSize = 5242880; // 5MB
 
-    public static function uploadMultiple($files, $folder, $maxFiles = 20)
+    public static function uploadMultiple($files, $folder, $maxFiles = 50)
     {
         $uploadedFiles = [];
 
