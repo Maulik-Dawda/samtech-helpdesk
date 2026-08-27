@@ -134,18 +134,13 @@ class TicketController extends Controller
             header("Location: " . BASE_URL . "/tickets/show/" . $ticket['id']);
             exit;
         }
-        $_SESSION['success'] = "Ticket created successfully.";
-        header("Location: " . BASE_URL . "/tickets");
-
-        if (function_exists('fastcgi_finish_request')) {
-            session_write_close();
-            fastcgi_finish_request();
-        }
-
         TicketNotificationService::ticketCreated(
             $ticket,
             $user
         );
+
+        $_SESSION['success'] = "Ticket created successfully.";
+        header("Location: " . BASE_URL . "/tickets");
         exit;
     }
 
@@ -348,19 +343,14 @@ class TicketController extends Controller
             exit;
         }
 
-        $_SESSION['success'] = "Reply added successfully.";
-        header("Location: " . BASE_URL . "/tickets/show/" . $id);
-
-        if (function_exists('fastcgi_finish_request')) {
-            session_write_close();
-            fastcgi_finish_request();
-        }
-
         TicketNotificationService::userReplied(
             $ticket,
             $user,
             $message
         );
+
+        $_SESSION['success'] = "Reply added successfully.";
+        header("Location: " . BASE_URL . "/tickets/show/" . $id);
         exit;
     }
 }

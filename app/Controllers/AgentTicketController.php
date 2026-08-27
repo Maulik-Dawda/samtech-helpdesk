@@ -161,19 +161,14 @@ class AgentTicketController extends Controller
             $_SESSION['auth_user_id']
         );
 
-        $_SESSION['success'] = "Reply sent successfully.";
-        header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-
-        if (function_exists('fastcgi_finish_request')) {
-            session_write_close();
-            fastcgi_finish_request();
-        }
-
         TicketNotificationService::agentReplied(
             $ticket,
             $agent,
             $message
         );
+
+        $_SESSION['success'] = "Reply sent successfully.";
+        header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
         exit;
     }
 
@@ -282,14 +277,6 @@ class AgentTicketController extends Controller
                 $_SESSION['auth_user_id']
             );
 
-            $_SESSION['success'] = "Ticket status updated successfully.";
-            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-
-            if (function_exists('fastcgi_finish_request')) {
-                session_write_close();
-                fastcgi_finish_request();
-            }
-
             TicketNotificationService::statusUpdated(
                 $ticket,
                 $ticket['status'],
@@ -297,6 +284,9 @@ class AgentTicketController extends Controller
                 $updatedBy,
                 $resolutionMessage
             );
+
+            $_SESSION['success'] = "Ticket status updated successfully.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
             exit;
         } catch (Throwable $e) {
             error_log("Ticket Status Update Error: " . $e->getMessage());
@@ -376,20 +366,15 @@ class AgentTicketController extends Controller
             exit;
         }
 
-        $_SESSION['success'] = 'Ticket created successfully.';
-        header("Location: " . BASE_URL . "/agent/tickets");
-
-        if (function_exists('fastcgi_finish_request')) {
-            session_write_close();
-            fastcgi_finish_request();
-        }
-
         $userModel = new User();
         $agent = $userModel->findById($_SESSION['auth_user_id']);
         $createdTicket = $ticketModel->findForAgent($created);
         if ($createdTicket && $agent) {
             TicketNotificationService::ticketCreated($createdTicket, $agent);
         }
+
+        $_SESSION['success'] = 'Ticket created successfully.';
+        header("Location: " . BASE_URL . "/agent/tickets");
         exit;
     }
 }

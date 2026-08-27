@@ -53,17 +53,17 @@ class TicketNotificationService
         }
 
         $agents = self::getActiveAgents();
-        $agentEmails = [];
-        foreach ($agents as $agent) {
-            if (!empty($agent['email'])) {
-                $agentEmails[] = $agent['email'];
-            }
-        }
 
-        if (!empty($agentEmails)) {
-            $mailSubject = "New Support Ticket: {$ticketNo} - {$subject}";
+        foreach ($agents as $agent) {
+            if (empty($agent['email'])) {
+                continue;
+            }
+
+            $mailSubject =
+                "New Support Ticket: {$ticketNo} - {$subject}";
+
             $mailMessage =
-                "Hello Support Team,\n\n" .
+                "Hello " . ($agent['full_name'] ?? 'Agent') . ",\n\n" .
                 "A new support ticket has been created and requires attention.\n\n" .
                 "Ticket Number: {$ticketNo}\n" .
                 "Created By: " . ($creator['full_name'] ?? '-') . "\n" .
@@ -75,7 +75,14 @@ class TicketNotificationService
                 "Open the ticket here:\n" .
                 $agentUrl;
 
-            MailService::sendMultipleTicketMail($agentEmails, $mailSubject, $mailMessage);
+            self::sendSafely(
+                $agent['email'],
+                $mailSubject,
+                $mailMessage,
+                'ticket_created_agent',
+                $ticket['id'] ?? null,
+                $agent['id'] ?? null
+            );
         }
     }
 
@@ -101,17 +108,17 @@ class TicketNotificationService
         $organization = $user['organization_name'] ?? '-';
 
         $agents = self::getActiveAgents();
-        $agentEmails = [];
-        foreach ($agents as $agent) {
-            if (!empty($agent['email'])) {
-                $agentEmails[] = $agent['email'];
-            }
-        }
 
-        if (!empty($agentEmails)) {
-            $mailSubject = "New User Reply: {$ticketNo} - {$subject}";
+        foreach ($agents as $agent) {
+            if (empty($agent['email'])) {
+                continue;
+            }
+
+            $mailSubject =
+                "New User Reply: {$ticketNo} - {$subject}";
+
             $mailMessage =
-                "Hello Support Team,\n\n" .
+                "Hello " . ($agent['full_name'] ?? 'Agent') . ",\n\n" .
                 "A user has added a new reply to a support ticket.\n\n" .
                 "Ticket Number: {$ticketNo}\n" .
                 "Subject: {$subject}\n" .
@@ -122,7 +129,14 @@ class TicketNotificationService
                 "Open the ticket here:\n" .
                 $agentUrl;
 
-            MailService::sendMultipleTicketMail($agentEmails, $mailSubject, $mailMessage);
+            self::sendSafely(
+                $agent['email'],
+                $mailSubject,
+                $mailMessage,
+                'user_reply_agent',
+                $ticket['id'] ?? null,
+                $agent['id'] ?? null
+            );
         }
     }
 
@@ -181,17 +195,17 @@ class TicketNotificationService
         }
 
         $agents = self::getActiveAgents();
-        $agentEmails = [];
-        foreach ($agents as $recipientAgent) {
-            if (!empty($recipientAgent['email']) && (int)($recipientAgent['id'] ?? 0) !== (int)($agent['id'] ?? 0)) {
-                $agentEmails[] = $recipientAgent['email'];
-            }
-        }
 
-        if (!empty($agentEmails)) {
-            $mailSubject = "Agent Reply Added: {$ticketNo} - {$subject}";
+        foreach ($agents as $recipientAgent) {
+            if (empty($recipientAgent['email'])) {
+                continue;
+            }
+
+            $mailSubject =
+                "Agent Reply Added: {$ticketNo} - {$subject}";
+
             $mailMessage =
-                "Hello Support Team,\n\n" .
+                "Hello " . ($recipientAgent['full_name'] ?? 'Agent') . ",\n\n" .
                 "An agent has replied to a support ticket.\n\n" .
                 "Ticket Number: {$ticketNo}\n" .
                 "Subject: {$subject}\n" .
@@ -201,7 +215,14 @@ class TicketNotificationService
                 "Open the ticket here:\n" .
                 $agentUrl;
 
-            MailService::sendMultipleTicketMail($agentEmails, $mailSubject, $mailMessage);
+            self::sendSafely(
+                $recipientAgent['email'],
+                $mailSubject,
+                $mailMessage,
+                'agent_reply_agent',
+                $ticket['id'] ?? null,
+                $recipientAgent['id'] ?? null
+            );
         }
     }
 
@@ -279,17 +300,17 @@ class TicketNotificationService
         }
 
         $agents = self::getActiveAgents();
-        $agentEmails = [];
-        foreach ($agents as $agent) {
-            if (!empty($agent['email']) && (int)($agent['id'] ?? 0) !== (int)($updatedBy['id'] ?? 0)) {
-                $agentEmails[] = $agent['email'];
-            }
-        }
 
-        if (!empty($agentEmails)) {
-            $mailSubject = "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
+        foreach ($agents as $agent) {
+            if (empty($agent['email'])) {
+                continue;
+            }
+
+            $mailSubject =
+                "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
+
             $mailMessage =
-                "Hello Support Team,\n\n" .
+                "Hello " . ($agent['full_name'] ?? 'Agent') . ",\n\n" .
                 "A support ticket status has been updated.\n\n" .
                 "Ticket Number: {$ticketNo}\n" .
                 "Subject: {$subject}\n" .
@@ -301,7 +322,14 @@ class TicketNotificationService
                 "\nOpen the ticket here:\n" .
                 $agentUrl;
 
-            MailService::sendMultipleTicketMail($agentEmails, $mailSubject, $mailMessage);
+            self::sendSafely(
+                $agent['email'],
+                $mailSubject,
+                $mailMessage,
+                'status_update_agent',
+                $ticket['id'] ?? null,
+                $agent['id'] ?? null
+            );
         }
     }
 
