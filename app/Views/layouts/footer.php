@@ -32,12 +32,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function openSidebar() {
         sidebar?.classList.add('show');
         overlay?.classList.add('show');
+        body.classList.add('sidebar-open');
         body.classList.add('overflow-hidden');
     }
 
     function closeSidebar() {
         sidebar?.classList.remove('show');
         overlay?.classList.remove('show');
+        body.classList.remove('sidebar-open');
         body.classList.remove('overflow-hidden');
     }
 

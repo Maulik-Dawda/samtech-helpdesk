@@ -267,10 +267,11 @@ body.sidebar-open {
         visibility var(--transition-base);
 }
 
+.sidebar-overlay.show,
 body.sidebar-open .sidebar-overlay {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
 }
 
 .logout-modal-content {
