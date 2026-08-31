@@ -145,14 +145,14 @@ function dashboardActivityIcon(string $action): string
                         <?= htmlspecialchars($adminName); ?>! 👋
                     </h2>
 
-                    <p class="page-description small mb-0 text-muted">
+                    <p class="page-description small mb-3 mb-md-0 text-muted">
                         Monitor tickets, users, organizations and recent
                         helpdesk activity from one place.
                     </p>
 
                 </div>
 
-                <div class="page-actions">
+                <div class="page-actions mt-3 mt-md-0">
 
                     <div class="date-pill">
 
@@ -177,7 +177,7 @@ function dashboardActivityIcon(string $action): string
 
             </div>
 
-            <div class="quick-actions-grid mt-3">
+            <div class="quick-actions-grid mt-4">
 
                 <a
                     href="<?= BASE_URL ?>/agent/tickets/create"
