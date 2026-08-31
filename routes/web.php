@@ -27,15 +27,18 @@ $router->post('/mfa-recovery', 'MfaController@sendRecoveryOtp');
 
 $router->get('/mfa-recovery-verify', 'MfaController@recoveryVerifyPage');
 $router->post('/mfa-recovery-verify', 'MfaController@verifyRecoveryOtp');
+$router->post('/mfa-recovery-verify/resend', 'MfaController@resendRecoveryOtp');
 
 $router->get('/user-login-otp', 'AuthController@userOtpPage');
 $router->post('/user-login-otp', 'AuthController@verifyUserOtp');
+$router->post('/user-login-otp/resend', 'AuthController@resendUserLoginOtp');
 
 $router->get('/forgot-password', 'AuthController@forgotPasswordPage');
 $router->post('/forgot-password', 'AuthController@sendForgotPasswordOtp');
 
 $router->get('/forgot-password-verify', 'AuthController@forgotPasswordVerifyPage');
 $router->post('/forgot-password-verify', 'AuthController@verifyForgotPasswordOtp');
+$router->post('/forgot-password-verify/resend', 'AuthController@resendForgotPasswordOtp');
 
 $router->get('/reset-password', 'AuthController@resetPasswordPage');
 $router->post('/reset-password', 'AuthController@resetPassword');

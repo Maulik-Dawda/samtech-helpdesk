@@ -253,15 +253,8 @@ class MfaController extends Controller
         $_SESSION['mfa_recovery_organization_id'] = $user['organization_id'] ?? null;
         $_SESSION['mfa_recovery_is_organization_admin'] = $user['is_organization_admin'] ?? 0;
 
-        $existingOtp = $otpModel->findValidUnusedByUserId($user['id']);
-
-        if ($existingOtp) {
-            $_SESSION['success'] =
-                "A recovery OTP has already been sent to your registered email address. Please use the same code or wait until it expires.";
-
-            header("Location: " . BASE_URL . "/mfa-recovery-verify");
-            exit;
-        }
+        // Expire all previous unused OTPs in database
+        $otpModel->expireAllUnusedByUserId($user['id']);
 
         $otp = random_int(100000, 999999);
 
@@ -285,6 +278,49 @@ class MfaController extends Controller
         $_SESSION['success'] =
             "Recovery OTP has been sent to your registered email address.";
 
+        header("Location: " . BASE_URL . "/mfa-recovery-verify");
+        exit;
+    }
+
+    public function resendRecoveryOtp()
+    {
+        Csrf::verify();
+        $this->startSession();
+
+        if (!isset($_SESSION['mfa_recovery_user_id'])) {
+            header("Location: " . BASE_URL . "/mfa-recovery");
+            exit;
+        }
+
+        $userId = $_SESSION['mfa_recovery_user_id'];
+        $userModel = new User();
+        $user = $userModel->findById($userId);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: " . BASE_URL . "/mfa-recovery");
+            exit;
+        }
+
+        $otpModel = new MfaRecoveryOtp();
+        $otpModel->expireAllUnusedByUserId($user['id']);
+
+        $otp = random_int(100000, 999999);
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+' . OTP_EXPIRY_MINUTES . ' minutes'));
+
+        $otpModel->createOtp($user['id'], $otp, $expiresAt);
+
+        $mailSent = MailService::sendMfaRecoveryOtp($user['email'], $otp);
+
+        if (!$mailSent) {
+            $_SESSION['error'] = "Unable to send recovery OTP email. Please try again later.";
+            header("Location: " . BASE_URL . "/mfa-recovery-verify");
+            exit;
+        }
+
+        $this->logActivity($user['id'], 'MFA recovery OTP resent via email');
+
+        $_SESSION['success'] = "A new MFA recovery code has been sent to your registered email address.";
         header("Location: " . BASE_URL . "/mfa-recovery-verify");
         exit;
     }

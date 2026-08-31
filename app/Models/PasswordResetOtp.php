@@ -66,4 +66,27 @@ class PasswordResetOtp extends Model
 
         return $stmt->fetch();
     }
+
+    public function expireAllUnusedByUserId($userId)
+    {
+        $stmt = $this->db->prepare("
+            UPDATE password_reset_otps
+            SET is_used = 1
+            WHERE user_id = ?
+            AND is_used = 0
+        ");
+
+        return $stmt->execute([$userId]);
+    }
+
+    public function deleteUnusedOtpByUserId($userId)
+    {
+        $stmt = $this->db->prepare("
+            DELETE FROM password_reset_otps
+            WHERE user_id = ?
+            AND is_used = 0
+        ");
+
+        return $stmt->execute([$userId]);
+    }
 }

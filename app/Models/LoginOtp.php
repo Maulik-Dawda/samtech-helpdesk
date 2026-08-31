@@ -76,4 +76,16 @@ class LoginOtp extends Model
 
         return $stmt->execute([$userId]);
     }
+
+    public function expireAllUnusedByUserId($userId)
+    {
+        $stmt = $this->db->prepare("
+            UPDATE login_otps
+            SET is_used = 1
+            WHERE user_id = ?
+            AND is_used = 0
+        ");
+
+        return $stmt->execute([$userId]);
+    }
 }

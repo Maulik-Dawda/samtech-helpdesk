@@ -103,6 +103,15 @@ $hasError = isset($_SESSION['error']);
                         Please check your <strong>Spam</strong> or <strong>Junk</strong> folder.
                     </div>
 
+                    <div class="d-flex align-items-center justify-content-between mt-2 p-2 bg-light rounded-3 border">
+                        <span class="text-muted small">Didn't receive the code?</span>
+                        <form method="POST" action="<?= BASE_URL ?>/mfa-recovery-verify/resend" class="d-inline" onsubmit="showSamtechLoader('Sending new code...')">
+                            <?= Csrf::field(); ?>
+                            <button type="submit" class="btn btn-link p-0 text-decoration-none fw-bold small text-success">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Resend Code
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <button
