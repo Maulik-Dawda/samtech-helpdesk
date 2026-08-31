@@ -4,7 +4,7 @@
 |--------------------------------------------------------------------------
 */
 
-@media (min-width:1600px){
+@media (min-width:1200px){
 
 .container-fluid{
     max-width:1650px;
@@ -12,7 +12,7 @@
 }
 
 .metric-grid{
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(6,1fr);
 }
 
 }
@@ -24,11 +24,11 @@
 |--------------------------------------------------------------------------
 */
 
-@media(max-width:1400px){
+@media(max-width:1199px){
 
 .metric-grid{
 
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(3,1fr);
 }
 
 .quick-actions-grid{
