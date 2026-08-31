@@ -215,6 +215,17 @@ function getAgentReplyRoleClass(string $role): string
                 <div class="page-actions">
 
                     <a
+                        href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
+                        target="_blank"
+                        class="btn btn-outline-success">
+
+                        <i class="bi bi-printer-fill me-1"></i>
+
+                        Print / Download Report
+
+                    </a>
+
+                    <a
                         href="<?= BASE_URL ?>/agent/tickets"
                         class="btn btn-light">
 

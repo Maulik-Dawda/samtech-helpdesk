@@ -118,13 +118,18 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
 
 <div class="container-fluid mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h4 class="fw-bold mb-1">Ticket Details</h4>
             <div class="text-muted small">View ticket information and conversation.</div>
         </div>
 
-        <a href="<?= BASE_URL ?>/tickets" class="back-link">Back to Tickets</a>
+        <div class="d-flex align-items-center gap-2">
+            <a href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= (int)$ticket['id']; ?>" target="_blank" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center">
+                <i class="bi bi-printer-fill me-1"></i> Print / Download Report
+            </a>
+            <a href="<?= BASE_URL ?>/tickets" class="back-link">Back to Tickets</a>
+        </div>
     </div>
 
     <div class="row">

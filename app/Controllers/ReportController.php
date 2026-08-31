@@ -155,15 +155,46 @@ class ReportController extends Controller
 
     public function printTicketDetail($id)
     {
-        $this->reportGuard();
+        AuthMiddleware::timeout();
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $userId = $_SESSION['auth_user_id'] ?? null;
+        $role = $_SESSION['auth_user_role'] ?? '';
+
+        if (!$userId) {
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
 
         $ticketModel = new Ticket();
 
-        $ticket = $ticketModel->findByIdForReport($id);
+        if (in_array($role, ['admin', 'agent'])) {
+            $ticket = $ticketModel->findByIdForReport($id);
+        } else {
+            $userModel = new User();
+            $user = $userModel->findById($userId);
+
+            if (!$user || empty($user['organization_id'])) {
+                http_response_code(403);
+                exit('Access denied. Account not linked to an organization.');
+            }
+
+            $orgTicket = $ticketModel->findOrganizationTicket($id, $user['organization_id']);
+
+            if (!$orgTicket) {
+                http_response_code(404);
+                exit('Ticket not found or access denied.');
+            }
+
+            $ticket = $ticketModel->findByIdForReport($id) ?? $orgTicket;
+        }
 
         if (!$ticket) {
             http_response_code(404);
-            exit('Ticket not found');
+            exit('Ticket not found or access denied');
         }
 
         $replyModel = new TicketReply();
@@ -171,11 +202,8 @@ class ReportController extends Controller
         $attachmentModel = new Attachment();
 
         $replies = $replyModel->getByTicketId($ticket['id']);
-
         $statusHistory = $historyModel->getByTicketId($ticket['id']);
-
         $attachments = $attachmentModel->getTicketAttachments($ticket['id']);
-
         $replyAttachments = $attachmentModel->getReplyAttachmentsByTicketId($ticket['id']);
 
         $this->view('reports/print-ticket-detail', [

@@ -93,6 +93,8 @@ $router->get('/reports/tickets/print', 'ReportController@printTickets');
 $router->get('/reports/tickets/filter', 'ReportController@filterTickets');
 
 $router->get('/reports/ticket-detail', 'ReportController@ticketDetail');
+$router->get('/reports/print-ticket-detail/{id}', 'ReportController@printTicketDetail');
+$router->get('/tickets/print/{id}', 'ReportController@printTicketDetail');
 
 $router->get('/profile', 'ProfileController@index');
 $router->get('/profile/change-password','ProfileController@changePassword');

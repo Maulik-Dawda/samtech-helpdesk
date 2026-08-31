@@ -769,13 +769,25 @@ function dashboardActivityIcon(string $action): string
                                         data-label="Action"
                                         class="text-end">
 
-                                        <a
-                                            href="<?= BASE_URL ?>/agent/tickets/show/<?= (int)$ticket['id']; ?>"
-                                            class="table-action-btn table-action-view ms-auto"
-                                            title="View ticket"
-                                            aria-label="View ticket">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </a>
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <a
+                                                href="<?= BASE_URL ?>/agent/tickets/show/<?= (int)$ticket['id']; ?>"
+                                                class="table-action-btn table-action-view"
+                                                title="View ticket"
+                                                aria-label="View ticket">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+
+                                            <a
+                                                href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= (int)$ticket['id']; ?>"
+                                                target="_blank"
+                                                class="table-action-btn table-action-view text-success"
+                                                style="background: #e8f5e9; color: #2e7d32;"
+                                                title="Print Ticket Report"
+                                                aria-label="Print Ticket Report">
+                                                <i class="bi bi-printer-fill"></i>
+                                            </a>
+                                        </div>
 
                                     </td>
 
