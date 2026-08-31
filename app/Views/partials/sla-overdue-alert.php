@@ -8,7 +8,7 @@ $ticketIndexBase = $isCustomerUser ? (BASE_URL . '/tickets') : (BASE_URL . '/age
 
 <?php if ($overdueCount > 0): ?>
 
-    <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-3 p-3" style="background: #fef2f2; border-left: 4px solid #ef4444 !important;">
+    <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4 p-3" style="background: #fef2f2; border-left: 4px solid #ef4444 !important;">
 
         <div class="d-flex align-items-start gap-2 flex-wrap flex-md-nowrap">
 
