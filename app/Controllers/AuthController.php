@@ -662,4 +662,44 @@ class AuthController extends Controller
             $this->getUserAgent()
         );
     }
+
+    public function unsubscribePage()
+    {
+        $baseUrl = BASE_URL;
+        echo '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Subscriptions - Samtech Helpdesk</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="card shadow-sm border-0 p-4 p-md-5 text-center" style="max-width: 520px; border-radius: 16px;">
+        <div class="mb-3">
+            <span class="badge bg-primary-subtle text-primary fs-6 px-3 py-2 rounded-pill">
+                Email Notification Preferences
+            </span>
+        </div>
+        <h3 class="fw-bold text-dark mb-3">Samtech Helpdesk Notifications</h3>
+        <p class="text-secondary small mb-4">
+            You are receiving transactional ticket and security notifications from Samtech Helpdesk.
+            To modify your notification preferences or update your email settings, please access your profile dashboard.
+        </p>
+        <a href="' . $baseUrl . '/user-login" class="btn btn-primary btn-lg rounded-pill px-4">
+            Log In to Helpdesk Account
+        </a>
+    </div>
+</body>
+</html>';
+        exit;
+    }
+
+    public function processUnsubscribe()
+    {
+        http_response_code(200);
+        header('Content-Type: text/plain');
+        echo "Unsubscribe request received.";
+        exit;
+    }
 }

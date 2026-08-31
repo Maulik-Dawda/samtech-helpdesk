@@ -134,3 +134,6 @@ $router->post('/organization-users/delete/{id}', 'OrganizationUserController@del
 $router->get('/reports/ticket-search', 'ReportController@searchTickets');
 $router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketDetail');
 
+$router->get('/unsubscribe', 'AuthController@unsubscribePage');
+$router->post('/unsubscribe', 'AuthController@processUnsubscribe');
+

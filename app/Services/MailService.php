@@ -109,6 +109,22 @@ class MailService
 
         /*
         |--------------------------------------------------------------------------
+        | List-Unsubscribe Header Compliance (RFC 2369 & RFC 8058)
+        |--------------------------------------------------------------------------
+        */
+
+        $unsubscribeEmail = ($type === 'ticket')
+            ? (defined('TICKET_FROM_EMAIL') ? TICKET_FROM_EMAIL : 'support@samtech.co.ae')
+            : (defined('MAIL_FROM_EMAIL') ? MAIL_FROM_EMAIL : 'no-reply@samtech.co.ae');
+
+        $baseUrl = defined('BASE_URL') ? BASE_URL : 'https://helpdesk.samtech.co.ae';
+        $unsubscribeUrl = rtrim($baseUrl, '/') . '/unsubscribe';
+
+        $mail->addCustomHeader('List-Unsubscribe', "<mailto:{$unsubscribeEmail}?subject=unsubscribe>, <{$unsubscribeUrl}>");
+        $mail->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+
+        /*
+        |--------------------------------------------------------------------------
         | Hide PHPMailer Version
         |--------------------------------------------------------------------------
         */
