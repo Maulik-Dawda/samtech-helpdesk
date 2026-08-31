@@ -390,7 +390,7 @@ class AdminUserController extends Controller
         $deleted = $userModel->deleteUserCompletely($id);
 
         if ($deleted) {
-            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' and all associated data deleted successfully from the system.";
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' deleted successfully. All tickets created by this user have been preserved in the database.";
         } else {
             $_SESSION['error'] = "Unable to delete user from the system.";
         }

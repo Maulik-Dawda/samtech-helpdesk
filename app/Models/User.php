@@ -572,7 +572,7 @@ class User extends Model
             return false;
         }
 
-        $safeDelete = function($sql, $params = []) {
+        $safeQuery = function($sql, $params = []) {
             try {
                 $stmt = $this->db->prepare($sql);
                 $stmt->execute($params);
@@ -584,40 +584,32 @@ class User extends Model
         try {
             $this->db->beginTransaction();
 
-            $safeDelete("DELETE FROM user_permissions WHERE user_id = ?", [$userId]);
-            $safeDelete("DELETE FROM authenticator_secrets WHERE user_id = ?", [$userId]);
-            $safeDelete("DELETE FROM mfa_recovery_otps WHERE user_id = ?", [$userId]);
-            $safeDelete("DELETE FROM login_otps WHERE user_id = ?", [$userId]);
+            // Clean up session and auth tokens for this user
+            $safeQuery("DELETE FROM user_permissions WHERE user_id = ?", [$userId]);
+            $safeQuery("DELETE FROM authenticator_secrets WHERE user_id = ?", [$userId]);
+            $safeQuery("DELETE FROM mfa_recovery_otps WHERE user_id = ?", [$userId]);
+            $safeQuery("DELETE FROM login_otps WHERE user_id = ?", [$userId]);
 
             if (!empty($user['email'])) {
-                $safeDelete("DELETE FROM password_reset_otps WHERE email = ?", [$user['email']]);
+                $safeQuery("DELETE FROM password_reset_otps WHERE email = ?", [$user['email']]);
             }
 
-            $safeDelete("DELETE FROM activity_logs WHERE user_id = ?", [$userId]);
-            $safeDelete("DELETE FROM reply_attachments WHERE uploaded_by = ?", [$userId]);
-            $safeDelete("DELETE FROM ticket_attachments WHERE uploaded_by = ?", [$userId]);
-            $safeDelete("DELETE FROM ticket_replies WHERE user_id = ?", [$userId]);
-            $safeDelete("DELETE FROM ticket_status_history WHERE changed_by = ?", [$userId]);
+            $safeQuery("DELETE FROM activity_logs WHERE user_id = ?", [$userId]);
 
-            try {
-                $stmt = $this->db->prepare("SELECT id FROM tickets WHERE user_id = ?");
-                $stmt->execute([$userId]);
-                $ticketIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            // DO NOT DELETE TICKETS OR REPLIES - PRESERVE ALL TICKETS IN DATABASE
+            // Set user references to NULL (or detach user association) so all tickets, replies, attachments, and status history stay saved in the database forever
+            $safeQuery("UPDATE tickets SET user_id = NULL WHERE user_id = ?", [$userId]);
+            $safeQuery("UPDATE tickets SET created_by = NULL WHERE created_by = ?", [$userId]);
+            $safeQuery("UPDATE tickets SET assigned_agent_id = NULL WHERE assigned_agent_id = ?", [$userId]);
+            $safeQuery("UPDATE tickets SET closed_by_agent_id = NULL WHERE closed_by_agent_id = ?", [$userId]);
 
-                if (!empty($ticketIds)) {
-                    $inClause = implode(',', array_map('intval', $ticketIds));
-                    $safeDelete("DELETE FROM reply_attachments WHERE ticket_id IN ($inClause)");
-                    $safeDelete("DELETE FROM ticket_attachments WHERE ticket_id IN ($inClause)");
-                    $safeDelete("DELETE FROM ticket_replies WHERE ticket_id IN ($inClause)");
-                    $safeDelete("DELETE FROM ticket_status_history WHERE ticket_id IN ($inClause)");
-                    $safeDelete("DELETE FROM tickets WHERE user_id = ?", [$userId]);
-                }
-            } catch (Throwable $e) {
-                error_log("Ticket cleanup notice: " . $e->getMessage());
-            }
+            $safeQuery("UPDATE ticket_replies SET user_id = NULL WHERE user_id = ?", [$userId]);
+            $safeQuery("UPDATE ticket_status_history SET changed_by = NULL WHERE changed_by = ?", [$userId]);
 
-            $safeDelete("UPDATE tickets SET closed_by_agent_id = NULL WHERE closed_by_agent_id = ?", [$userId]);
+            $safeQuery("UPDATE ticket_attachments SET uploaded_by = NULL WHERE uploaded_by = ?", [$userId]);
+            $safeQuery("UPDATE reply_attachments SET uploaded_by = NULL WHERE uploaded_by = ?", [$userId]);
 
+            // Delete user account row
             $stmt = $this->db->prepare("DELETE FROM users WHERE id = ? AND role != 'admin'");
             $result = $stmt->execute([$userId]);
 
