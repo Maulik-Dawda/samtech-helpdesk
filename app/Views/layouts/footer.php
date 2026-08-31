@@ -75,31 +75,39 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     );
 
-    // Live Dashboard Clock with seconds
+    // Live Dashboard Clock with seconds (Dubai Time Asia/Dubai)
     function startLiveDashboardClock() {
         const liveTimeElements = document.querySelectorAll('.dashboard-time[data-live-time="true"]');
-        if (!liveTimeElements.length) return;
+        const liveDateElements = document.querySelectorAll('.dashboard-date[data-live-date="true"]');
+        if (!liveTimeElements.length && !liveDateElements.length) return;
+
+        const optionsTime = {
+            timeZone: 'Asia/Dubai',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+
+        const optionsDate = {
+            timeZone: 'Asia/Dubai',
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        };
 
         function updateClock() {
             const now = new Date();
-            let hours = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            const formattedHours = String(hours).padStart(2, '0');
-            const timeString = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+            const timeString = now.toLocaleTimeString('en-US', optionsTime);
+            const dateString = now.toLocaleDateString('en-GB', optionsDate);
 
             liveTimeElements.forEach(function (el) {
-                const badge = el.querySelector('span');
-                if (badge) {
-                    const badgeClone = badge.cloneNode(true);
-                    el.textContent = timeString + ' ';
-                    el.appendChild(badgeClone);
-                } else {
-                    el.textContent = timeString;
-                }
+                el.textContent = timeString;
+            });
+
+            liveDateElements.forEach(function (el) {
+                el.textContent = dateString;
             });
         }
 

@@ -106,7 +106,7 @@ function agentDashboardPriorityClass(string $priority): string
 
                         <div>
 
-                            <div class="dashboard-date">
+                            <div class="dashboard-date" data-live-date="true">
                                 <?= htmlspecialchars($currentDate); ?>
                             </div>
 

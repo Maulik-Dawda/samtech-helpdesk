@@ -160,13 +160,12 @@ function dashboardActivityIcon(string $action): string
 
                         <div>
 
-                            <div class="dashboard-date">
+                            <div class="dashboard-date" data-live-date="true">
                                 <?= htmlspecialchars($currentDate); ?>
                             </div>
 
                             <div class="dashboard-time" data-live-time="true">
                                 <?= htmlspecialchars($currentTime); ?>
-                                <span>Dubai Time</span>
                             </div>
 
                         </div>
