@@ -102,16 +102,6 @@ $hasError = isset($_SESSION['error']);
                         <strong>Didn't receive the OTP?</strong>
                         Please check your <strong>Spam</strong> or <strong>Junk</strong> folder.
                     </div>
-
-                    <div class="d-flex align-items-center justify-content-between mt-2 p-2 bg-light rounded-3 border">
-                        <span class="text-muted small">Didn't receive the code?</span>
-                        <form method="POST" action="<?= BASE_URL ?>/mfa-recovery-verify/resend" class="d-inline" onsubmit="showSamtechLoader('Sending new code...')">
-                            <?= Csrf::field(); ?>
-                            <button type="submit" class="btn btn-link p-0 text-decoration-none fw-bold small text-success">
-                                <i class="bi bi-arrow-clockwise me-1"></i>Resend Code
-                            </button>
-                        </form>
-                    </div>
                 </div>
 
                 <button
@@ -123,6 +113,16 @@ $hasError = isset($_SESSION['error']);
                 </button>
 
             </form>
+
+            <div class="d-flex align-items-center justify-content-between mt-3 p-2 bg-light rounded-3 border">
+                <span class="text-muted small">Need another code?</span>
+                <form method="POST" action="<?= BASE_URL ?>/mfa-recovery-verify/resend" id="resendOtpForm" class="d-inline" onsubmit="handleResendSubmit(event)">
+                    <?= Csrf::field(); ?>
+                    <button type="submit" id="resendOtpBtn" class="btn btn-link p-0 text-decoration-none fw-bold small text-success">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Resend Code
+                    </button>
+                </form>
+            </div>
 
             <div class="text-center mt-3">
 
@@ -147,6 +147,49 @@ $hasError = isset($_SESSION['error']);
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const storageKey = 'otp_resend_expiry_' + window.location.pathname;
+
+    function updateResendTimer() {
+        const expiry = parseInt(localStorage.getItem(storageKey) || '0', 10);
+        const now = Date.now();
+        const diffSeconds = Math.ceil((expiry - now) / 1000);
+
+        if (diffSeconds > 0) {
+            resendBtn.disabled = true;
+            resendBtn.classList.remove('text-success');
+            resendBtn.classList.add('text-muted');
+            resendBtn.style.pointerEvents = 'none';
+            resendBtn.innerHTML = '<i class="bi bi-clock me-1"></i>Resend Code in ' + diffSeconds + 's';
+            setTimeout(updateResendTimer, 1000);
+        } else {
+            localStorage.removeItem(storageKey);
+            resendBtn.disabled = false;
+            resendBtn.classList.remove('text-muted');
+            resendBtn.classList.add('text-success');
+            resendBtn.style.pointerEvents = 'auto';
+            resendBtn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i>Resend Code';
+        }
+    }
+
+    window.handleResendSubmit = function(e) {
+        const expiry = parseInt(localStorage.getItem(storageKey) || '0', 10);
+        if (expiry > Date.now()) {
+            e.preventDefault();
+            return false;
+        }
+        localStorage.setItem(storageKey, Date.now() + 60000);
+        if (typeof showSamtechLoader === 'function') {
+            showSamtechLoader('Sending new code...');
+        }
+    };
+
+    updateResendTimer();
+});
+</script>
 
 <style>
     html,
