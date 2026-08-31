@@ -249,14 +249,17 @@ $organizations = is_array($organizations ?? null)
 
                         Assign Agent
 
+                        <span class="text-danger">*</span>
+
                     </label>
 
                     <select
                         name="assigned_agent_id"
-                        class="form-select">
+                        class="form-select"
+                        required>
 
                         <option value="">
-                            Select Agent (Unassigned)
+                            Select Agent *
                         </option>
 
                         <?php foreach (($agents ?? []) as $agentItem): ?>

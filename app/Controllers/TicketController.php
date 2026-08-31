@@ -45,10 +45,10 @@ class TicketController extends Controller
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
-        $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : null;
+        $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : 0;
 
-        if (empty($subject) || empty($description)) {
-            $_SESSION['error'] = "Subject and description are required.";
+        if (empty($subject) || empty($description) || $assignedAgentId <= 0) {
+            $_SESSION['error'] = "Subject, description, and assigned agent are required.";
             header("Location: " . BASE_URL . "/tickets/create");
             exit;
         }

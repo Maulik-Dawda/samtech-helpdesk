@@ -71,9 +71,9 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Assign Agent (Optional)</label>
-                    <select name="assigned_agent_id" class="form-select">
-                        <option value="">Select Agent (Unassigned)</option>
+                    <label class="form-label">Assign Agent <span class="text-danger">*</span></label>
+                    <select name="assigned_agent_id" class="form-select" required>
+                        <option value="">Select Agent *</option>
                         <?php foreach ($agents as $agentItem): ?>
                             <option value="<?= $agentItem['id']; ?>">
                                 <?= htmlspecialchars($agentItem['full_name']); ?> (<?= htmlspecialchars($agentItem['email']); ?>)
