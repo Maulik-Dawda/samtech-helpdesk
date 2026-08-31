@@ -516,12 +516,23 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                                     </td>
 
                                     <td class="text-end">
-                                        <a
-                                            href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticket['id']; ?>"
-                                            class="table-action-btn table-action-view"
-                                            title="View Ticket">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </a>
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <a
+                                                href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticket['id']; ?>"
+                                                class="table-action-btn table-action-view"
+                                                title="View Ticket">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+
+                                            <a
+                                                href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticket['id']; ?>"
+                                                target="_blank"
+                                                class="table-action-btn table-action-view text-success"
+                                                style="background: #e8f5e9; color: #2e7d32;"
+                                                title="Print Ticket Report">
+                                                <i class="bi bi-printer-fill"></i>
+                                            </a>
+                                        </div>
                                     </td>
 
                                 </tr>

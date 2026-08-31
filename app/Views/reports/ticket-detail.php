@@ -39,7 +39,7 @@
 
                 <?php if($ticket): ?>
                     <a
-                        href="<?= BASE_URL ?>/reports/ticket-detail/print/<?= $ticket['id']; ?>"
+                        href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticket['id']; ?>"
                         target="_blank"
                         class="btn btn-primary-custom">
                         <i class="bi bi-printer me-1"></i>
