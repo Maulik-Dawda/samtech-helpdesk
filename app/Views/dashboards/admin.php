@@ -48,7 +48,7 @@ $greeting = DateTimeHelper::greeting();
 $dubaiNow = DateTimeHelper::now();
 
 $currentDate = $dubaiNow->format('l, d F Y');
-$currentTime = $dubaiNow->format('h:i A');
+$currentTime = $dubaiNow->format('h:i:s A');
 
 /*
 |--------------------------------------------------------------------------
@@ -164,7 +164,7 @@ function dashboardActivityIcon(string $action): string
                                 <?= htmlspecialchars($currentDate); ?>
                             </div>
 
-                            <div class="dashboard-time">
+                            <div class="dashboard-time" data-live-time="true">
                                 <?= htmlspecialchars($currentTime); ?>
                                 <span>Dubai Time</span>
                             </div>

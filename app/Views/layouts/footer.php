@@ -74,6 +74,40 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     );
+
+    // Live Dashboard Clock with seconds
+    function startLiveDashboardClock() {
+        const liveTimeElements = document.querySelectorAll('.dashboard-time[data-live-time="true"]');
+        if (!liveTimeElements.length) return;
+
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const formattedHours = String(hours).padStart(2, '0');
+            const timeString = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+
+            liveTimeElements.forEach(function (el) {
+                const badge = el.querySelector('span');
+                if (badge) {
+                    const badgeClone = badge.cloneNode(true);
+                    el.textContent = timeString + ' ';
+                    el.appendChild(badgeClone);
+                } else {
+                    el.textContent = timeString;
+                }
+            });
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    startLiveDashboardClock();
 });
 </script>
 

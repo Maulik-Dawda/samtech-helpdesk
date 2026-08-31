@@ -36,7 +36,7 @@ $greeting = DateTimeHelper::greeting();
 $currentDateTime = DateTimeHelper::now();
 
 $currentDate = $currentDateTime->format('l, d F Y');
-$currentTime = $currentDateTime->format('h:i A');
+$currentTime = $currentDateTime->format('h:i:s A');
 
 /*
 |--------------------------------------------------------------------------
@@ -110,7 +110,7 @@ function agentDashboardPriorityClass(string $priority): string
                                 <?= htmlspecialchars($currentDate); ?>
                             </div>
 
-                            <div class="dashboard-time">
+                            <div class="dashboard-time" data-live-time="true">
                                 <?= htmlspecialchars($currentTime); ?>
                             </div>
 
