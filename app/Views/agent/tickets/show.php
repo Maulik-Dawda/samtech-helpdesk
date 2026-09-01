@@ -212,7 +212,7 @@ function getAgentReplyRoleClass(string $role): string
 
                 </div>
 
-                <div class="page-actions d-flex align-items-center gap-2 flex-wrap">
+                <div class="page-actions d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
 
                     <span class="status-badge <?= getAgentShowStatusClass($status); ?>">
 
