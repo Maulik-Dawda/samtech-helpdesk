@@ -125,7 +125,7 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <a href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= (int)$ticket['id']; ?>" target="_blank" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center">
+            <a href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= (int)$ticket['id']; ?>" target="_blank" class="btn btn-sm btn-outline-secondary fw-bold d-inline-flex align-items-center">
                 <i class="bi bi-printer-fill me-1"></i> Print / Download Report
             </a>
             <a href="<?= BASE_URL ?>/tickets" class="back-link">Back to Tickets</a>

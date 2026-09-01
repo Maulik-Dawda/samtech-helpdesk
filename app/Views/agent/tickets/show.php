@@ -212,12 +212,18 @@ function getAgentReplyRoleClass(string $role): string
 
                 </div>
 
-                <div class="page-actions">
+                <div class="page-actions d-flex align-items-center gap-2 flex-wrap">
+
+                    <span class="status-badge <?= getAgentShowStatusClass($status); ?>">
+
+                        <?= htmlspecialchars($statusLabel); ?>
+
+                    </span>
 
                     <a
                         href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
                         target="_blank"
-                        class="btn btn-outline-success">
+                        class="btn btn-outline-secondary">
 
                         <i class="bi bi-printer-fill me-1"></i>
 
@@ -234,12 +240,6 @@ function getAgentReplyRoleClass(string $role): string
                         Back to Tickets
 
                     </a>
-
-                    <span class="status-badge <?= getAgentShowStatusClass($status); ?>">
-
-                        <?= htmlspecialchars($statusLabel); ?>
-
-                    </span>
 
                 </div>
 

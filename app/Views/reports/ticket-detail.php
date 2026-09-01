@@ -164,7 +164,7 @@
                                     </div>
 
                                     <div>
-                                        <?= nl2br(htmlspecialchars($reply['message'])); ?>
+                                        <?= nl2br(htmlspecialchars(trim($reply['message'] ?? ''))); ?>
                                     </div>
 
                                     <?php if(!empty($replyAttachments[$reply['id']])): ?>

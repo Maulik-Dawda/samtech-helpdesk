@@ -30,9 +30,9 @@
         height: 72px;
         margin: 0 auto 18px;
         border-radius: 50%;
-        border: 4px solid rgba(177, 233, 111, .2);
-        border-top-color: #b1e96f;
-        border-right-color: #6cb33f;
+        border: 4px solid rgba(15, 23, 42, .1);
+        border-top-color: #0f172a;
+        border-right-color: #334155;
         animation: samtechSpin .8s linear infinite;
         position: relative;
     }
@@ -42,8 +42,8 @@
         position: absolute;
         inset: 10px;
         border-radius: 50%;
-        border: 3px solid rgba(177, 233, 111, .15);
-        border-bottom-color: #6cb33f;
+        border: 3px solid rgba(15, 23, 42, .08);
+        border-bottom-color: #475569;
         animation: samtechSpinReverse 1.2s linear infinite;
     }
 
@@ -111,13 +111,13 @@
             loader.classList.add('show');
         }
 
-        // Auto-hide fallback after 5 seconds
+        // Auto-hide fallback after 15 seconds
         if (samtechLoaderTimer) {
             clearTimeout(samtechLoaderTimer);
         }
         samtechLoaderTimer = setTimeout(function() {
             hideSamtechLoader();
-        }, 5000);
+        }, 15000);
     }
 
     function hideSamtechLoader() {
@@ -162,44 +162,60 @@
 
         document.querySelectorAll('form').forEach(function(form) {
 
-            const action = (form.getAttribute('action') || '').toLowerCase();
-            const currentPath = window.location.pathname.toLowerCase();
-
-            // Only activate loader for Auth screens and Auth form submissions
-            const isAuthAction =
-                action.includes('login') ||
-                action.includes('otp') ||
-                action.includes('mfa') ||
-                action.includes('forgot-password') ||
-                action.includes('reset-password') ||
-                currentPath.includes('login') ||
-                currentPath.includes('forgot-password') ||
-                currentPath.includes('reset-password') ||
-                currentPath.includes('mfa');
-
-            if (!isAuthAction) {
-                return;
-            }
-
             form.addEventListener('submit', function(e) {
 
                 if (e.defaultPrevented) {
                     return;
                 }
 
-                let message = 'Verifying credentials...';
+                if (typeof form.checkValidity === 'function' && !form.checkValidity()) {
+                    return;
+                }
+
+                const action = (form.getAttribute('action') || '').toLowerCase();
+                const currentPath = window.location.pathname.toLowerCase();
+
+                let message = 'Processing your request...';
 
                 if (action.includes('admin-login')) {
                     message = 'Verifying admin access...';
+                } else if (action.includes('login')) {
+                    message = 'Verifying credentials...';
                 } else if (action.includes('otp') || action.includes('mfa')) {
                     message = 'Verifying security code...';
                 } else if (action.includes('forgot-password')) {
                     message = 'Sending verification code...';
                 } else if (action.includes('reset-password')) {
                     message = 'Updating password...';
+                } else if (action.includes('reply') || currentPath.includes('show')) {
+                    message = 'Posting reply & sending notifications...';
+                } else if (action.includes('status') || action.includes('priority') || action.includes('assign')) {
+                    message = 'Updating ticket details...';
+                } else if (action.includes('tickets/store') || action.includes('tickets/create')) {
+                    message = 'Creating support ticket...';
+                } else if (action.includes('user') && (action.includes('create') || action.includes('store'))) {
+                    message = 'Creating user account...';
+                } else if (action.includes('organization') && (action.includes('create') || action.includes('store'))) {
+                    message = 'Creating organization...';
+                } else if (action.includes('user') && action.includes('update')) {
+                    message = 'Updating user details...';
+                } else if (action.includes('profile')) {
+                    message = 'Saving profile changes...';
+                } else if (action.includes('password')) {
+                    message = 'Updating password...';
                 }
 
                 showSamtechLoader(message);
+
+                const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    setTimeout(function() {
+                        submitBtn.disabled = true;
+                        if (submitBtn.tagName === 'BUTTON') {
+                            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+                        }
+                    }, 50);
+                }
             });
 
         });

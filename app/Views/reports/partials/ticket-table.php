@@ -79,7 +79,7 @@
                             <a
                                 href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= (int)$ticket['id']; ?>"
                                 target="_blank"
-                                class="btn btn-sm btn-outline-success border-0"
+                                class="btn btn-sm btn-outline-secondary border-0"
                                 title="Print Ticket Detail Report">
                                 <i class="bi bi-printer-fill fs-6"></i>
                             </a>

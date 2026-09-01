@@ -184,8 +184,9 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             line-height: 1.6;
             color: #0f172a;
             font-size: 11px;
-            white-space: pre-wrap;
+            white-space: pre-line;
             word-wrap: break-word;
+            text-align: left;
         }
 
         .timeline-item {
@@ -317,7 +318,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
     <div class="section">
         <div class="section-title">Description</div>
-        <div class="description-box"><?= nl2br(htmlspecialchars($ticket['description'] ?? 'No description provided.')); ?></div>
+        <div class="description-box"><?= nl2br(htmlspecialchars(trim($ticket['description'] ?? 'No description provided.'))); ?></div>
     </div>
 
     <?php if (!empty($attachments)): ?>
@@ -351,8 +352,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
                         </tr>
                     </table>
 
-                    <div class="reply-body">
-                        <?= nl2br(htmlspecialchars($reply['message'])); ?>
+                    <div class="reply-body"><?= nl2br(htmlspecialchars(trim($reply['message'] ?? ''))); ?></div>
 
                         <?php if (!empty($replyAttachments[$reply['id']])): ?>
                             <div style="border-top:1px solid #e2e8f0; margin-top:10px; padding-top:8px;">
