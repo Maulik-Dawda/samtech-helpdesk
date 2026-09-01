@@ -66,12 +66,12 @@
 
 .page-actions{
 
-    width:100%;
+    width:auto;
 }
 
 .page-actions .btn{
 
-    flex:1;
+    flex:initial;
 }
 
 .chart-wrapper{

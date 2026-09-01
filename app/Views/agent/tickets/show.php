@@ -223,7 +223,7 @@ function getAgentReplyRoleClass(string $role): string
                     <a
                         href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
                         target="_blank"
-                        class="btn btn-outline-secondary">
+                        class="btn btn-outline-secondary text-nowrap">
 
                         <i class="bi bi-printer-fill me-1"></i>
 
@@ -233,7 +233,7 @@ function getAgentReplyRoleClass(string $role): string
 
                     <a
                         href="<?= BASE_URL ?>/agent/tickets"
-                        class="btn btn-light">
+                        class="btn btn-light text-nowrap">
 
                         <i class="bi bi-arrow-left me-2"></i>
 

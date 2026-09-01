@@ -983,6 +983,13 @@
     gap: 16px;
 }
 
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
 @media (max-width: 1199.98px) {
     .page-header {
         flex-direction: column;
@@ -993,6 +1000,7 @@
     .page-actions {
         margin-top: 14px;
         width: 100%;
+        flex-wrap: wrap;
     }
 }
 
