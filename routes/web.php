@@ -137,9 +137,3 @@ $router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketD
 $router->get('/unsubscribe', 'AuthController@unsubscribePage');
 $router->post('/unsubscribe', 'AuthController@processUnsubscribe');
 
-$router->get('/scanner', 'CallMaskingController@show');
-$router->get('/call-owner', 'CallMaskingController@show');
-$router->get('/scan/{code}', 'CallMaskingController@show');
-
-$router->post('/api/call-owner/submit', 'CallMaskingController@submitApi');
-
