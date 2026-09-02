@@ -73,6 +73,8 @@ define('APP_NAME', $env['APP_NAME'] ?? 'Samtech Helpdesk');
 
 define('SESSION_TIMEOUT', (int)($env['SESSION_TIMEOUT'] ?? 2700));
 
+define('CALL_MASKING_DID', $env['CALL_MASKING_DID'] ?? '+97148007268');
+
 /*
 |--------------------------------------------------------------------------
 | Mail Configuration
