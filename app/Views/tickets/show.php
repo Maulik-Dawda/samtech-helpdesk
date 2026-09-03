@@ -227,7 +227,8 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
                             $replyEditedAt = !empty($reply['edited_at']) ? (string) $reply['edited_at'] : '';
 
                             $currentUserId = (int) ($_SESSION['auth_user_id'] ?? 0);
-                            $canEditReply = ($replyUserId === $currentUserId) && $replyEditCount < 2;
+                            $ticketIsClosed = strtolower((string) ($ticket['status'] ?? '')) === 'closed';
+                            $canEditReply = !$ticketIsClosed && ($replyUserId === $currentUserId) && $replyEditCount < 2;
                             ?>
                             <div class="reply-box p-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">

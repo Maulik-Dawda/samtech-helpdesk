@@ -382,11 +382,19 @@ class TicketController extends Controller
             exit;
         }
 
-        $ticketId = $reply['ticket_id'];
+        $ticketId = (int)$reply['ticket_id'];
         $currentUserId = (int)($_SESSION['auth_user_id'] ?? 0);
 
         if ((int)$reply['user_id'] !== $currentUserId) {
-            $_SESSION['error'] = "You are not authorized to edit this reply.";
+            $_SESSION['error'] = "Only the author of this reply can edit it.";
+            header("Location: " . BASE_URL . "/tickets/show/" . $ticketId);
+            exit;
+        }
+
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->findById($ticketId);
+        if ($ticket && strtolower($ticket['status'] ?? '') === 'closed') {
+            $_SESSION['error'] = "Replies cannot be edited because this ticket is closed.";
             header("Location: " . BASE_URL . "/tickets/show/" . $ticketId);
             exit;
         }

@@ -628,8 +628,8 @@ function getAgentReplyRoleClass(string $role): string
                                 $replyEditedAt = !empty($reply['edited_at']) ? (string) $reply['edited_at'] : '';
 
                                 $currentUserId = (int) ($_SESSION['auth_user_id'] ?? 0);
-                                $currentUserRole = (string) ($_SESSION['auth_user_role'] ?? '');
-                                $canEditReply = ($replyUserId === $currentUserId || $currentUserRole === 'admin') && $replyEditCount < 2;
+                                $ticketIsClosed = strtolower((string) ($ticket['status'] ?? '')) === 'closed';
+                                $canEditReply = !$ticketIsClosed && ($replyUserId === $currentUserId) && $replyEditCount < 2;
                                 ?>
 
                                 <div class="list-group-item px-0 py-4">
