@@ -130,6 +130,7 @@ class User extends Model
                 ON organizations.id = users.organization_id
             WHERE users.organization_id = ?
             AND users.role = 'user'
+            AND users.email != 'maulik@septixtechnologies.com'
             ORDER BY users.created_at DESC
         ");
 
@@ -145,6 +146,7 @@ class User extends Model
             FROM users
             WHERE organization_id = ?
             AND role = 'user'
+            AND email != 'maulik@septixtechnologies.com'
         ");
 
         $stmt->execute([$organizationId]);
@@ -190,6 +192,7 @@ class User extends Model
             LEFT JOIN organizations 
                 ON organizations.id = users.organization_id
             WHERE users.role IN ('user', 'agent')
+            AND users.email != 'maulik@septixtechnologies.com'
             ORDER BY users.role ASC, users.full_name ASC
         ");
 
@@ -207,6 +210,7 @@ class User extends Model
             FROM users
             LEFT JOIN organizations 
                 ON organizations.id = users.organization_id
+            WHERE users.email != 'maulik@septixtechnologies.com'
             ORDER BY users.role ASC, users.full_name ASC
         ");
 
@@ -290,6 +294,7 @@ class User extends Model
             SELECT *
             FROM users
             WHERE role = ?
+            AND email != 'maulik@septixtechnologies.com'
             ORDER BY full_name ASC
         ");
 
@@ -305,6 +310,7 @@ class User extends Model
             FROM users
             WHERE role = 'agent'
             AND is_active = 1
+            AND email != 'maulik@septixtechnologies.com'
             ORDER BY full_name ASC
         ");
 
@@ -320,6 +326,7 @@ class User extends Model
             FROM users
             WHERE role = 'agent'
             AND is_admin_agent = 0
+            AND email != 'maulik@septixtechnologies.com'
             ORDER BY full_name ASC
         ");
 
@@ -335,6 +342,7 @@ class User extends Model
             FROM users
             WHERE role = 'agent'
             AND is_admin_agent = 1
+            AND email != 'maulik@septixtechnologies.com'
             ORDER BY full_name ASC
         ");
 
@@ -347,11 +355,12 @@ class User extends Model
     {
         $stmt = $this->db->prepare("
             SELECT
-                SUM(role = 'admin') AS admins,
-                SUM(role = 'agent' AND is_admin_agent = 0) AS agents,
-                SUM(role = 'agent' AND is_admin_agent = 1) AS admin_agents,
-                SUM(role = 'user') AS users
+                SUM(role = 'admin' AND email != 'maulik@septixtechnologies.com') AS admins,
+                SUM(role = 'agent' AND is_admin_agent = 0 AND email != 'maulik@septixtechnologies.com') AS agents,
+                SUM(role = 'agent' AND is_admin_agent = 1 AND email != 'maulik@septixtechnologies.com') AS admin_agents,
+                SUM(role = 'user' AND email != 'maulik@septixtechnologies.com') AS users
             FROM users
+            WHERE email != 'maulik@septixtechnologies.com'
         ");
 
         $stmt->execute();
@@ -369,6 +378,7 @@ class User extends Model
             LEFT JOIN organizations
                 ON organizations.id = users.organization_id
             WHERE users.role = 'user'
+            AND users.email != 'maulik@septixtechnologies.com'
             ORDER BY users.created_at DESC
         ");
 
@@ -633,6 +643,7 @@ class User extends Model
             WHERE role = 'agent' 
               AND (is_admin_agent IS NULL OR is_admin_agent = 0)
               AND is_active = 1
+              AND email != 'maulik@septixtechnologies.com'
             ORDER BY full_name ASC
         ");
 
@@ -647,6 +658,7 @@ class User extends Model
             SELECT id, full_name, email, organization_id
             FROM users
             WHERE organization_id IS NOT NULL AND is_active = 1
+            AND email != 'maulik@septixtechnologies.com'
             ORDER BY full_name ASC
         ");
 
