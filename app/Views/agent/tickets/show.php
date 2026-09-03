@@ -1174,7 +1174,10 @@ function getAgentReplyRoleClass(string $role): string
                                         </option>
                                     <?php endif; ?>
 
-                                    <?php if ($status !== 'closed' && ($_SESSION['auth_user_role'] ?? '') === 'admin'): ?>
+                                    <?php
+                                    $canCloseTicket = PermissionHelper::isAdmin() || PermissionHelper::isAdminAgent();
+                                    if ($status !== 'closed' && $canCloseTicket):
+                                    ?>
                                         <option value="closed">
                                             Closed
                                         </option>
@@ -1182,9 +1185,9 @@ function getAgentReplyRoleClass(string $role): string
 
                                 </select>
 
-                                <?php if (($_SESSION['auth_user_role'] ?? '') !== 'admin'): ?>
+                                <?php if (!$canCloseTicket): ?>
                                     <small class="text-muted d-block mt-2">
-                                        <i class="bi bi-info-circle me-1"></i> Note: Only administrators can close tickets.
+                                        <i class="bi bi-info-circle me-1"></i> Note: Only administrators and admin agents can close tickets.
                                     </small>
                                 <?php endif; ?>
 

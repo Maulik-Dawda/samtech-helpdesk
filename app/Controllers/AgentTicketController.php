@@ -9,6 +9,7 @@ require_once ROOT_PATH . "/app/Services/UploadService.php";
 require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
+require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
 
 class AgentTicketController extends Controller
 {
@@ -186,9 +187,9 @@ class AgentTicketController extends Controller
         $status = $_POST['status'] ?? '';
         $resolutionMessage = trim($_POST['resolution_message'] ?? '');
 
-        $role = $_SESSION['auth_user_role'] ?? '';
-        if ($status === 'closed' && $role !== 'admin') {
-            $_SESSION['error'] = "Only administrators can close tickets.";
+        $canCloseTicket = PermissionHelper::isAdmin() || PermissionHelper::isAdminAgent();
+        if ($status === 'closed' && !$canCloseTicket) {
+            $_SESSION['error'] = "Only administrators and admin agents can close tickets.";
             header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
             exit;
         }
