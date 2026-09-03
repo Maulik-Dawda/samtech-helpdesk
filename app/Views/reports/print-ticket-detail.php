@@ -347,6 +347,9 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
                                 <span style="font-weight:normal; color:#475569; font-size:10px;">(<?= ucfirst($reply['role']); ?>)</span>
                             </td>
                             <td style="border:none; text-align:right; padding:0; color:#64748b; font-size:10px;">
+                                <?php if (!empty($reply['edit_count']) && (int)$reply['edit_count'] > 0): ?>
+                                    <span style="font-weight:bold; color:#475569; font-style:italic; margin-right:4px;">(Edited)</span>
+                                <?php endif; ?>
                                 🕒 <?= htmlspecialchars($reply['created_at']); ?>
                             </td>
                         </tr>

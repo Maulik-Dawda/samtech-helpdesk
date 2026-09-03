@@ -50,10 +50,12 @@ $router->post('/tickets/store', 'TicketController@store');
 $router->get('/tickets/show/{id}', 'TicketController@show');
 
 $router->post('/tickets/reply/{id}', 'TicketController@storeReply');
+$router->post('/tickets/reply/edit/{id}', 'TicketController@editReply');
 
 $router->get('/agent/tickets', 'AgentTicketController@index');
 $router->get('/agent/tickets/show/{id}', 'AgentTicketController@show');
 $router->post('/agent/tickets/reply/{id}', 'AgentTicketController@reply');
+$router->post('/agent/tickets/reply/edit/{id}', 'AgentTicketController@editReply');
 $router->post('/agent/tickets/status/{id}', 'AgentTicketController@updateStatus');
 
 $router->get('/organization-users', 'OrganizationUserController@index');

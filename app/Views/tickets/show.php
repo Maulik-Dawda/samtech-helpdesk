@@ -220,8 +220,17 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
                         <div class="alert alert-info">No replies yet.</div>
                     <?php else: ?>
                         <?php foreach ($replies as $reply): ?>
+                            <?php
+                            $replyId = (int) ($reply['id'] ?? 0);
+                            $replyUserId = (int) ($reply['user_id'] ?? 0);
+                            $replyEditCount = (int) ($reply['edit_count'] ?? 0);
+                            $replyEditedAt = !empty($reply['edited_at']) ? (string) $reply['edited_at'] : '';
+
+                            $currentUserId = (int) ($_SESSION['auth_user_id'] ?? 0);
+                            $canEditReply = ($replyUserId === $currentUserId) && $replyEditCount < 2;
+                            ?>
                             <div class="reply-box p-3 mb-3">
-                                <div class="d-flex justify-content-between mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
                                     <strong>
                                         <?= htmlspecialchars($reply['full_name']); ?>
                                         <span class="badge-soft priority-low">
@@ -229,19 +238,34 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
                                         </span>
                                     </strong>
 
-                                    <small class="text-muted">
-                                        <?= htmlspecialchars($reply['created_at']); ?>
-                                    </small>
+                                    <div class="text-muted small d-flex flex-wrap align-items-center gap-2">
+                                        <?php if ($replyEditCount > 0): ?>
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill" title="Edited <?= $replyEditCount; ?> time<?= $replyEditCount > 1 ? 's' : ''; ?><?= !empty($replyEditedAt) ? ' on ' . htmlspecialchars($replyEditedAt) : ''; ?>">
+                                                <i class="bi bi-pencil-fill me-1"></i> (Edited)
+                                            </span>
+                                        <?php endif; ?>
+
+                                        <span>
+                                            <i class="bi bi-clock me-1"></i>
+                                            <?= htmlspecialchars($reply['created_at']); ?>
+                                        </span>
+
+                                        <?php if ($canEditReply): ?>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 text-nowrap ms-1" data-bs-toggle="modal" data-bs-target="#editUserReplyModal_<?= $replyId; ?>">
+                                                <i class="bi bi-pencil me-1"></i> Edit
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
 
                                 <div>
                                     <?= nl2br(htmlspecialchars($reply['message'])); ?>
                                 </div>
-                                <?php if (!empty($replyAttachments[$reply['id']])): ?>
+                                <?php if (!empty($replyAttachments[$replyId])): ?>
 
                                     <div class="mt-3">
 
-                                        <?php foreach ($replyAttachments[$reply['id']] as $replyAttachment): ?>
+                                        <?php foreach ($replyAttachments[$replyId] as $replyAttachment): ?>
 
                                             <div class="border rounded p-2 mb-2 bg-white d-flex justify-content-between align-items-center">
 
@@ -268,6 +292,40 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
 
                                     </div>
 
+                                <?php endif; ?>
+
+                                <?php if ($canEditReply): ?>
+                                    <!-- Edit Reply Modal -->
+                                    <div class="modal fade text-start" id="editUserReplyModal_<?= $replyId; ?>" tabindex="-1" aria-labelledby="editUserReplyModalLabel_<?= $replyId; ?>" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0 shadow">
+                                                <form action="<?= BASE_URL ?>/tickets/reply/edit/<?= $replyId; ?>" method="POST">
+                                                    <?= Csrf::field(); ?>
+                                                    <div class="modal-header border-bottom-0 pb-0">
+                                                        <h5 class="modal-title fw-bold text-dark" id="editUserReplyModalLabel_<?= $replyId; ?>">
+                                                            <i class="bi bi-pencil-square text-primary me-2"></i>
+                                                            Edit Reply Message
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body py-3">
+                                                        <div class="alert alert-info py-2 px-3 small rounded-3 mb-3">
+                                                            <i class="bi bi-info-circle me-1"></i>
+                                                            You can edit your reply up to 2 times. Edits used: <strong><?= $replyEditCount; ?>/2</strong>.
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label fw-semibold">Reply Message</label>
+                                                            <textarea name="message" class="form-control" rows="5" required><?= htmlspecialchars($reply['message']); ?></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-top-0 pt-0 gap-2">
+                                                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary px-4 fw-bold">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>

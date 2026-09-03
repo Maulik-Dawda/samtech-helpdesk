@@ -150,7 +150,7 @@
                             <?php foreach($replies as $reply): ?>
                                 <div class="reply-box p-3 mb-3">
 
-                                    <div class="d-flex justify-content-between mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
                                         <strong>
                                             <?= htmlspecialchars($reply['full_name']); ?>
                                             <span class="badge-soft priority-low">
@@ -158,8 +158,13 @@
                                             </span>
                                         </strong>
 
-                                        <small class="text-muted">
-                                            <?= htmlspecialchars($reply['created_at']); ?>
+                                        <small class="text-muted d-flex align-items-center gap-2">
+                                            <?php if (!empty($reply['edit_count']) && (int)$reply['edit_count'] > 0): ?>
+                                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill" title="Edited <?= (int)$reply['edit_count']; ?> time<?= (int)$reply['edit_count'] > 1 ? 's' : ''; ?>">
+                                                    <i class="bi bi-pencil-fill me-1"></i> (Edited)
+                                                </span>
+                                            <?php endif; ?>
+                                            <span><?= htmlspecialchars($reply['created_at']); ?></span>
                                         </small>
                                     </div>
 

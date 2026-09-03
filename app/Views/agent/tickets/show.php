@@ -622,6 +622,14 @@ function getAgentReplyRoleClass(string $role): string
                                 if (!is_array($currentReplyAttachments)) {
                                     $currentReplyAttachments = [];
                                 }
+
+                                $replyUserId = (int) ($reply['user_id'] ?? 0);
+                                $replyEditCount = (int) ($reply['edit_count'] ?? 0);
+                                $replyEditedAt = !empty($reply['edited_at']) ? (string) $reply['edited_at'] : '';
+
+                                $currentUserId = (int) ($_SESSION['auth_user_id'] ?? 0);
+                                $currentUserRole = (string) ($_SESSION['auth_user_role'] ?? '');
+                                $canEditReply = ($replyUserId === $currentUserId || $currentUserRole === 'admin') && $replyEditCount < 2;
                                 ?>
 
                                 <div class="list-group-item px-0 py-4">
@@ -662,11 +670,35 @@ function getAgentReplyRoleClass(string $role): string
 
                                                 </div>
 
-                                                <div class="text-muted small text-md-end">
+                                                <div class="text-muted small text-md-end d-flex flex-wrap align-items-center justify-content-md-end gap-2">
 
-                                                    <i class="bi bi-clock me-1"></i>
+                                                    <?php if ($replyEditCount > 0): ?>
 
-                                                    <?= htmlspecialchars($replyCreatedAt); ?>
+                                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill" title="Edited <?= $replyEditCount; ?> time<?= $replyEditCount > 1 ? 's' : ''; ?><?= !empty($replyEditedAt) ? ' on ' . htmlspecialchars($replyEditedAt) : ''; ?>">
+
+                                                            <i class="bi bi-pencil-fill me-1"></i> (Edited)
+
+                                                        </span>
+
+                                                    <?php endif; ?>
+
+                                                    <span>
+
+                                                        <i class="bi bi-clock me-1"></i>
+
+                                                        <?= htmlspecialchars($replyCreatedAt); ?>
+
+                                                    </span>
+
+                                                    <?php if ($canEditReply): ?>
+
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#editReplyModal_<?= $replyId; ?>">
+
+                                                            <i class="bi bi-pencil me-1"></i> Edit
+
+                                                        </button>
+
+                                                    <?php endif; ?>
 
                                                 </div>
 
@@ -747,6 +779,71 @@ function getAgentReplyRoleClass(string $role): string
                                                             </div>
 
                                                         <?php endforeach; ?>
+
+                                                    </div>
+
+                                                </div>
+
+                                            <?php endif; ?>
+
+                                            <?php if ($canEditReply): ?>
+
+                                                <!-- Edit Reply Modal -->
+                                                <div class="modal fade text-start" id="editReplyModal_<?= $replyId; ?>" tabindex="-1" aria-labelledby="editReplyModalLabel_<?= $replyId; ?>" aria-hidden="true">
+
+                                                    <div class="modal-dialog modal-dialog-centered">
+
+                                                        <div class="modal-content rounded-4 border-0 shadow">
+
+                                                            <form action="<?= BASE_URL ?>/agent/tickets/reply/edit/<?= $replyId; ?>" method="POST">
+
+                                                                <?= Csrf::field(); ?>
+
+                                                                <div class="modal-header border-bottom-0 pb-0">
+
+                                                                    <h5 class="modal-title fw-bold text-dark" id="editReplyModalLabel_<?= $replyId; ?>">
+
+                                                                        <i class="bi bi-pencil-square text-primary me-2"></i>
+
+                                                                        Edit Reply Message
+
+                                                                    </h5>
+
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                                                                </div>
+
+                                                                <div class="modal-body py-3">
+
+                                                                    <div class="alert alert-info py-2 px-3 small rounded-3 mb-3">
+
+                                                                        <i class="bi bi-info-circle me-1"></i>
+
+                                                                        You can edit a reply up to 2 times. Edits used: <strong><?= $replyEditCount; ?>/2</strong>.
+
+                                                                    </div>
+
+                                                                    <div class="mb-2">
+
+                                                                        <label class="form-label fw-semibold">Reply Message</label>
+
+                                                                        <textarea name="message" class="form-control" rows="5" required><?= htmlspecialchars($replyMessage); ?></textarea>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="modal-footer border-top-0 pt-0 gap-2">
+
+                                                                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+
+                                                                    <button type="submit" class="btn btn-primary px-4 fw-bold">Save Changes</button>
+
+                                                                </div>
+
+                                                            </form>
+
+                                                        </div>
 
                                                     </div>
 

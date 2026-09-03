@@ -353,4 +353,55 @@ class TicketController extends Controller
         header("Location: " . BASE_URL . "/tickets/show/" . $id);
         exit;
     }
+
+    public function editReply($id)
+    {
+        Csrf::verify();
+        AuthMiddleware::timeout();
+        AuthMiddleware::check('user');
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $newMessage = trim($_POST['message'] ?? '');
+        if (empty($newMessage)) {
+            $_SESSION['error'] = "Reply message cannot be empty.";
+            $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/tickets");
+            header("Location: " . $redirect);
+            exit;
+        }
+
+        $replyModel = new TicketReply();
+        $reply = $replyModel->findById($id);
+
+        if (!$reply) {
+            $_SESSION['error'] = "Reply not found.";
+            $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/tickets");
+            header("Location: " . $redirect);
+            exit;
+        }
+
+        $ticketId = $reply['ticket_id'];
+        $currentUserId = (int)($_SESSION['auth_user_id'] ?? 0);
+
+        if ((int)$reply['user_id'] !== $currentUserId) {
+            $_SESSION['error'] = "You are not authorized to edit this reply.";
+            header("Location: " . BASE_URL . "/tickets/show/" . $ticketId);
+            exit;
+        }
+
+        $editCount = (int)($reply['edit_count'] ?? 0);
+        if ($editCount >= 2) {
+            $_SESSION['error'] = "This reply has reached the maximum allowed limit of 2 edits.";
+            header("Location: " . BASE_URL . "/tickets/show/" . $ticketId);
+            exit;
+        }
+
+        $replyModel->updateReplyMessage($id, $newMessage);
+
+        $_SESSION['success'] = "Reply updated successfully. (" . ($editCount + 1) . "/2 edits used)";
+        header("Location: " . BASE_URL . "/tickets/show/" . $ticketId);
+        exit;
+    }
 }
