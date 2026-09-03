@@ -823,10 +823,10 @@ function getAgentReplyRoleClass(string $role): string
 
                             </div>
 
-                            <div class="mb-4">
+                            <div class="mb-4 attachment-upload-group">
 
                                 <label
-                                    for="reply-attachments"
+                                    for="reply-attachments-picker"
                                     class="form-label">
 
                                     Attachments
@@ -835,18 +835,25 @@ function getAgentReplyRoleClass(string $role): string
 
                                 <input
                                     type="file"
-                                    id="reply-attachments"
-                                    name="attachments[]"
-                                    class="form-control"
+                                    id="reply-attachments-picker"
+                                    class="form-control attachment-picker-input"
                                     multiple
                                     accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+
+                                <input
+                                    type="file"
+                                    name="attachments[]"
+                                    class="form-control attachment-hidden-input d-none"
+                                    multiple>
 
                                 <div class="form-text mt-2">
 
                                     JPG, PNG, PDF, Word, Excel, TXT, ZIP and RAR.
-                                    Multiple files allowed, 5 MB per file.
+                                    Select files as many times as needed. 5 MB per file.
 
                                 </div>
+
+                                <div class="attachment-staged-list d-flex flex-column gap-2 mt-3"></div>
 
                             </div>
 

@@ -333,7 +333,7 @@ $organizations = is_array($organizations ?? null)
 
                 <!-- Attachments -->
 
-                <div class="col-12">
+                <div class="col-12 attachment-upload-group">
 
                     <label class="form-label">
 
@@ -343,10 +343,15 @@ $organizations = is_array($organizations ?? null)
 
                     <input
                         type="file"
-                        name="attachments[]"
-                        class="form-control"
+                        class="form-control attachment-picker-input"
                         multiple
                         accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+
+                    <input
+                        type="file"
+                        name="attachments[]"
+                        class="form-control attachment-hidden-input d-none"
+                        multiple>
 
                     <div class="form-text mt-2">
 
@@ -361,10 +366,12 @@ $organizations = is_array($organizations ?? null)
 
                         <br>
 
-                        <strong>Multiple files allowed</strong>,
+                        <strong>Select files as many times as needed</strong>,
                         <strong>5 MB</strong> each.
 
                     </div>
+
+                    <div class="attachment-staged-list d-flex flex-column gap-2 mt-3"></div>
 
                 </div>
 

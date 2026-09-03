@@ -289,19 +289,26 @@ $currentPriorityClass = $priorityClasses[$ticket['priority']] ?? 'priority-low';
                                     required></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-3 attachment-upload-group">
                                 <label class="form-label fw-semibold">Attachments</label>
 
                                 <input
                                     type="file"
-                                    name="attachments[]"
-                                    class="form-control"
+                                    class="form-control attachment-picker-input"
                                     multiple
                                     accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
 
-                                <small class="text-muted">
-                                    Multiple files allowed, 5MB per file.
+                                <input
+                                    type="file"
+                                    name="attachments[]"
+                                    class="form-control attachment-hidden-input d-none"
+                                    multiple>
+
+                                <small class="text-muted d-block mt-1">
+                                    JPG, PNG, PDF, Word, Excel, TXT, ZIP, RAR. Select files as many times as needed, 5MB per file.
                                 </small>
+
+                                <div class="attachment-staged-list d-flex flex-column gap-2 mt-2"></div>
                             </div>
 
                             <button type="submit" class="btn btn-primary-custom">
