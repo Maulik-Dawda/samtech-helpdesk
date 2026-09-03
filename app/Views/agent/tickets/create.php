@@ -333,7 +333,7 @@ $organizations = is_array($organizations ?? null)
 
                 <!-- Attachments -->
 
-                <div class="col-12">
+                <div class="col-12 attachment-upload-group">
 
                     <label class="form-label">
 
@@ -341,12 +341,31 @@ $organizations = is_array($organizations ?? null)
 
                     </label>
 
+                    <div class="d-flex gap-2 align-items-center mb-2">
+
+                        <input
+                            type="file"
+                            class="form-control attachment-picker-input"
+                            multiple
+                            accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary text-nowrap btn-upload-attachment">
+
+                            <i class="bi bi-cloud-upload-fill me-1"></i>
+
+                            Upload File
+
+                        </button>
+
+                    </div>
+
                     <input
                         type="file"
                         name="attachments[]"
-                        class="form-control"
-                        multiple
-                        accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+                        class="form-control attachment-hidden-input d-none"
+                        multiple>
 
                     <div class="form-text mt-2">
 
@@ -365,6 +384,8 @@ $organizations = is_array($organizations ?? null)
                         <strong>5 MB</strong> each.
 
                     </div>
+
+                    <div class="attachment-staged-list d-flex flex-column gap-2 mt-3"></div>
 
                 </div>
 
