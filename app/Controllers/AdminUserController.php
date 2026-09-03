@@ -398,4 +398,90 @@ class AdminUserController extends Controller
         header("Location: " . BASE_URL . "/admin/users");
         exit;
     }
+
+    public function toggleMfaLogin($id)
+    {
+        Csrf::verify();
+        $this->adminGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: " . BASE_URL . "/admin/users");
+            exit;
+        }
+
+        $currentMfaLogin = !empty($user['login_type_mfa']);
+        $newMfaStatus = !$currentMfaLogin;
+
+        $userModel->toggleMfaLogin($id, $newMfaStatus);
+
+        if ($newMfaStatus) {
+            $_SESSION['success'] = "MFA Login feature enabled for " . htmlspecialchars($user['full_name']) . ". User will now verify via MFA instead of OTP.";
+        } else {
+            $_SESSION['success'] = "MFA Login feature disabled. User will log in with OTP.";
+        }
+
+        header("Location: " . BASE_URL . "/admin/users/show/" . $id);
+        exit;
+    }
+
+    public function resetMfa($id)
+    {
+        Csrf::verify();
+        $this->adminGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: " . BASE_URL . "/admin/users");
+            exit;
+        }
+
+        $userModel->resetMfa($id);
+
+        $_SESSION['success'] = "MFA authenticator reset successfully for " . htmlspecialchars($user['full_name']) . ".";
+        header("Location: " . BASE_URL . "/admin/users/show/" . $id);
+        exit;
+    }
+
+    public function changePassword($id)
+    {
+        Csrf::verify();
+        $this->adminGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            header("Location: " . BASE_URL . "/admin/users");
+            exit;
+        }
+
+        $newPassword = trim($_POST['new_password'] ?? '');
+        $confirmPassword = trim($_POST['confirm_password'] ?? '');
+
+        if (empty($newPassword) || strlen($newPassword) < 8) {
+            $_SESSION['error'] = "Password must be at least 8 characters long.";
+            header("Location: " . BASE_URL . "/admin/users/show/" . $id);
+            exit;
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            $_SESSION['error'] = "New password and confirmation password do not match.";
+            header("Location: " . BASE_URL . "/admin/users/show/" . $id);
+            exit;
+        }
+
+        $userModel->updatePassword($id, $newPassword);
+
+        $_SESSION['success'] = "Password changed successfully for " . htmlspecialchars($user['full_name']) . ".";
+        header("Location: " . BASE_URL . "/admin/users/show/" . $id);
+        exit;
+    }
 }

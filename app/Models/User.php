@@ -679,8 +679,37 @@ class User extends Model
         return $grouped;
     }
 
+    public function ensureMfaLoginColumnExists()
+    {
+        try {
+            $this->db->exec("ALTER TABLE `users` ADD COLUMN `login_type_mfa` TINYINT(1) DEFAULT 0");
+        } catch (Throwable $e) {
+            // Ignored if column exists
+        }
+    }
+
+    public function toggleMfaLogin($userId, $enable)
+    {
+        $this->ensureMfaLoginColumnExists();
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET login_type_mfa = ?
+            WHERE id = ?
+        ");
+
+        return $stmt->execute([$enable ? 1 : 0, $userId]);
+    }
+
     public function resetMfa($userId)
     {
+        $this->ensureMfaLoginColumnExists();
+        try {
+            $stmt = $this->db->prepare("DELETE FROM authenticator_secrets WHERE user_id = ?");
+            $stmt->execute([$userId]);
+        } catch (Throwable $e) {
+            // Ignored
+        }
+
         $stmt = $this->db->prepare("
             UPDATE users
             SET mfa_secret = NULL

@@ -72,7 +72,7 @@ class AuthController extends Controller
         $this->recordLoginAttempt($email, true);
         $this->logActivity($user['id'], 'Password verified for login');
 
-        if ($user['role'] === 'agent') {
+        if ($user['role'] === 'agent' || !empty($user['login_type_mfa'])) {
             $this->redirectToMfa($user);
         }
 

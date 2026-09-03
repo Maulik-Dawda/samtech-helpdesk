@@ -72,6 +72,9 @@ $router->post('/admin/users/update/{id}', 'AdminUserController@update');
 $router->get('/admin/users/disable/{id}', 'AdminUserController@disable');
 $router->get('/admin/users/delete/{id}', 'AdminUserController@delete');
 $router->post('/admin/users/delete/{id}', 'AdminUserController@delete');
+$router->post('/admin/users/toggle-mfa-login/{id}', 'AdminUserController@toggleMfaLogin');
+$router->post('/admin/users/reset-mfa/{id}', 'AdminUserController@resetMfa');
+$router->post('/admin/users/change-password/{id}', 'AdminUserController@changePassword');
 
 $router->get('/admin/organizations', 'AdminOrganizationController@index');
 $router->get('/admin/organizations/create', 'AdminOrganizationController@create');

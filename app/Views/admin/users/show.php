@@ -34,6 +34,7 @@ $isAdminAgent = !empty($user['is_admin_agent']);
 $isOrganizationAdmin = !empty($user['is_organization_admin']);
 $isEmailVerified = !empty($user['is_email_verified']);
 $isActive = !empty($user['is_active']);
+$isMfaLogin = !empty($user['login_type_mfa']);
 
 $roleLabel = match ($role) {
     'admin' => 'Administrator',
@@ -291,9 +292,24 @@ function getProfileTicketPriorityClass(string $priority): string
                 </div>
 
 
-                <?php if ($role !== 'admin'): ?>
+                <div class="d-flex flex-wrap gap-2">
 
-                    <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn <?= $isMfaLogin ? 'btn-outline-warning' : 'btn-outline-primary' ?>" data-bs-toggle="modal" data-bs-target="#toggleMfaLoginModal">
+                        <i class="bi bi-shield-lock-fill me-1"></i>
+                        <?= $isMfaLogin ? 'Disable MFA Login (Use OTP)' : 'Allow Login with MFA' ?>
+                    </button>
+
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changeUserPasswordModal">
+                        <i class="bi bi-key-fill me-1"></i>
+                        Change Password
+                    </button>
+
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetUserMfaModal">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Reset MFA
+                    </button>
+
+                    <?php if ($role !== 'admin'): ?>
 
                         <a
                             href="<?= BASE_URL ?>/admin/users/edit/<?= $userId; ?>"
@@ -320,9 +336,9 @@ function getProfileTicketPriorityClass(string $priority): string
 
                         <?php endif; ?>
 
-                    </div>
+                    <?php endif; ?>
 
-                <?php endif; ?>
+                </div>
 
             </div>
 
@@ -1196,6 +1212,92 @@ function getProfileTicketPriorityClass(string $priority): string
 
     </div>
 
+</div>
+
+<!-- Toggle MFA Login Confirmation Modal -->
+<div class="modal fade" id="toggleMfaLoginModal" tabindex="-1" aria-labelledby="toggleMfaLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark" id="toggleMfaLoginModalLabel">
+                    <i class="bi bi-shield-lock-fill text-primary me-2"></i>
+                    Confirm MFA Login Setting
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="mb-0 fs-6 text-secondary">
+                    Are you sure you want to give this feature to user? User will get MFA verify feature instead of login with OTP.
+                </p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 gap-2">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                <form action="<?= BASE_URL ?>/admin/users/toggle-mfa-login/<?= $userId; ?>" method="POST" class="d-inline">
+                    <?= Csrf::field(); ?>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change User Password Modal -->
+<div class="modal fade" id="changeUserPasswordModal" tabindex="-1" aria-labelledby="changeUserPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <form action="<?= BASE_URL ?>/admin/users/change-password/<?= $userId; ?>" method="POST">
+                <?= Csrf::field(); ?>
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="changeUserPasswordModalLabel">
+                        <i class="bi bi-key-fill text-secondary me-2"></i>
+                        Change User Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">New Password <span class="text-danger">*</span></label>
+                        <input type="password" name="new_password" class="form-control" placeholder="Enter new password (min 8 chars)" required minlength="8">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold small text-muted">Confirm New Password <span class="text-danger">*</span></label>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Confirm new password" required minlength="8">
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0 gap-2">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reset User MFA Modal -->
+<div class="modal fade" id="resetUserMfaModal" tabindex="-1" aria-labelledby="resetUserMfaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark" id="resetUserMfaModalLabel">
+                    <i class="bi bi-arrow-counterclockwise text-danger me-2"></i>
+                    Reset User MFA
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="mb-0 fs-6 text-secondary">
+                    Are you sure you want to reset MFA for this user? This will clear their registered authenticator secret.
+                </p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 gap-2">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                <form action="<?= BASE_URL ?>/admin/users/reset-mfa/<?= $userId; ?>" method="POST" class="d-inline">
+                    <?= Csrf::field(); ?>
+                    <button type="submit" class="btn btn-danger px-4 fw-bold">Reset MFA</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>
