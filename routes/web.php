@@ -112,6 +112,11 @@ $router->get('/admin/organizations/show/{id}', 'AdminOrganizationController@show
 $router->get('/organizations/edit/{id}', 'AdminOrganizationController@edit');
 $router->post('/organizations/update/{id}', 'AdminOrganizationController@update');
 
+$router->post('/organizations/disable/{id}', 'AdminOrganizationController@disable');
+$router->post('/admin/organizations/disable/{id}', 'AdminOrganizationController@disable');
+$router->post('/organizations/enable/{id}', 'AdminOrganizationController@enable');
+$router->post('/admin/organizations/enable/{id}', 'AdminOrganizationController@enable');
+
 $router->get('/agent/tickets/create', 'AgentTicketController@create');
 $router->post('/agent/tickets/store', 'AgentTicketController@store');
 

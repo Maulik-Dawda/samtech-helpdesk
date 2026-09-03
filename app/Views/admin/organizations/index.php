@@ -519,6 +519,86 @@ $totalUserCapacity = array_sum(array_map(
 
                                             </a>
 
+                                            <?php if ($isActive): ?>
+                                                <button
+                                                    type="button"
+                                                    class="table-action-btn border-0 bg-transparent text-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#disableOrgModal_<?= $organizationId; ?>"
+                                                    title="Disable Organization"
+                                                    aria-label="Disable Organization">
+                                                    <i class="bi bi-building-x"></i>
+                                                </button>
+                                            <?php else: ?>
+                                                <button
+                                                    type="button"
+                                                    class="table-action-btn border-0 bg-transparent text-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#enableOrgModal_<?= $organizationId; ?>"
+                                                    title="Enable Organization"
+                                                    aria-label="Enable Organization">
+                                                    <i class="bi bi-building-check"></i>
+                                                </button>
+                                            <?php endif; ?>
+
+                                        </div>
+
+                                        <!-- Disable Organization Modal -->
+                                        <div class="modal fade text-start" id="disableOrgModal_<?= $organizationId; ?>" tabindex="-1" aria-labelledby="disableOrgModalLabel_<?= $organizationId; ?>" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content rounded-4 border-0 shadow">
+                                                    <div class="modal-header border-bottom-0 pb-0">
+                                                        <h5 class="modal-title fw-bold text-dark" id="disableOrgModalLabel_<?= $organizationId; ?>">
+                                                            <i class="bi bi-building-x text-danger me-2"></i>
+                                                            Disable Organization
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body py-3">
+                                                        <p class="mb-3 fs-6 text-secondary">
+                                                            Are you sure you want to disable organization <strong class="text-dark"><?= htmlspecialchars($organizationName); ?></strong>?
+                                                        </p>
+                                                        <div class="alert alert-warning bg-warning-subtle text-dark border-0 p-3 rounded-3 small mb-0">
+                                                            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                                                            <strong>Notice:</strong> All users belonging to this organization will be disabled. No data will be deleted from the system.
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-top-0 pt-0 gap-2">
+                                                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="<?= BASE_URL ?>/admin/organizations/disable/<?= $organizationId; ?>" method="POST" class="d-inline">
+                                                            <?= Csrf::field(); ?>
+                                                            <button type="submit" class="btn btn-danger px-4 fw-bold">Disable Organization</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Enable Organization Modal -->
+                                        <div class="modal fade text-start" id="enableOrgModal_<?= $organizationId; ?>" tabindex="-1" aria-labelledby="enableOrgModalLabel_<?= $organizationId; ?>" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content rounded-4 border-0 shadow">
+                                                    <div class="modal-header border-bottom-0 pb-0">
+                                                        <h5 class="modal-title fw-bold text-dark" id="enableOrgModalLabel_<?= $organizationId; ?>">
+                                                            <i class="bi bi-building-check text-success me-2"></i>
+                                                            Enable Organization
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body py-3">
+                                                        <p class="mb-0 fs-6 text-secondary">
+                                                            Are you sure you want to enable organization <strong class="text-dark"><?= htmlspecialchars($organizationName); ?></strong> and restore access for its users?
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer border-top-0 pt-0 gap-2">
+                                                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="<?= BASE_URL ?>/admin/organizations/enable/<?= $organizationId; ?>" method="POST" class="d-inline">
+                                                            <?= Csrf::field(); ?>
+                                                            <button type="submit" class="btn btn-success px-4 fw-bold">Enable Organization</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </td>

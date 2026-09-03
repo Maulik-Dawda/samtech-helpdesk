@@ -227,4 +227,50 @@ class AdminOrganizationController extends Controller
             'limit' => $limit
         ]);
     }
+
+    public function disable($id)
+    {
+        Csrf::verify();
+        $this->staffGuard();
+
+        $organizationModel = new Organization();
+        $organization = $organizationModel->findById($id);
+
+        if (!$organization) {
+            $_SESSION['error'] = "Organization not found.";
+            header("Location: " . BASE_URL . "/organizations");
+            exit;
+        }
+
+        $organizationModel->disableOrganizationAndUsers($id);
+
+        $_SESSION['success'] = "Organization '" . htmlspecialchars($organization['name']) . "' and all its associated users have been disabled. No data was deleted.";
+
+        $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/organizations");
+        header("Location: " . $redirect);
+        exit;
+    }
+
+    public function enable($id)
+    {
+        Csrf::verify();
+        $this->staffGuard();
+
+        $organizationModel = new Organization();
+        $organization = $organizationModel->findById($id);
+
+        if (!$organization) {
+            $_SESSION['error'] = "Organization not found.";
+            header("Location: " . BASE_URL . "/organizations");
+            exit;
+        }
+
+        $organizationModel->enableOrganizationAndUsers($id);
+
+        $_SESSION['success'] = "Organization '" . htmlspecialchars($organization['name']) . "' and all its associated users have been re-enabled.";
+
+        $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/organizations");
+        header("Location: " . $redirect);
+        exit;
+    }
 }

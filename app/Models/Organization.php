@@ -142,16 +142,60 @@ class Organization extends Model
         return $stmt->fetch() ? true : false;
     }
     public function countAll()
-{
-    $stmt = $this->db->prepare("
-        SELECT COUNT(*) AS total
-        FROM organizations
-    ");
+    {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) AS total
+            FROM organizations
+        ");
 
-    $stmt->execute();
+        $stmt->execute();
 
-    $result = $stmt->fetch();
+        $result = $stmt->fetch();
 
-    return (int)$result['total'];
-}
+        return (int)$result['total'];
+    }
+
+    public function disableOrganizationAndUsers($id)
+    {
+        $id = (int)$id;
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("UPDATE organizations SET is_active = 0 WHERE id = ?");
+            $stmt->execute([$id]);
+
+            $stmt2 = $this->db->prepare("UPDATE users SET is_active = 0 WHERE organization_id = ? AND role != 'admin'");
+            $stmt2->execute([$id]);
+
+            $this->db->commit();
+            return true;
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Error disabling organization {$id}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function enableOrganizationAndUsers($id)
+    {
+        $id = (int)$id;
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("UPDATE organizations SET is_active = 1 WHERE id = ?");
+            $stmt->execute([$id]);
+
+            $stmt2 = $this->db->prepare("UPDATE users SET is_active = 1 WHERE organization_id = ? AND role != 'admin'");
+            $stmt2->execute([$id]);
+
+            $this->db->commit();
+            return true;
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Error enabling organization {$id}: " . $e->getMessage());
+            return false;
+        }
+    }
 }
