@@ -823,42 +823,23 @@ function getAgentReplyRoleClass(string $role): string
 
                             </div>
 
-                            <div class="mb-4 attachment-upload-group">
+                            <div class="mb-4">
 
                                 <label
-                                    for="reply-attachments-picker"
+                                    for="reply-attachments"
                                     class="form-label">
 
                                     Attachments
 
                                 </label>
 
-                                <div class="d-flex gap-2 align-items-center mb-2">
-
-                                    <input
-                                        type="file"
-                                        id="reply-attachments-picker"
-                                        class="form-control attachment-picker-input"
-                                        multiple
-                                        accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary text-nowrap btn-upload-attachment">
-
-                                        <i class="bi bi-cloud-upload-fill me-1"></i>
-
-                                        Upload File
-
-                                    </button>
-
-                                </div>
-
                                 <input
                                     type="file"
+                                    id="reply-attachments"
                                     name="attachments[]"
-                                    class="form-control attachment-hidden-input d-none"
-                                    multiple>
+                                    class="form-control"
+                                    multiple
+                                    accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
 
                                 <div class="form-text mt-2">
 
@@ -866,8 +847,6 @@ function getAgentReplyRoleClass(string $role): string
                                     Multiple files allowed, 5 MB per file.
 
                                 </div>
-
-                                <div class="attachment-staged-list d-flex flex-column gap-2 mt-3"></div>
 
                             </div>
 
