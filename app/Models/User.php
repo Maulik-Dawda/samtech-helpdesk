@@ -529,15 +529,13 @@ class User extends Model
     public function getActivityLogs($userId, $limit = 30)
     {
         $stmt = $this->db->prepare("
-        SELECT *
-
+        SELECT activity_logs.*
         FROM activity_logs
-
-        WHERE user_id=?
-
-        ORDER BY created_at DESC
-
-        LIMIT $limit
+        LEFT JOIN users ON users.id = activity_logs.user_id
+        WHERE activity_logs.user_id = ?
+        AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ORDER BY activity_logs.created_at DESC
+        LIMIT " . (int)$limit . "
     ");
 
         $stmt->execute([$userId]);

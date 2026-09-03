@@ -154,6 +154,7 @@ class Ticket extends Model
             LEFT JOIN organizations ON organizations.id = tickets.organization_id
             LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
             WHERE 1=1
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
         ";
         $params = [];
 
@@ -195,6 +196,7 @@ class Ticket extends Model
             LEFT JOIN organizations ON organizations.id = tickets.organization_id
             LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
             WHERE 1=1
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
         ";
         $params = [];
 
@@ -343,6 +345,7 @@ class Ticket extends Model
         LEFT JOIN users AS closed_agent ON closed_agent.id = tickets.closed_by_agent_id
         LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE 1=1
+        AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
     ";
 
         $params = [];
@@ -439,13 +442,15 @@ class Ticket extends Model
             SUM(status = 'resolved') AS resolved_count,
             SUM(status = 'closed') AS closed_count
         FROM tickets
+        LEFT JOIN users ON users.id = tickets.user_id
         WHERE 1=1
+        AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
     ";
 
         $params = [];
 
         if ($organizationId) {
-            $sql .= " AND organization_id = ?";
+            $sql .= " AND tickets.organization_id = ?";
             $params[] = $organizationId;
         }
 
@@ -466,6 +471,7 @@ class Ticket extends Model
         LEFT JOIN users ON users.id = tickets.user_id
         LEFT JOIN organizations ON organizations.id = tickets.organization_id
         WHERE 1=1
+        AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
     ";
 
         $params = [];

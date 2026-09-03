@@ -29,6 +29,7 @@ class ActivityLog extends Model
                 users.role
             FROM activity_logs
             LEFT JOIN users ON users.id = activity_logs.user_id
+            WHERE (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
             ORDER BY activity_logs.created_at DESC
             LIMIT " . (int)$limit
         );
@@ -48,6 +49,7 @@ class ActivityLog extends Model
             FROM activity_logs
             LEFT JOIN users ON users.id = activity_logs.user_id
             WHERE activity_logs.user_id = ?
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
             ORDER BY activity_logs.created_at DESC
             LIMIT " . (int)$limit
         );
@@ -63,6 +65,7 @@ class ActivityLog extends Model
             FROM activity_logs
             LEFT JOIN users ON users.id = activity_logs.user_id
             WHERE 1=1
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
         ";
 
         if (!empty($filters['user_id'])) {

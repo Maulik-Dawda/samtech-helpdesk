@@ -40,6 +40,7 @@ class TicketReply extends Model
             FROM ticket_replies
             JOIN users ON users.id = ticket_replies.user_id
             WHERE ticket_replies.ticket_id = ?
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
             ORDER BY ticket_replies.created_at ASC
         ");
 
