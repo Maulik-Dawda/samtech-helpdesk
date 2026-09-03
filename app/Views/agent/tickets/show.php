@@ -1174,13 +1174,19 @@ function getAgentReplyRoleClass(string $role): string
                                         </option>
                                     <?php endif; ?>
 
-                                    <?php if ($status !== 'closed'): ?>
+                                    <?php if ($status !== 'closed' && ($_SESSION['auth_user_role'] ?? '') === 'admin'): ?>
                                         <option value="closed">
                                             Closed
                                         </option>
                                     <?php endif; ?>
 
                                 </select>
+
+                                <?php if (($_SESSION['auth_user_role'] ?? '') !== 'admin'): ?>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="bi bi-info-circle me-1"></i> Note: Only administrators can close tickets.
+                                    </small>
+                                <?php endif; ?>
 
                             </div>
 

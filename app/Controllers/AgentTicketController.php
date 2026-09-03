@@ -186,6 +186,13 @@ class AgentTicketController extends Controller
         $status = $_POST['status'] ?? '';
         $resolutionMessage = trim($_POST['resolution_message'] ?? '');
 
+        $role = $_SESSION['auth_user_role'] ?? '';
+        if ($status === 'closed' && $role !== 'admin') {
+            $_SESSION['error'] = "Only administrators can close tickets.";
+            header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+            exit;
+        }
+
         $allowedStatuses = [
             'open',
             'in_progress',
