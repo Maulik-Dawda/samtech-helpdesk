@@ -60,10 +60,6 @@ $router->get('/organization-users', 'OrganizationUserController@index');
 $router->get('/organization-users/create', 'OrganizationUserController@create');
 $router->post('/organization-users/create','OrganizationUserController@store');
 
-$router->get('/admin/permissions', 'AdminPermissionController@index');
-$router->get('/admin/permissions/edit/{id}', 'AdminPermissionController@edit');
-$router->post('/admin/permissions/update/{id}', 'AdminPermissionController@update');
-
 $router->get('/admin/users', 'AdminUserController@index');
 $router->get('/admin/users/create', 'AdminUserController@create');
 $router->post('/admin/users/create', 'AdminUserController@store');

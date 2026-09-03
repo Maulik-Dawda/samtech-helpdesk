@@ -263,18 +263,6 @@ if ($isAdmin) {
 
                 <?php endif; ?>
 
-                <?php if ($isAdmin): ?>
-
-                    <a
-                        class="sidebar-link <?= sidebarActive('/admin/permissions'); ?>"
-                        href="<?= BASE_URL ?>/admin/permissions"
-                    >
-                        <i class="bi bi-shield-lock-fill sidebar-link-icon"></i>
-                        <span class="sidebar-link-text">Permissions</span>
-                    </a>
-
-                <?php endif; ?>
-
             </div>
 
         <?php endif; ?>
