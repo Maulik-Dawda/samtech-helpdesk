@@ -419,28 +419,38 @@ $organizations = is_array($organizations ?? null)
 const orgUsersMap = <?= json_encode($orgUsersGrouped ?? []); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
-    const orgSelect = document.getElementById('organizationSelect');
-    const userSelect = document.getElementById('orgUserSelect');
+    // Initialize Select2 on form selects
+    if (window.jQuery && $.fn.select2) {
+        $('.form-select').select2({
+            width: '100%'
+        });
+    }
+
+    const orgSelect = $('#organizationSelect');
+    const userSelect = $('#orgUserSelect');
 
     function updateOrgUsers() {
-        if (!orgSelect || !userSelect) return;
+        if (!orgSelect.length || !userSelect.length) return;
 
-        const selectedOrgId = orgSelect.value;
-        userSelect.innerHTML = '<option value="">Select User (Defaults to Organization Name)</option>';
+        const selectedOrgId = orgSelect.val();
+        userSelect.empty();
+        userSelect.append('<option value="">Select User (Defaults to Organization Name)</option>');
 
         if (selectedOrgId && orgUsersMap[selectedOrgId]) {
             const users = orgUsersMap[selectedOrgId];
             users.forEach(function(user) {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.textContent = user.full_name + ' (' + user.email + ')';
-                userSelect.appendChild(option);
+                const option = new Option(user.full_name + ' (' + user.email + ')', user.id, false, false);
+                userSelect.append(option);
             });
+        }
+
+        if (window.jQuery && $.fn.select2) {
+            userSelect.trigger('change.select2');
         }
     }
 
-    if (orgSelect) {
-        orgSelect.addEventListener('change', updateOrgUsers);
+    if (orgSelect.length) {
+        orgSelect.on('change', updateOrgUsers);
         updateOrgUsers();
     }
 });

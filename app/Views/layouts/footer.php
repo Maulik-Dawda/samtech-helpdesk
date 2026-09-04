@@ -204,6 +204,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.querySelectorAll('.attachment-upload-group').forEach(initAttachmentGroup);
+
+    // Global Select2 Auto-Initializer for .form-select
+    if (window.jQuery && $.fn.select2) {
+        $('.form-select:not(.no-select2)').each(function() {
+            if (!$(this).data('select2')) {
+                $(this).select2({
+                    width: '100%'
+                });
+            }
+        });
+    }
 });
 </script>
 
