@@ -500,7 +500,7 @@ function agentDashboardPriorityClass(string $priority): string
 
                             <tr>
                                 <th>Ticket</th>
-                                <th>Organization</th>
+                                <th>Subject</th>
                                 <th>Customer</th>
                                 <th>Assigned Agent</th>
                                 <th>Priority</th>
@@ -528,46 +528,27 @@ function agentDashboardPriorityClass(string $priority): string
                                 <tr>
 
                                     <td data-label="Ticket">
-
                                         <div>
-
                                             <a
                                                 href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>"
                                                 class="fw-bold text-decoration-none">
-
                                                 <?= htmlspecialchars(
                                                     $ticket['ticket_no'] ?? '-'
                                                 ); ?>
-
                                             </a>
 
-                                            <?php if (!empty($ticket['subject'])): ?>
-
-                                                <div class="text-muted small mt-1">
-
-                                                    <?= htmlspecialchars(
-                                                        mb_strimwidth(
-                                                            $ticket['subject'],
-                                                            0,
-                                                            45,
-                                                            '...'
-                                                        )
-                                                    ); ?>
-
+                                            <?php if (!empty($ticket['organization_name'])): ?>
+                                                <div class="text-muted small mt-1 text-truncate" style="max-width: 180px;" title="<?= htmlspecialchars($ticket['organization_name']); ?>">
+                                                    <?= htmlspecialchars($ticket['organization_name']); ?>
                                                 </div>
-
                                             <?php endif; ?>
-
                                         </div>
-
                                     </td>
 
-                                    <td data-label="Organization">
-
-                                        <?= htmlspecialchars(
-                                            $ticket['organization_name'] ?? '-'
-                                        ); ?>
-
+                                    <td data-label="Subject">
+                                        <span class="d-inline-block text-truncate fw-medium text-dark" style="max-width: 200px;" title="<?= htmlspecialchars($ticket['subject'] ?? ''); ?>">
+                                            <?= htmlspecialchars($ticket['subject'] ?? 'Untitled Ticket'); ?>
+                                        </span>
                                     </td>
 
                                     <td data-label="Customer">
