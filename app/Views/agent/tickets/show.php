@@ -179,66 +179,53 @@ function getAgentReplyRoleClass(string $role): string
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-3">
-
-                        <i class="bi bi-ticket-perforated-fill"></i>
-
+                    <div class="app-badge app-badge-primary mb-2">
+                        <i class="bi bi-ticket-perforated-fill me-1"></i>
                         Ticket Details
-
                     </div>
 
-                    <h1 class="page-title">
-                        <?= htmlspecialchars(
-                            $subject !== ''
-                                ? $subject
-                                : 'Untitled Ticket'
-                        ); ?>
-                    </h1>
+                    <div class="d-flex align-items-center flex-wrap gap-2.5 mb-1">
+                        <h1 class="page-title mb-0">
+                            <?= htmlspecialchars(
+                                $subject !== ''
+                                    ? $subject
+                                    : 'Untitled Ticket'
+                            ); ?>
+                        </h1>
+                        <span class="status-badge <?= getAgentShowStatusClass($status); ?> px-3 py-1 fw-semibold">
+                            <i class="bi bi-circle-fill me-1" style="font-size: 7px; vertical-align: middle;"></i>
+                            <?= htmlspecialchars($statusLabel); ?>
+                        </span>
+                    </div>
 
-                    <p class="page-description">
-
-                        <span class="fw-semibold">
+                    <p class="page-description mb-0">
+                        <span class="fw-semibold text-dark">
                             <?= htmlspecialchars(
                                 $ticketNumber !== ''
                                     ? $ticketNumber
                                     : 'Ticket'
                             ); ?>
                         </span>
-
-                        · Review the request, communicate with the customer and
-                        manage the ticket status.
-
+                        · Review the request, communicate with the customer and manage the ticket status.
                     </p>
 
                 </div>
 
                 <div class="page-actions d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
 
-                    <span class="status-badge <?= getAgentShowStatusClass($status); ?>">
-
-                        <?= htmlspecialchars($statusLabel); ?>
-
-                    </span>
-
                     <a
                         href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
                         target="_blank"
-                        class="btn btn-outline-secondary text-nowrap">
-
-                        <i class="bi bi-printer-fill me-1"></i>
-
+                        class="btn-header-print text-nowrap">
+                        <i class="bi bi-printer-fill btn-icon-accent me-1"></i>
                         Print / Download Report
-
                     </a>
 
                     <a
                         href="<?= BASE_URL ?>/agent/tickets"
-                        class="btn btn-light text-nowrap">
-
-                        <i class="bi bi-arrow-left me-2"></i>
-
+                        class="btn-header-back text-nowrap">
+                        <i class="bi bi-arrow-left me-1"></i>
                         Back to Tickets
-
                     </a>
 
                 </div>
