@@ -717,4 +717,136 @@ class Ticket extends Model
 
         return $stmt->fetchAll();
     }
+
+    public function getTicketsByAssignedAgent($agentId, $limit = 15, $offset = 0, $search = '', $status = '', $priority = '')
+    {
+        $sql = "
+            SELECT 
+                tickets.*,
+                COALESCE(users.full_name, organizations.name) AS customer_name,
+                COALESCE(users.email, organizations.email, '') AS customer_email,
+                organizations.name AS organization_name,
+                closed_agent.full_name AS closed_by_agent_name,
+                assigned_agent.full_name AS assigned_agent_name
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            LEFT JOIN users AS closed_agent ON closed_agent.id = tickets.closed_by_agent_id
+            LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
+            WHERE tickets.assigned_agent_id = ?
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ";
+        $params = [(int)$agentId];
+
+        if (!empty($status)) {
+            $sql .= " AND tickets.status = ?";
+            $params[] = $status;
+        }
+
+        if (!empty($priority)) {
+            $sql .= " AND tickets.priority = ?";
+            $params[] = $priority;
+        }
+
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ?
+                OR tickets.subject LIKE ?
+                OR tickets.description LIKE ?
+                OR users.full_name LIKE ?
+                OR organizations.name LIKE ?
+            )";
+            array_push($params, $term, $term, $term, $term, $term);
+        }
+
+        $sql .= " ORDER BY tickets.created_at DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
+
+    public function countTicketsByAssignedAgent($agentId, $search = '', $status = '', $priority = '')
+    {
+        $sql = "
+            SELECT COUNT(*) AS total
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            WHERE tickets.assigned_agent_id = ?
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ";
+        $params = [(int)$agentId];
+
+        if (!empty($status)) {
+            $sql .= " AND tickets.status = ?";
+            $params[] = $status;
+        }
+
+        if (!empty($priority)) {
+            $sql .= " AND tickets.priority = ?";
+            $params[] = $priority;
+        }
+
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ?
+                OR tickets.subject LIKE ?
+                OR tickets.description LIKE ?
+                OR users.full_name LIKE ?
+                OR organizations.name LIKE ?
+            )";
+            array_push($params, $term, $term, $term, $term, $term);
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $res = $stmt->fetch();
+        return (int)($res['total'] ?? 0);
+    }
+
+    public function getAllAgentsTicketCounts()
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                users.id,
+                users.full_name,
+                users.email,
+                users.role,
+                users.is_admin_agent,
+                COUNT(tickets.id) AS total_assigned,
+                SUM(CASE WHEN tickets.status = 'open' THEN 1 ELSE 0 END) AS total_open,
+                SUM(CASE WHEN tickets.status IN ('in_progress', 'in progress') THEN 1 ELSE 0 END) AS total_in_progress,
+                SUM(CASE WHEN tickets.status = 'resolved' THEN 1 ELSE 0 END) AS total_resolved,
+                SUM(CASE WHEN tickets.status = 'closed' THEN 1 ELSE 0 END) AS total_closed
+            FROM users
+            LEFT JOIN tickets ON tickets.assigned_agent_id = users.id
+            WHERE users.role IN ('agent', 'admin')
+            AND users.is_active = 1
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+            GROUP BY users.id, users.full_name, users.email, users.role, users.is_admin_agent
+            ORDER BY total_assigned DESC, users.full_name ASC
+        ");
+
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getUnassignedTicketCount()
+    {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) AS total
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            WHERE (tickets.assigned_agent_id IS NULL OR tickets.assigned_agent_id = 0)
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ");
+
+        $stmt->execute();
+        $res = $stmt->fetch();
+        return (int)($res['total'] ?? 0);
+    }
 }

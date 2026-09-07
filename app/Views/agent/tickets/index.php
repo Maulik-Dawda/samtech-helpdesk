@@ -276,6 +276,47 @@ function getAgentTicketPriorityClass(string $priority): string
     </section>
 
 
+    <?php if (!empty($unassignedCount) && $unassignedCount > 0): ?>
+
+        <div class="alert alert-warning border border-warning-subtle shadow-sm rounded-4 p-3 mb-4 d-flex align-items-center justify-content-between gap-3">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="bg-warning-subtle text-warning-emphasis p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+
+                </div>
+
+                <div>
+
+                    <h6 class="fw-bold text-dark mb-1">
+
+                        Attention Required: <?= $unassignedCount; ?> Unassigned Ticket<?= $unassignedCount > 1 ? 's' : ''; ?>
+
+                    </h6>
+
+                    <p class="text-muted small mb-0">
+
+                        There <?= $unassignedCount === 1 ? 'is' : 'are'; ?> <strong><?= $unassignedCount; ?></strong> ticket<?= $unassignedCount > 1 ? 's' : ''; ?> in the system that <?= $unassignedCount === 1 ? 'has' : 'have'; ?> not been assigned to any support agent yet.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <a href="<?= BASE_URL ?>/agent/tickets/all-assigned" class="btn btn-sm btn-warning text-dark font-weight-bold text-nowrap px-3 rounded-pill">
+
+                <i class="bi bi-people-fill me-1"></i> View All Assigned
+
+            </a>
+
+        </div>
+
+    <?php endif; ?>
+
+
     <!-- =========================================================
          TICKET TABLE
     ========================================================== -->
@@ -492,9 +533,11 @@ function getAgentTicketPriorityClass(string $priority): string
 
                                         <?php else: ?>
 
-                                            <span class="text-muted small">
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill fw-semibold" style="font-size:11.5px;">
 
-                                                Unassigned
+                                                <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+
+                                                Not Assigned Yet
 
                                             </span>
 

@@ -64,28 +64,14 @@
                 <div class="attachment-staged-list d-flex flex-column gap-2 mt-2"></div>
             </div>
 
-            <?php $agents = is_array($agents ?? null) ? $agents : []; ?>
-
             <div class="row mb-4">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label class="form-label">Priority</label>
                     <select name="priority" class="form-select" required>
                         <option value="low">Low</option>
                         <option value="medium" selected>Medium</option>
                         <option value="high">High</option>
                         <option value="urgent">Urgent</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Assign Agent <span class="text-danger">*</span></label>
-                    <select name="assigned_agent_id" class="form-select" required>
-                        <option value="">Select Agent *</option>
-                        <?php foreach ($agents as $agentItem): ?>
-                            <option value="<?= $agentItem['id']; ?>">
-                                <?= htmlspecialchars($agentItem['full_name']); ?> (<?= htmlspecialchars($agentItem['email']); ?>)
-                            </option>
-                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>

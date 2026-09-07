@@ -53,6 +53,9 @@ $router->post('/tickets/reply/{id}', 'TicketController@storeReply');
 $router->post('/tickets/reply/edit/{id}', 'TicketController@editReply');
 
 $router->get('/agent/tickets', 'AgentTicketController@index');
+$router->get('/agent/tickets/assigned-to-you', 'AgentTicketController@assignedToYou');
+$router->get('/agent/tickets/all-assigned', 'AgentTicketController@allAssigned');
+$router->get('/agent/tickets/assigned-agent/{id}', 'AgentTicketController@agentAssignedTickets');
 $router->get('/agent/tickets/show/{id}', 'AgentTicketController@show');
 $router->post('/agent/tickets/reply/{id}', 'AgentTicketController@reply');
 $router->post('/agent/tickets/reply/edit/{id}', 'AgentTicketController@editReply');

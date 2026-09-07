@@ -84,7 +84,12 @@ if (!function_exists('sidebarActive')) {
             return $currentPath === $targetPath ? 'active' : '';
         }
 
-        if ($targetPath === '/agent/tickets' && str_starts_with($currentPath, '/agent/tickets/create')) {
+        if ($targetPath === '/agent/tickets' && (
+            str_starts_with($currentPath, '/agent/tickets/create') ||
+            str_starts_with($currentPath, '/agent/tickets/assigned-to-you') ||
+            str_starts_with($currentPath, '/agent/tickets/all-assigned') ||
+            str_starts_with($currentPath, '/agent/tickets/assigned-agent')
+        )) {
             return '';
         }
 
@@ -219,16 +224,28 @@ if ($isAdmin) {
                     <span class="sidebar-link-text">Create Ticket</span>
                 </a>
 
-            <?php endif; ?>
-
-            <?php if ($isAgent || $isAdmin): ?>
-
                 <a
                     class="sidebar-link <?= sidebarActive('/agent/tickets'); ?>"
                     href="<?= BASE_URL ?>/agent/tickets"
                 >
                     <i class="bi bi-ticket-detailed-fill sidebar-link-icon"></i>
                     <span class="sidebar-link-text">All Tickets</span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/agent/tickets/assigned-to-you'); ?>"
+                    href="<?= BASE_URL ?>/agent/tickets/assigned-to-you"
+                >
+                    <i class="bi bi-person-workspace sidebar-link-icon"></i>
+                    <span class="sidebar-link-text">Tickets Assigned to You</span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/agent/tickets/all-assigned'); ?>"
+                    href="<?= BASE_URL ?>/agent/tickets/all-assigned"
+                >
+                    <i class="bi bi-people-fill sidebar-link-icon"></i>
+                    <span class="sidebar-link-text">All Assigned Tickets</span>
                 </a>
 
             <?php endif; ?>

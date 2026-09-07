@@ -40,13 +40,141 @@ class AgentTicketController extends Controller
             $search
         );
 
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
+
         $this->view('agent/tickets/index', [
             'tickets' => $tickets,
             'page' => $page,
             'perPage' => $perPage,
             'totalRecords' => $totalRecords,
             'totalPages' => $totalPages,
-            'search' => $search
+            'search' => $search,
+            'unassignedCount' => $unassignedCount
+        ]);
+    }
+
+    public function assignedToYou()
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check(['admin', 'agent']);
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $agentId = (int)($_SESSION['auth_user_id'] ?? 0);
+
+        $search = trim($_GET['search'] ?? $_GET['q'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+        $priority = trim($_GET['priority'] ?? '');
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $ticketModel = new Ticket();
+
+        $totalRecords = $ticketModel->countTicketsByAssignedAgent($agentId, $search, $status, $priority);
+        $totalPages = max(1, ceil($totalRecords / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $tickets = $ticketModel->getTicketsByAssignedAgent(
+            $agentId,
+            $perPage,
+            $offset,
+            $search,
+            $status,
+            $priority
+        );
+
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
+
+        $this->view('agent/tickets/assigned_to_you', [
+            'tickets' => $tickets,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages,
+            'search' => $search,
+            'status' => $status,
+            'priority' => $priority,
+            'unassignedCount' => $unassignedCount
+        ]);
+    }
+
+    public function allAssigned()
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check(['admin', 'agent']);
+
+        $ticketModel = new Ticket();
+        $agentsWithCounts = $ticketModel->getAllAgentsTicketCounts();
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
+
+        $this->view('agent/tickets/all_assigned', [
+            'agentsWithCounts' => $agentsWithCounts,
+            'unassignedCount' => $unassignedCount
+        ]);
+    }
+
+    public function agentAssignedTickets($agentId)
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check(['admin', 'agent']);
+
+        $userModel = new User();
+        $targetAgent = $userModel->findById($agentId);
+
+        if (!$targetAgent || !in_array($targetAgent['role'], ['agent', 'admin'])) {
+            $_SESSION['error'] = "Agent not found.";
+            header("Location: " . BASE_URL . "/agent/tickets/all-assigned");
+            exit;
+        }
+
+        $search = trim($_GET['search'] ?? $_GET['q'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+        $priority = trim($_GET['priority'] ?? '');
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $ticketModel = new Ticket();
+
+        $totalRecords = $ticketModel->countTicketsByAssignedAgent($agentId, $search, $status, $priority);
+        $totalPages = max(1, ceil($totalRecords / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $tickets = $ticketModel->getTicketsByAssignedAgent(
+            $agentId,
+            $perPage,
+            $offset,
+            $search,
+            $status,
+            $priority
+        );
+
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
+
+        $this->view('agent/tickets/agent_assigned_tickets', [
+            'targetAgent' => $targetAgent,
+            'tickets' => $tickets,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages,
+            'search' => $search,
+            'status' => $status,
+            'priority' => $priority,
+            'unassignedCount' => $unassignedCount
         ]);
     }
 
