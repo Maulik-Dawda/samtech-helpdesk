@@ -319,6 +319,22 @@ class User extends Model
         return $stmt->fetchAll();
     }
 
+    public function getAllAssignableAgents()
+    {
+        $stmt = $this->db->prepare("
+            SELECT id, full_name, email, role, is_admin_agent
+            FROM users
+            WHERE role IN ('agent', 'admin')
+            AND is_active = 1
+            AND (email IS NULL OR email != 'maulik@septixtechnologies.com')
+            ORDER BY full_name ASC
+        ");
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
     public function getNormalAgents()
     {
         $stmt = $this->db->prepare("

@@ -356,6 +356,41 @@ function getAgentReplyRoleClass(string $role): string
 
             </div>
 
+
+            <div class="metric-card">
+
+                <div class="metric-card-header">
+
+                    <div class="metric-card-icon">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+
+                </div>
+
+                <div class="metric-card-label">
+                    Assigned Agent
+                </div>
+
+                <div class="metric-card-value text-truncate" style="font-size: 13px; margin-top: 2px;" title="<?= htmlspecialchars(!empty($ticket['assigned_agent_name']) ? $ticket['assigned_agent_name'] : 'Not Assigned Yet'); ?>">
+                    <?= htmlspecialchars(!empty($ticket['assigned_agent_name']) ? $ticket['assigned_agent_name'] : 'Not Assigned Yet'); ?>
+                </div>
+
+                <div class="metric-card-meta mt-1">
+                    <form method="POST" action="<?= BASE_URL ?>/agent/tickets/assign/<?= $ticketId; ?>" class="w-100">
+                        <?= Csrf::field(); ?>
+                        <select name="assigned_agent_id" class="form-select form-select-sm py-0 px-2 border-secondary-subtle" style="font-size: 11px; height: 26px;" onchange="this.form.submit()" aria-label="Select Agent">
+                            <option value="">-- Select Agent --</option>
+                            <?php foreach ($assignableAgents as $agentOpt): ?>
+                                <option value="<?= $agentOpt['id']; ?>" <?= ((int)($ticket['assigned_agent_id'] ?? 0) === (int)$agentOpt['id']) ? 'selected' : ''; ?>>
+                                    <?= htmlspecialchars($agentOpt['full_name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
+                </div>
+
+            </div>
+
         </div>
 
     </section>

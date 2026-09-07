@@ -281,6 +281,19 @@ class Ticket extends Model
             $ticketId
         ]);
     }
+
+    public function updateAssignedAgent($ticketId, $agentId)
+    {
+        $agentId = !empty($agentId) ? (int)$agentId : null;
+
+        $stmt = $this->db->prepare("
+            UPDATE tickets
+            SET assigned_agent_id = ?
+            WHERE id = ?
+        ");
+
+        return $stmt->execute([$agentId, (int)$ticketId]);
+    }
     public function getOrganizationTickets($organizationId)
     {
         $stmt = $this->db->prepare("

@@ -521,27 +521,43 @@ function getAgentTicketPriorityClass(string $priority): string
 
                                     <td data-label="Assigned Agent">
 
-                                        <?php if ($assignedAgentName !== ''): ?>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
 
-                                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
+                                            <?php if ($assignedAgentName !== ''): ?>
 
-                                                <i class="bi bi-person-badge me-1"></i>
+                                                <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:600;">
 
-                                                <?= htmlspecialchars($assignedAgentName); ?>
+                                                    <i class="bi bi-person-badge me-1"></i>
 
-                                            </span>
+                                                    <?= htmlspecialchars($assignedAgentName); ?>
 
-                                        <?php else: ?>
+                                                </span>
 
-                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill fw-semibold" style="font-size:11.5px;">
+                                            <?php else: ?>
 
-                                                <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill fw-semibold" style="font-size:11px;">
 
-                                                Not Assigned Yet
+                                                    <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
 
-                                            </span>
+                                                    Not Assigned Yet
 
-                                        <?php endif; ?>
+                                                </span>
+
+                                            <?php endif; ?>
+
+                                            <form method="POST" action="<?= BASE_URL ?>/agent/tickets/assign/<?= $ticketId; ?>" class="d-inline-block">
+                                                <?= Csrf::field(); ?>
+                                                <select name="assigned_agent_id" class="form-select form-select-sm py-0 px-2 border-secondary-subtle" style="font-size:11px; height:26px; width: auto; max-width: 140px;" onchange="this.form.submit()" title="Assign Agent" aria-label="Assign Agent">
+                                                    <option value="">-- Assign --</option>
+                                                    <?php foreach ($assignableAgents as $a): ?>
+                                                        <option value="<?= $a['id']; ?>" <?= ((int)($ticket['assigned_agent_id'] ?? 0) === (int)$a['id']) ? 'selected' : ''; ?>>
+                                                            <?= htmlspecialchars($a['full_name']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </form>
+
+                                        </div>
 
                                     </td>
 

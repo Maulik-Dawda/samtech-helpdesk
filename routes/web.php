@@ -60,6 +60,7 @@ $router->get('/agent/tickets/show/{id}', 'AgentTicketController@show');
 $router->post('/agent/tickets/reply/{id}', 'AgentTicketController@reply');
 $router->post('/agent/tickets/reply/edit/{id}', 'AgentTicketController@editReply');
 $router->post('/agent/tickets/status/{id}', 'AgentTicketController@updateStatus');
+$router->post('/agent/tickets/assign/{id}', 'AgentTicketController@updateAssignedAgent');
 
 $router->get('/organization-users', 'OrganizationUserController@index');
 $router->get('/organization-users/create', 'OrganizationUserController@create');

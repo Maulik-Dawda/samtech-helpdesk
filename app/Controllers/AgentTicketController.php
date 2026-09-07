@@ -42,6 +42,9 @@ class AgentTicketController extends Controller
 
         $unassignedCount = $ticketModel->getUnassignedTicketCount();
 
+        $userModel = new User();
+        $assignableAgents = $userModel->getAllAssignableAgents();
+
         $this->view('agent/tickets/index', [
             'tickets' => $tickets,
             'page' => $page,
@@ -49,7 +52,8 @@ class AgentTicketController extends Controller
             'totalRecords' => $totalRecords,
             'totalPages' => $totalPages,
             'search' => $search,
-            'unassignedCount' => $unassignedCount
+            'unassignedCount' => $unassignedCount,
+            'assignableAgents' => $assignableAgents
         ]);
     }
 
@@ -93,6 +97,9 @@ class AgentTicketController extends Controller
 
         $unassignedCount = $ticketModel->getUnassignedTicketCount();
 
+        $userModel = new User();
+        $assignableAgents = $userModel->getAllAssignableAgents();
+
         $this->view('agent/tickets/assigned_to_you', [
             'tickets' => $tickets,
             'page' => $page,
@@ -102,7 +109,8 @@ class AgentTicketController extends Controller
             'search' => $search,
             'status' => $status,
             'priority' => $priority,
-            'unassignedCount' => $unassignedCount
+            'unassignedCount' => $unassignedCount,
+            'assignableAgents' => $assignableAgents
         ]);
     }
 
@@ -163,6 +171,7 @@ class AgentTicketController extends Controller
         );
 
         $unassignedCount = $ticketModel->getUnassignedTicketCount();
+        $assignableAgents = $userModel->getAllAssignableAgents();
 
         $this->view('agent/tickets/agent_assigned_tickets', [
             'targetAgent' => $targetAgent,
@@ -174,7 +183,8 @@ class AgentTicketController extends Controller
             'search' => $search,
             'status' => $status,
             'priority' => $priority,
-            'unassignedCount' => $unassignedCount
+            'unassignedCount' => $unassignedCount,
+            'assignableAgents' => $assignableAgents
         ]);
     }
 
@@ -203,13 +213,56 @@ class AgentTicketController extends Controller
 
         $replyAttachments = $attachmentModel->getReplyAttachmentsByTicketId($ticket['id']);
 
+        $userModel = new User();
+        $assignableAgents = $userModel->getAllAssignableAgents();
+
         $this->view('agent/tickets/show', [
             'ticket' => $ticket,
             'replies' => $replies,
             'statusHistory' => $statusHistory,
             'attachments' => $attachments,
-            'replyAttachments' => $replyAttachments
+            'replyAttachments' => $replyAttachments,
+            'assignableAgents' => $assignableAgents
         ]);
+    }
+
+    public function updateAssignedAgent($id)
+    {
+        Csrf::verify();
+        AuthMiddleware::timeout();
+        AuthMiddleware::check(['admin', 'agent']);
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $id = (int)$id;
+        $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : null;
+
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->findForAgent($id);
+
+        if (!$ticket) {
+            $_SESSION['error'] = "Ticket not found.";
+            $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/agent/tickets");
+            header("Location: " . $redirect);
+            exit;
+        }
+
+        $ticketModel->updateAssignedAgent($id, $assignedAgentId);
+
+        $userModel = new User();
+        if ($assignedAgentId) {
+            $assignedAgent = $userModel->findById($assignedAgentId);
+            $agentName = $assignedAgent ? $assignedAgent['full_name'] : 'Agent';
+            $_SESSION['success'] = "Ticket #" . htmlspecialchars($ticket['ticket_no']) . " assigned to " . htmlspecialchars($agentName) . " successfully.";
+        } else {
+            $_SESSION['success'] = "Ticket #" . htmlspecialchars($ticket['ticket_no']) . " is now unassigned.";
+        }
+
+        $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/agent/tickets/show/" . $id);
+        header("Location: " . $redirect);
+        exit;
     }
     public function reply($id)
     {
