@@ -528,16 +528,15 @@ class User extends Model
     public function getRecentTickets($userId, $limit = 10)
     {
         $stmt = $this->db->prepare("
-        SELECT *
-
-        FROM tickets
-
-        WHERE user_id=?
-
-        ORDER BY created_at DESC
-
-        LIMIT $limit
-    ");
+            SELECT 
+                tickets.*,
+                assigned_agent.full_name AS assigned_agent_name
+            FROM tickets
+            LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
+            WHERE tickets.user_id = ?
+            ORDER BY tickets.created_at DESC
+            LIMIT " . (int)$limit . "
+        ");
 
         $stmt->execute([$userId]);
 

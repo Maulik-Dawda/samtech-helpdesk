@@ -479,10 +479,12 @@ class Ticket extends Model
         SELECT 
             tickets.*,
             COALESCE(users.full_name, organizations.name) AS customer_name,
-            organizations.name AS organization_name
+            organizations.name AS organization_name,
+            assigned_agent.full_name AS assigned_agent_name
         FROM tickets
         LEFT JOIN users ON users.id = tickets.user_id
         LEFT JOIN organizations ON organizations.id = tickets.organization_id
+        LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE 1=1
         AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
     ";
