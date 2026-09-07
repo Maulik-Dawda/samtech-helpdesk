@@ -86,11 +86,6 @@ $agentRole = htmlspecialchars(ucfirst($targetAgent['role'] ?? 'Agent'));
                         Email: <strong><?= $agentEmail; ?></strong> | Role: <strong><?= $agentRole; ?></strong>
                     </p>
                 </div>
-                <div class="page-actions">
-                    <a href="<?= BASE_URL ?>/agent/tickets/create" class="btn btn-primary-custom">
-                        <i class="bi bi-plus-circle-fill me-2"></i> Create Ticket
-                    </a>
-                </div>
             </div>
         </div>
     </section>

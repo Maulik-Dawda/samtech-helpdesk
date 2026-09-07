@@ -74,11 +74,6 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                         View, manage, and process all customer support tickets assigned directly to you.
                     </p>
                 </div>
-                <div class="page-actions">
-                    <a href="<?= BASE_URL ?>/agent/tickets/create" class="btn btn-primary-custom">
-                        <i class="bi bi-plus-circle-fill me-2"></i> Create Ticket
-                    </a>
-                </div>
             </div>
         </div>
     </section>
