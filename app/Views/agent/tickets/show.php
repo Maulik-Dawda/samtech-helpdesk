@@ -1042,7 +1042,7 @@ function getAgentReplyRoleClass(string $role): string
                             <option value="">-- Unassigned --</option>
                             <?php foreach ($assignableAgents as $agentOpt): ?>
                                 <option value="<?= $agentOpt['id']; ?>" <?= ((int)($ticket['assigned_agent_id'] ?? 0) === (int)$agentOpt['id']) ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($agentOpt['full_name']); ?> (<?= htmlspecialchars(ucfirst($agentOpt['role'])); ?>)
+                                    <?= htmlspecialchars($agentOpt['full_name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

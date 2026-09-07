@@ -324,7 +324,8 @@ class User extends Model
         $stmt = $this->db->prepare("
             SELECT id, full_name, email, role, is_admin_agent
             FROM users
-            WHERE role IN ('agent', 'admin')
+            WHERE role = 'agent'
+            AND (is_admin_agent IS NULL OR is_admin_agent = 0)
             AND is_active = 1
             AND (email IS NULL OR email != 'maulik@septixtechnologies.com')
             ORDER BY full_name ASC
