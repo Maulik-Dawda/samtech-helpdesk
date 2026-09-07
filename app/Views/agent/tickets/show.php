@@ -356,41 +356,6 @@ function getAgentReplyRoleClass(string $role): string
 
             </div>
 
-
-            <div class="metric-card">
-
-                <div class="metric-card-header">
-
-                    <div class="metric-card-icon">
-                        <i class="bi bi-person-badge-fill"></i>
-                    </div>
-
-                </div>
-
-                <div class="metric-card-label">
-                    Assigned Agent
-                </div>
-
-                <div class="metric-card-value text-truncate" style="font-size: 13px; margin-top: 2px;" title="<?= htmlspecialchars(!empty($ticket['assigned_agent_name']) ? $ticket['assigned_agent_name'] : 'Not Assigned Yet'); ?>">
-                    <?= htmlspecialchars(!empty($ticket['assigned_agent_name']) ? $ticket['assigned_agent_name'] : 'Not Assigned Yet'); ?>
-                </div>
-
-                <div class="metric-card-meta mt-1">
-                    <form method="POST" action="<?= BASE_URL ?>/agent/tickets/assign/<?= $ticketId; ?>" class="w-100">
-                        <?= Csrf::field(); ?>
-                        <select name="assigned_agent_id" class="form-select form-select-sm py-0 px-2 border-secondary-subtle" style="font-size: 11px; height: 26px;" onchange="this.form.submit()" aria-label="Select Agent">
-                            <option value="">-- Select Agent --</option>
-                            <?php foreach ($assignableAgents as $agentOpt): ?>
-                                <option value="<?= $agentOpt['id']; ?>" <?= ((int)($ticket['assigned_agent_id'] ?? 0) === (int)$agentOpt['id']) ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($agentOpt['full_name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </form>
-                </div>
-
-            </div>
-
         </div>
 
     </section>
@@ -1028,6 +993,64 @@ function getAgentReplyRoleClass(string $role): string
              SIDEBAR
         ====================================================== -->
         <div class="col-xl-4">
+
+            <!-- Assign Ticket Section -->
+            <section class="ui-panel mb-4">
+
+                <div class="ui-panel-header">
+
+                    <div class="ui-panel-title-wrap">
+
+                        <h2 class="ui-panel-title">
+                            <i class="bi bi-person-gear text-primary me-2"></i>
+                            Assign Ticket
+                        </h2>
+
+                        <p class="ui-panel-subtitle">
+                            Select or update the support agent assigned to this ticket.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="ui-panel-body">
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold d-block mb-1">
+                            Currently Assigned To:
+                        </label>
+                        <?php if (!empty($ticket['assigned_agent_name'])): ?>
+                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:600;">
+                                <i class="bi bi-person-badge me-1"></i>
+                                <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 rounded-pill fw-semibold" style="font-size:12px;">
+                                <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+                                Not Assigned Yet
+                            </span>
+                        <?php endif; ?>
+                    </div>
+
+                    <form method="POST" action="<?= BASE_URL ?>/agent/tickets/assign/<?= $ticketId; ?>">
+                        <?= Csrf::field(); ?>
+                        <label for="assign_agent_select" class="form-label fw-semibold">
+                            Select Agent
+                        </label>
+                        <select id="assign_agent_select" name="assigned_agent_id" class="form-select border-secondary-subtle mb-3" onchange="this.form.submit()">
+                            <option value="">-- Unassigned --</option>
+                            <?php foreach ($assignableAgents as $agentOpt): ?>
+                                <option value="<?= $agentOpt['id']; ?>" <?= ((int)($ticket['assigned_agent_id'] ?? 0) === (int)$agentOpt['id']) ? 'selected' : ''; ?>>
+                                    <?= htmlspecialchars($agentOpt['full_name']); ?> (<?= htmlspecialchars(ucfirst($agentOpt['role'])); ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
+
+                </div>
+
+            </section>
 
             <!-- Ticket Details -->
             <section class="ui-panel mb-4">
