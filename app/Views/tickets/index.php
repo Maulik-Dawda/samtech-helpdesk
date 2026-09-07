@@ -289,29 +289,19 @@ if (session_status() === PHP_SESSION_NONE) {
                                     </td>
 
 
-                                    <td data-label="Assigned Agent">
-
-                                        <?php if ($assignedAgentName !== ''): ?>
-
-                                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
-
-                                                <i class="bi bi-person-badge me-1"></i>
-
-                                                <?= htmlspecialchars($assignedAgentName); ?>
-
-                                            </span>
-
-                                        <?php else: ?>
-
-                                            <span class="text-muted small">
-
-                                                Unassigned
-
-                                            </span>
-
-                                        <?php endif; ?>
-
-                                    </td>
+                                     <td data-label="Assigned Agent">
+                                         <?php if ($assignedAgentName !== ''): ?>
+                                             <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
+                                                 <i class="bi bi-person-badge me-1"></i>
+                                                 <?= htmlspecialchars($assignedAgentName); ?>
+                                             </span>
+                                         <?php else: ?>
+                                             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill fw-semibold" style="font-size:11.5px;">
+                                                 <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+                                                 Not Assigned Yet
+                                             </span>
+                                         <?php endif; ?>
+                                     </td>
 
 
                                     <td data-label="Priority">
