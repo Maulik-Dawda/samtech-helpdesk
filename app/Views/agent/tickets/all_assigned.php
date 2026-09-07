@@ -133,7 +133,7 @@ foreach ($agentsWithCounts as $agentItem) {
                 <div class="table-card-subtitle">Click on any agent to inspect all tickets assigned to them.</div>
             </div>
             <div class="app-badge app-badge-primary">
-                <i class="bi bi-person-badge"></i> <?= $totalAgents; ?> Agents
+                <i class="bi bi-people"></i> <?= $totalAgents; ?> <?= $totalAgents === 1 ? 'Agent' : 'Agents'; ?>
             </div>
         </div>
 
@@ -148,7 +148,7 @@ foreach ($agentsWithCounts as $agentItem) {
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table align-middle">
+                    <table class="table" id="allAssignedTable">
                         <thead>
                             <tr>
                                 <th>Agent Name</th>
@@ -171,53 +171,73 @@ foreach ($agentsWithCounts as $agentItem) {
                                 $roleStr = (string)($agent['role'] ?? 'agent');
                                 $isAdminAgent = (int)($agent['is_admin_agent'] ?? 0) === 1;
 
-                                $roleBadgeLabel = match ($roleStr) {
+                                $initial = $agentName !== '' ? strtoupper(mb_substr($agentName, 0, 1)) : 'A';
+
+                                $roleLabel = match ($roleStr) {
                                     'admin' => 'Administrator',
                                     'agent' => $isAdminAgent ? 'Admin Agent' : 'Support Agent',
                                     default => 'Support Agent'
                                 };
-                                $roleBadgeClass = match ($roleStr) {
-                                    'admin' => 'bg-danger-subtle text-danger',
-                                    'agent' => $isAdminAgent ? 'bg-primary-subtle text-primary' : 'bg-info-subtle text-info-emphasis',
-                                    default => 'bg-secondary-subtle text-secondary'
+                                $roleStatusClass = match ($roleStr) {
+                                    'admin' => 'status-closed',
+                                    'agent' => $isAdminAgent ? 'status-progress' : 'status-open',
+                                    default => 'status-resolved'
                                 };
                                 ?>
                                 <tr>
                                     <td>
-                                        <a href="<?= BASE_URL ?>/agent/tickets/assigned-agent/<?= $agentId; ?>" class="fw-bold text-decoration-none text-dark d-flex align-items-center gap-2">
-                                            <div class="avatar-initial rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 14px;">
-                                                <?= strtoupper(substr($agentName ?: 'A', 0, 1)); ?>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="table-avatar">
+                                                <?= htmlspecialchars($initial); ?>
                                             </div>
-                                            <span><?= htmlspecialchars($agentName); ?></span>
-                                        </a>
+                                            <div class="fw-semibold">
+                                                <a href="<?= BASE_URL ?>/agent/tickets/assigned-agent/<?= $agentId; ?>" class="text-decoration-none text-dark">
+                                                    <?= htmlspecialchars($agentName); ?>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td><?= htmlspecialchars($agentEmail); ?></td>
                                     <td>
-                                        <span class="badge rounded-pill <?= $roleBadgeClass; ?> px-3 py-1 fw-semibold">
-                                            <?= htmlspecialchars($roleBadgeLabel); ?>
+                                        <div class="text-muted">
+                                            <?= htmlspecialchars($agentEmail); ?>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge <?= $roleStatusClass; ?>">
+                                            <?= htmlspecialchars($roleLabel); ?>
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">
+                                        <span class="status-badge status-open fw-bold">
                                             <?= (int)($agent['total_assigned'] ?? 0); ?>
                                         </span>
                                     </td>
-                                    <td class="text-center fw-semibold text-warning">
-                                        <?= (int)($agent['total_open'] ?? 0); ?>
+                                    <td class="text-center">
+                                        <span class="status-badge status-pending fw-bold">
+                                            <?= (int)($agent['total_open'] ?? 0); ?>
+                                        </span>
                                     </td>
-                                    <td class="text-center fw-semibold text-info">
-                                        <?= (int)($agent['total_in_progress'] ?? 0); ?>
+                                    <td class="text-center">
+                                        <span class="status-badge status-progress fw-bold">
+                                            <?= (int)($agent['total_in_progress'] ?? 0); ?>
+                                        </span>
                                     </td>
-                                    <td class="text-center fw-semibold text-success">
-                                        <?= (int)($agent['total_resolved'] ?? 0); ?>
+                                    <td class="text-center">
+                                        <span class="status-badge status-resolved fw-bold">
+                                            <?= (int)($agent['total_resolved'] ?? 0); ?>
+                                        </span>
                                     </td>
-                                    <td class="text-center fw-semibold text-secondary">
-                                        <?= (int)($agent['total_closed'] ?? 0); ?>
+                                    <td class="text-center">
+                                        <span class="status-badge status-closed fw-bold">
+                                            <?= (int)($agent['total_closed'] ?? 0); ?>
+                                        </span>
                                     </td>
                                     <td class="text-end">
-                                        <a href="<?= BASE_URL ?>/agent/tickets/assigned-agent/<?= $agentId; ?>" class="btn btn-sm btn-primary-custom rounded-pill px-3">
-                                            <i class="bi bi-eye-fill me-1"></i> View Assigned Tickets
-                                        </a>
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <a href="<?= BASE_URL ?>/agent/tickets/assigned-agent/<?= $agentId; ?>" class="btn btn-sm btn-primary-custom" title="View Assigned Tickets">
+                                                <i class="bi bi-eye-fill me-1"></i> View Tickets
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

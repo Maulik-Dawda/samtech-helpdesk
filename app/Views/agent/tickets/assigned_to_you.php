@@ -159,7 +159,7 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                     </p>
                 </div>
             </div>
-            <a href="<?= BASE_URL ?>/agent/tickets/all-assigned" class="btn btn-sm btn-warning text-dark font-weight-bold text-nowrap px-3 rounded-pill">
+            <a href="<?= BASE_URL ?>/agent/tickets/all-assigned" class="btn btn-sm btn-primary-custom">
                 <i class="bi bi-people-fill me-1"></i> View All Assigned
             </a>
         </div>
@@ -179,7 +179,7 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                     <input type="search" name="search" class="form-control ticket-search-input" placeholder="Search ticket no, subject..." value="<?= htmlspecialchars($search); ?>" autocomplete="off" aria-label="Search tickets">
                 </div>
 
-                <select name="status" class="form-select border-secondary-subtle" style="min-width: 140px;" aria-label="Filter status">
+                <select name="status" class="form-select table-filter" aria-label="Filter status">
                     <option value="">All Statuses</option>
                     <option value="open" <?= $status === 'open' ? 'selected' : ''; ?>>Open</option>
                     <option value="in_progress" <?= $status === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
@@ -188,7 +188,7 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                     <option value="closed" <?= $status === 'closed' ? 'selected' : ''; ?>>Closed</option>
                 </select>
 
-                <select name="priority" class="form-select border-secondary-subtle" style="min-width: 140px;" aria-label="Filter priority">
+                <select name="priority" class="form-select table-filter" aria-label="Filter priority">
                     <option value="">All Priorities</option>
                     <option value="low" <?= $priority === 'low' ? 'selected' : ''; ?>>Low</option>
                     <option value="medium" <?= $priority === 'medium' ? 'selected' : ''; ?>>Medium</option>
@@ -196,12 +196,12 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                     <option value="urgent" <?= $priority === 'urgent' ? 'selected' : ''; ?>>Urgent</option>
                 </select>
 
-                <button type="submit" class="btn btn-primary-custom px-3">
+                <button type="submit" class="btn btn-sm btn-primary-custom">
                     <i class="bi bi-filter me-1"></i> Filter
                 </button>
 
                 <?php if (!empty($search) || !empty($status) || !empty($priority)): ?>
-                    <a href="<?= BASE_URL ?>/agent/tickets/assigned-to-you" class="btn btn-outline-secondary px-3">
+                    <a href="<?= BASE_URL ?>/agent/tickets/assigned-to-you" class="btn btn-sm btn-outline-secondary">
                         <i class="bi bi-x-circle me-1"></i> Reset
                     </a>
                 <?php endif; ?>
@@ -245,14 +245,26 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                                 $statusVal = strtolower((string)($ticket['status'] ?? 'open'));
                                 $createdAt = !empty($ticket['created_at']) ? date('M d, Y H:i', strtotime($ticket['created_at'])) : '-';
                                 $closedAt = !empty($ticket['closed_at']) ? date('M d, Y H:i', strtotime($ticket['closed_at'])) : '-';
+                                $initial = $customerName !== '' ? strtoupper(substr($customerName, 0, 1)) : 'C';
                                 ?>
                                 <tr>
                                     <td>
-                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="fw-bold text-decoration-none text-primary">
-                                            <?= htmlspecialchars($ticketNumber); ?>
-                                        </a>
+                                        <div class="fw-semibold">
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="text-decoration-none text-primary">
+                                                <?= htmlspecialchars($ticketNumber); ?>
+                                            </a>
+                                        </div>
                                     </td>
-                                    <td><?= htmlspecialchars($customerName ?: 'N/A'); ?></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="table-avatar">
+                                                <?= htmlspecialchars($initial); ?>
+                                            </div>
+                                            <div class="fw-semibold">
+                                                <?= htmlspecialchars($customerName ?: 'Unknown Customer'); ?>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>
                                         <span class="d-inline-block text-truncate" style="max-width: 250px;" title="<?= htmlspecialchars($subject); ?>">
                                             <?= htmlspecialchars($subject); ?>
@@ -271,9 +283,11 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                                     <td><?= htmlspecialchars($createdAt); ?></td>
                                     <td><?= htmlspecialchars($closedAt); ?></td>
                                     <td class="text-end">
-                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                            <i class="bi bi-eye-fill me-1"></i> View
-                                        </a>
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="table-action-btn table-action-view" title="View ticket" aria-label="View ticket">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
