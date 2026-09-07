@@ -179,27 +179,28 @@ function getAgentReplyRoleClass(string $role): string
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-2">
-                        <i class="bi bi-ticket-perforated-fill me-1"></i>
-                        Ticket Details
-                    </div>
+                    <div class="d-flex align-items-center flex-wrap gap-2.5 mb-2">
+                        <div class="app-badge app-badge-primary">
+                            <i class="bi bi-ticket-perforated-fill me-1"></i>
+                            Ticket Details
+                        </div>
 
-                    <div class="d-flex align-items-center flex-wrap gap-2.5 mb-1">
-                        <h1 class="page-title mb-0">
-                            <?= htmlspecialchars(
-                                $subject !== ''
-                                    ? $subject
-                                    : 'Untitled Ticket'
-                            ); ?>
-                        </h1>
                         <span class="status-badge <?= getAgentShowStatusClass($status); ?> px-3 py-1 fw-semibold">
                             <i class="bi bi-circle-fill me-1" style="font-size: 7px; vertical-align: middle;"></i>
                             <?= htmlspecialchars($statusLabel); ?>
                         </span>
                     </div>
 
+                    <h1 class="page-title mb-2">
+                        <?= htmlspecialchars(
+                            $subject !== ''
+                                ? $subject
+                                : 'Untitled Ticket'
+                        ); ?>
+                    </h1>
+
                     <p class="page-description mb-0">
-                        <span class="fw-semibold text-dark">
+                        <span class="fw-semibold text-dark me-1">
                             <?= htmlspecialchars(
                                 $ticketNumber !== ''
                                     ? $ticketNumber
