@@ -199,9 +199,9 @@
 
 </div>
 
-<!-- Modal: Select Contract to Generate PDF Report -->
+<!-- Modal: Confirm & Generate PDF Report -->
 <div class="modal fade" id="generateReportModal" tabindex="-1" aria-labelledby="generateReportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 18px;">
             <div class="modal-header border-0 pb-0 p-4">
                 <h5 class="modal-title fw-bold" id="generateReportModalLabel">
@@ -211,17 +211,28 @@
             </div>
             <div class="modal-body p-4">
                 <p class="text-muted small mb-3">
-                    Select which contract period report you want to print for <strong><?= htmlspecialchars($organization['name']); ?></strong>.
+                    Are you sure you want to generate and print the report for <strong><?= htmlspecialchars($organization['name']); ?></strong>?
                 </p>
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-dark small">Choose Contract Period</label>
-                    <select id="reportContractSelect" class="form-select form-select-lg shadow-none w-100 fs-6" style="border-radius: 10px; padding: 12px 16px;">
-                        <?php foreach ($contracts as $c): ?>
-                            <option value="<?= $c['id']; ?>" <?= ((int)$c['id'] === (int)$selectedContract['id']) ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($c['contract_name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+
+                <div class="card bg-light border-0 p-3 mb-2" style="border-radius: 12px;">
+                    <div class="mb-2">
+                        <span class="text-muted small d-block">Contract Name</span>
+                        <strong class="text-dark fs-6"><?= htmlspecialchars($selectedContract['contract_name']); ?></strong>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-1">
+                            <span class="text-muted small d-block">Contract Type</span>
+                            <span class="badge bg-white text-dark border fw-semibold">
+                                <?= ucwords(str_replace('_', ' ', $selectedContract['contract_type'])); ?>
+                            </span>
+                        </div>
+                        <div class="col-6 mb-1">
+                            <span class="text-muted small d-block">Contract Dates</span>
+                            <span class="fw-semibold text-dark small">
+                                <?= date('M d, Y', strtotime($selectedContract['start_date'])); ?> &mdash; <?= date('M d, Y', strtotime($selectedContract['end_date'])); ?>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0 pe-4 pb-4">
@@ -236,19 +247,15 @@
 
 <script>
 function openPdfReport() {
-    const select = document.getElementById('reportContractSelect');
-    const contractId = select ? select.value : '';
-    if (contractId) {
-        const targetUrl = '<?= BASE_URL ?>/contracts/print-report/' + contractId;
-        const newWin = window.open(targetUrl, '_blank');
-        if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
-            window.location.href = targetUrl;
-        } else {
-            const modalEl = document.getElementById('generateReportModal');
-            if (modalEl && typeof bootstrap !== 'undefined') {
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-            }
+    const targetUrl = '<?= BASE_URL ?>/contracts/print-report/<?= $selectedContract['id']; ?>';
+    const newWin = window.open(targetUrl, '_blank');
+    if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+        window.location.href = targetUrl;
+    } else {
+        const modalEl = document.getElementById('generateReportModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
         }
     }
 }
