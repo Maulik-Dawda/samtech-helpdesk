@@ -14,14 +14,14 @@
                         <span class="text-muted small">/</span>
                         <span class="badge bg-light text-dark border"><?= htmlspecialchars($organization['name']); ?></span>
                     </div>
-                    <h2 class="fw-bold mb-0">
+                    <h1 class="page-title mb-0">
                         <i class="bi bi-building text-primary me-2"></i><?= htmlspecialchars($organization['name']); ?>
-                    </h2>
+                    </h1>
                 </div>
 
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <!-- Modal Trigger: Generate Contract Report -->
-                    <button type="button" class="btn btn-outline-danger fw-semibold" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#generateReportModal">
+                    <button type="button" class="btn btn-outline-danger fw-semibold" data-bs-toggle="modal" data-bs-target="#generateReportModal">
                         <i class="bi bi-file-earmark-pdf-fill me-1"></i> Generate Contract Report
                     </button>
 
@@ -36,8 +36,8 @@
     </section>
 
     <!-- Top Card: Company Details & Contract Filter Dropdown -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
-        <div class="card-body p-4">
+    <div class="ui-panel mb-4">
+        <div class="ui-panel-body">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-3 mb-lg-0">
                     <h5 class="fw-bold mb-2">Company Overview</h5>
@@ -62,7 +62,7 @@
                     <label class="form-label fw-bold text-dark small mb-1">
                         <i class="bi bi-funnel-fill text-primary me-1"></i>Select Contract / Renewal Filter
                     </label>
-                    <select class="form-select shadow-none" style="border-radius: 10px;" onchange="if(this.value) window.location.href = this.value;">
+                    <select class="form-select shadow-none" onchange="if(this.value) window.location.href = this.value;">
                         <?php foreach ($contracts as $c): ?>
                             <?php
                             $isSel = ((int)$c['id'] === (int)$selectedContract['id']);
@@ -79,8 +79,8 @@
     </div>
 
     <!-- Contract Expiration Timeline Status Card (Green / Orange / Red) -->
-    <div class="card border-0 shadow-sm mb-4 <?= $statusInfo['card_class']; ?>" style="border-radius: 18px;">
-        <div class="card-body p-4">
+    <div class="ui-panel mb-4 <?= $statusInfo['card_class']; ?>">
+        <div class="ui-panel-body">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-2">
@@ -92,9 +92,9 @@
                         </span>
                     </div>
 
-                    <h3 class="fw-bold mb-1">
+                    <h2 class="fw-bold mb-1">
                         <?= htmlspecialchars($selectedContract['contract_name']); ?>
-                    </h3>
+                    </h2>
 
                     <p class="mb-0 small opacity-75">
                         <i class="bi bi-calendar-range me-1"></i>
@@ -126,30 +126,33 @@
     </div>
 
     <!-- Tickets List Section for Contract Timeframe -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
-        <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center">
+    <div class="table-card content-section mb-4">
+        <div class="table-card-header">
             <div>
-                <h5 class="fw-bold mb-1">
-                    <i class="bi bi-ticket-detailed-fill text-primary me-2"></i>Tickets Raised in Contract Period
-                </h5>
-                <p class="text-muted small mb-0">
+                <div class="table-card-title d-flex align-items-center gap-2">
+                    <i class="bi bi-ticket-detailed-fill text-primary"></i>
+                    <span>Tickets Raised in Contract Period</span>
+                </div>
+                <div class="table-card-subtitle">
                     All support tickets created between <?= date('M d, Y', strtotime($selectedContract['start_date'])); ?> and <?= date('M d, Y', strtotime($selectedContract['end_date'])); ?>.
-                </p>
+                </div>
             </div>
-            <span class="badge bg-primary rounded-pill fs-6 px-3 py-2"><?= count($tickets); ?> Tickets</span>
+            <div class="app-badge app-badge-primary">
+                <?= count($tickets); ?> Tickets
+            </div>
         </div>
 
-        <div class="card-body p-0">
+        <div class="table-card-body">
             <?php if (empty($tickets)): ?>
-                <div class="text-center py-5">
-                    <i class="bi bi-ticket-perforated text-muted fs-1 d-block mb-2"></i>
-                    <h6 class="fw-bold">No Tickets Found</h6>
-                    <p class="text-muted small">No tickets were raised by <?= htmlspecialchars($organization['name']); ?> within this contract timeframe.</p>
+                <div class="table-empty">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <h5>No tickets found</h5>
+                    <p>No support tickets were created during this contract period.</p>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="table-light">
+                    <table class="table">
+                        <thead>
                             <tr>
                                 <th class="ps-4">TICKET NO</th>
                                 <th>SUBJECT</th>
@@ -163,6 +166,10 @@
                         </thead>
                         <tbody>
                             <?php foreach ($tickets as $t): ?>
+                                <?php
+                                $statusKey = strtolower(str_replace(' ', '_', $t['status'] ?? 'open'));
+                                $priorityKey = strtolower($t['priority'] ?? 'medium');
+                                ?>
                                 <tr>
                                     <td class="ps-4 fw-bold">
                                         #<?= htmlspecialchars($t['ticket_no'] ?? $t['id']); ?>
@@ -179,12 +186,12 @@
                                         <?= htmlspecialchars($t['assigned_agent_name'] ?? 'Not Assigned'); ?>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">
+                                        <span class="priority-badge priority-<?= $priorityKey; ?>">
                                             <?= ucfirst($t['priority']); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info-subtle text-info-emphasis border border-info">
+                                        <span class="status-badge status-<?= $statusKey; ?>">
                                             <?= ucwords(str_replace('_', ' ', $t['status'])); ?>
                                         </span>
                                     </td>
@@ -192,7 +199,7 @@
                                         <?= date('M d, Y H:i', strtotime($t['created_at'])); ?>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $t['id']; ?>" class="btn btn-sm btn-outline-secondary fw-semibold" style="border-radius: 6px;" target="_blank">
+                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $t['id']; ?>" class="btn btn-sm btn-outline-secondary" target="_blank">
                                             <i class="bi bi-box-arrow-up-right me-1"></i> View
                                         </a>
                                     </td>
