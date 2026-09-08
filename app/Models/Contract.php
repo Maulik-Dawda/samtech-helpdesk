@@ -24,8 +24,7 @@ class Contract extends Model
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX idx_contracts_org (organization_id),
-                INDEX idx_contracts_dates (start_date, end_date),
-                CONSTRAINT fk_contracts_organization FOREIGN KEY (organization_id) REFERENCES organizations (id) ON DELETE CASCADE
+                INDEX idx_contracts_dates (start_date, end_date)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
             $this->db->exec($sql);
         } catch (Exception $e) {
