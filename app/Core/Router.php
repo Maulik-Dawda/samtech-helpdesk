@@ -32,16 +32,8 @@ class Router
             $method = $_SERVER['REQUEST_METHOD'];
 
             if (!isset($this->routes[$method])) {
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $_SESSION['error'] = "Requested page not found.";
-                $referer = $_SERVER['HTTP_REFERER'] ?? '';
-                if (!empty($referer)) {
-                    header("Location: " . $referer);
-                    exit;
-                }
-                header("Location: " . (defined('BASE_URL') ? BASE_URL : '/'));
+                http_response_code(404);
+                require_once ROOT_PATH . "/app/Views/errors/404.php";
                 exit;
             }
 
@@ -67,16 +59,8 @@ class Router
                 }
             }
 
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-            $_SESSION['error'] = "Requested page not found.";
-            $referer = $_SERVER['HTTP_REFERER'] ?? '';
-            if (!empty($referer)) {
-                header("Location: " . $referer);
-                exit;
-            }
-            header("Location: " . (defined('BASE_URL') ? BASE_URL : '/'));
+            http_response_code(404);
+            require_once ROOT_PATH . "/app/Views/errors/404.php";
             exit;
 
         } catch (Throwable $e) {
