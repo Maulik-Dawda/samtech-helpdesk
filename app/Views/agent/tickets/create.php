@@ -189,6 +189,20 @@ $organizations = is_array($organizations ?? null)
 
                 </div>
 
+                <div class="col-12" id="noUsersNoticeWrapper">
+                    <div id="noUsersNotice" class="alert alert-warning border-warning d-none mb-0">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div>
+                                <i class="bi bi-exclamation-triangle-fill me-2 text-warning fs-5 align-middle"></i>
+                                <strong>No Users Registered:</strong> This organization currently has no users. You must add at least 1 user to this organization before creating a ticket on its behalf.
+                            </div>
+                            <a href="<?= BASE_URL ?>/agent/users/create" class="btn btn-sm btn-warning text-dark fw-bold">
+                                <i class="bi bi-person-plus-fill me-1"></i> Add User Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Priority -->
 
@@ -431,6 +445,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const orgSelect = $('#organizationSelect');
     const userSelect = $('#orgUserSelect');
+    const noUsersNotice = $('#noUsersNotice');
+    const submitBtn = $('button[type="submit"]');
 
     function updateOrgUsers() {
         if (!orgSelect.length || !userSelect.length) return;
@@ -439,8 +455,26 @@ document.addEventListener('DOMContentLoaded', function() {
         userSelect.empty();
         userSelect.append('<option value="">Select User *</option>');
 
-        if (selectedOrgId && orgUsersMap[selectedOrgId]) {
-            const users = orgUsersMap[selectedOrgId];
+        if (!selectedOrgId) {
+            noUsersNotice.addClass('d-none');
+            userSelect.prop('disabled', false);
+            submitBtn.prop('disabled', false);
+            if (window.jQuery && $.fn.select2) {
+                userSelect.trigger('change.select2');
+            }
+            return;
+        }
+
+        const users = orgUsersMap[selectedOrgId] || [];
+
+        if (users.length === 0) {
+            noUsersNotice.removeClass('d-none');
+            userSelect.prop('disabled', true);
+            submitBtn.prop('disabled', true);
+        } else {
+            noUsersNotice.addClass('d-none');
+            userSelect.prop('disabled', false);
+            submitBtn.prop('disabled', false);
             users.forEach(function(user) {
                 const option = new Option(user.full_name + ' (' + user.email + ')', user.id, false, false);
                 userSelect.append(option);

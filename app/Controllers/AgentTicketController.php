@@ -596,6 +596,22 @@ class AgentTicketController extends Controller
             exit;
         }
 
+        $userModel = new User();
+
+        $orgUsers = $userModel->getOrganizationUsers($organizationId);
+        if (empty($orgUsers)) {
+            $_SESSION['error'] = 'Selected organization has no registered users. You must add at least one user to the organization before creating a ticket on its behalf.';
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
+
+        $user = $userModel->findById($userId);
+        if (!$user || (int)$user['organization_id'] !== $organizationId) {
+            $_SESSION['error'] = 'Selected user does not belong to the selected organization.';
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
+
         $ticketModel = new Ticket();
 
         $ticketNo = $ticketModel->generateTicketNo();
