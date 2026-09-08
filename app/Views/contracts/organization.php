@@ -203,25 +203,25 @@
 
 <!-- Modal: Select Contract to Generate PDF Report -->
 <div class="modal fade" id="generateReportModal" tabindex="-1" aria-labelledby="generateReportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 18px;">
-            <div class="modal-header">
+            <div class="modal-header border-0 pb-0 p-4">
                 <h5 class="modal-title fw-bold" id="generateReportModalLabel">
                     <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>Generate Contract Report
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <p class="text-muted small mb-3">
                     Select which contract period report you want to print for <strong><?= htmlspecialchars($organization['name']); ?></strong>.
                 </p>
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Choose Contract Period</label>
-                    <select id="reportContractSelect" class="form-select">
+                    <label class="form-label fw-bold text-dark small">Choose Contract Period</label>
+                    <select id="reportContractSelect" class="form-select form-select-lg shadow-none w-100 fs-6" style="border-radius: 10px; padding: 12px 16px;">
                         <?php foreach ($contracts as $c): ?>
                             <?php
                             $cType = ucwords(str_replace('_', ' ', $c['contract_type']));
-                            $cRange = date('M d, Y', strtotime($c['start_date'])) . ' to ' . date('M d, Y', strtotime($c['end_date']));
+                            $cRange = date('M d, Y', strtotime($c['start_date'])) . ' - ' . date('M d, Y', strtotime($c['end_date']));
                             ?>
                             <option value="<?= $c['id']; ?>" <?= ((int)$c['id'] === (int)$selectedContract['id']) ? 'selected' : ''; ?>>
                                 <?= htmlspecialchars($c['contract_name']); ?> (<?= $cType; ?>: <?= $cRange; ?>)
@@ -230,9 +230,9 @@
                     </select>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="openPdfReport()">
+            <div class="modal-footer border-0 pt-0 pe-4 pb-4">
+                <button type="button" class="btn btn-light px-3" style="border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger px-4 fw-semibold" style="border-radius: 8px;" onclick="openPdfReport()">
                     <i class="bi bi-printer-fill me-1"></i> Print / Generate PDF
                 </button>
             </div>

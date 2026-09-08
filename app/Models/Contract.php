@@ -126,13 +126,28 @@ class Contract extends Model
         $stmt = $this->db->prepare("
             SELECT 
                 t.*,
-                u.full_name AS customer_name,
-                u.email AS customer_email,
+                COALESCE(u.full_name, o.name) AS customer_name,
+                COALESCE(u.email, o.email, '') AS customer_email,
                 agent.full_name AS assigned_agent_name,
-                o.name AS organization_name
+                closed_agent.full_name AS closed_by_agent_name,
+                o.name AS organization_name,
+                (
+                    SELECT sh.created_at 
+                    FROM ticket_status_history sh 
+                    WHERE sh.ticket_id = t.id AND sh.new_status IN ('closed', 'resolved')
+                    ORDER BY sh.id DESC LIMIT 1
+                ) AS status_closed_at,
+                (
+                    SELECT tr.message 
+                    FROM ticket_replies tr 
+                    JOIN users ru ON ru.id = tr.user_id 
+                    WHERE tr.ticket_id = t.id AND ru.role IN ('admin', 'agent')
+                    ORDER BY tr.id DESC LIMIT 1
+                ) AS last_agent_reply
             FROM tickets t
             LEFT JOIN users u ON u.id = t.user_id
             LEFT JOIN users agent ON agent.id = t.assigned_agent_id
+            LEFT JOIN users closed_agent ON closed_agent.id = t.closed_by_agent_id
             LEFT JOIN organizations o ON o.id = t.organization_id
             WHERE t.organization_id = ?
             AND DATE(t.created_at) >= ?
@@ -140,7 +155,33 @@ class Contract extends Model
             ORDER BY t.created_at DESC
         ");
         $stmt->execute([$organizationId, $startDate, $endDate]);
-        return $stmt->fetchAll();
+        $tickets = $stmt->fetchAll();
+
+        foreach ($tickets as &$t) {
+            // Determine Close Date
+            if (in_array(strtolower($t['status'] ?? ''), ['closed', 'resolved'])) {
+                if (!empty($t['closed_at'])) {
+                    $t['effective_closed_at'] = date('M d, Y H:i', strtotime($t['closed_at']));
+                } elseif (!empty($t['status_closed_at'])) {
+                    $t['effective_closed_at'] = date('M d, Y H:i', strtotime($t['status_closed_at']));
+                } elseif (!empty($t['updated_at'])) {
+                    $t['effective_closed_at'] = date('M d, Y H:i', strtotime($t['updated_at']));
+                } else {
+                    $t['effective_closed_at'] = '-';
+                }
+            } else {
+                $t['effective_closed_at'] = '-';
+            }
+
+            // Determine Resolution Message
+            if (!empty($t['last_agent_reply'])) {
+                $t['resolution_message'] = $t['last_agent_reply'];
+            } else {
+                $t['resolution_message'] = '-';
+            }
+        }
+
+        return $tickets;
     }
 
     /**

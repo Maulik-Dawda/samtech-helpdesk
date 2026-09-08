@@ -13,17 +13,24 @@ $logoSrc = file_exists($logoPath)
     <style>
         @page {
             size: A4 portrait;
-            margin: 12mm 10mm 12mm 10mm;
+            margin: 10mm 10mm 10mm 10mm;
         }
 
         @media print {
-            header, footer, nav, .print-actions {
+            .print-actions {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+            }
+            footer, .footer {
                 display: none !important;
             }
-            body {
+            html, body {
                 background: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
 
@@ -49,44 +56,59 @@ $logoSrc = file_exists($logoPath)
             background: #0f172a;
             color: #ffffff;
             border: none;
-            padding: 10px 20px;
+            padding: 9px 18px;
             border-radius: 6px;
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            transition: background 0.2s ease;
         }
 
+        .print-btn:hover {
+            background: #1e293b;
+        }
+
+        /* Container table for page-repeat header */
+        table.report-container {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+
+        table.report-container > thead > tr > td {
+            border: none;
+            padding-bottom: 12px;
+        }
+
+        table.report-container > tbody > tr > td {
+            border: none;
+            padding: 0;
+        }
+
+        /* Letterhead Header */
         .header-table {
             width: 100%;
             border-bottom: 2px solid #0f172a;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-collapse: collapse;
         }
 
         .logo {
-            width: 170px;
-            height: auto;
+            height: 46px;
+            width: auto;
         }
 
-        .report-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #0f172a;
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-
-        .report-subtitle {
-            color: #64748b;
+        .header-date {
             font-size: 11px;
-            margin-top: 2px;
+            font-weight: 600;
+            color: #475569;
+            text-align: right;
         }
 
         .company-box {
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             padding: 12px 15px;
             margin-bottom: 20px;
@@ -104,62 +126,158 @@ $logoSrc = file_exists($logoPath)
         .badge-green { background: #dcfce7; color: #15803d; }
         .badge-orange { background: #fef3c7; color: #b45309; }
         .badge-red { background: #fee2e2; color: #b91c1c; }
+        .badge-gray { background: #f1f5f9; color: #475569; }
 
-        .table {
+        .section-heading {
+            font-size: 13px;
+            font-weight: 800;
+            border-bottom: 1.5px solid #0f172a;
+            padding-bottom: 4px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Summary Table with strict 7 columns */
+        .summary-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .table th, .table td {
+        .summary-table th, .summary-table td {
             border: 1px solid #cbd5e1;
-            padding: 7px 10px;
+            padding: 7px 9px;
             text-align: left;
+            vertical-align: top;
+            font-size: 10.5px;
         }
 
-        .table th {
+        .summary-table th {
             background: #f1f5f9;
             font-weight: 700;
             color: #1e293b;
         }
 
-        .section-heading {
-            font-size: 14px;
-            font-weight: 800;
-            border-bottom: 1.5px solid #0f172a;
-            padding-bottom: 4px;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            color: #0f172a;
-        }
-
-        .ticket-detail-box {
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 15px;
+        /* Detailed Ticket Section Styling (matching print-ticket-detail.php) */
+        .ticket-detail-block {
+            margin-bottom: 25px;
             page-break-inside: avoid;
         }
 
-        .ticket-detail-header {
+        .section-title {
+            font-size: 11px;
             font-weight: 700;
-            font-size: 12px;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-
-        .ticket-meta {
-            font-size: 10px;
-            color: #64748b;
             margin-bottom: 8px;
+            border-left: 4px solid #0f172a;
+            padding-left: 8px;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .reply-item {
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        table.info-table th {
+            width: 20%;
             background: #f8fafc;
-            border-left: 3px solid #0284c7;
+            text-align: left;
             padding: 6px 10px;
-            margin-top: 6px;
+            border: 1px solid #cbd5e1;
+            font-weight: 700;
+            color: #334155;
+            font-size: 10px;
+        }
+
+        table.info-table td {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
             font-size: 10.5px;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 9.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .description-box {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            padding: 10px 12px;
+            line-height: 1.5;
+            border-radius: 6px;
+            color: #0f172a;
+            font-size: 10.5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 12px;
+        }
+
+        .reply-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+            overflow: hidden;
+        }
+
+        .reply-header-table {
+            width: 100%;
+            background: #f1f5f9;
+            padding: 6px 10px;
+            border-bottom: 1px solid #cbd5e1;
+            border-collapse: collapse;
+        }
+
+        .reply-header-table td {
+            font-size: 10px;
+        }
+
+        .reply-body {
+            padding: 10px 12px;
+            line-height: 1.5;
+            color: #0f172a;
+            font-size: 10.5px;
+            white-space: pre-line;
+            word-wrap: break-word;
+            text-align: left;
+        }
+
+        .timeline-item {
+            border-left: 3px solid #334155;
+            padding-left: 10px;
+            margin-bottom: 8px;
+            font-size: 10px;
+        }
+
+        .attachment-list {
+            margin: 4px 0 0 0;
+            padding-left: 18px;
+            color: #334155;
+            font-size: 10px;
+        }
+
+        .attachment-list li {
+            margin-bottom: 2px;
+        }
+
+        .ticket-divider {
+            border-top: 2px dashed #cbd5e1;
+            margin: 25px 0;
         }
     </style>
 </head>
@@ -171,110 +289,242 @@ $logoSrc = file_exists($logoPath)
         </button>
     </div>
 
-    <!-- Header Table with Logo & Report Details -->
-    <table class="header-table">
-        <tr>
-            <td style="width: 50%;">
-                <img src="<?= $logoSrc; ?>" alt="Samtech Solutions" class="logo">
-                <div class="report-subtitle">Official Maintenance Contract Report</div>
-            </td>
-            <td style="width: 50%; text-align: right;">
-                <div class="report-title">CONTRACT REPORT</div>
-                <div class="report-subtitle">Generated on: <?= date('F d, Y H:i'); ?></div>
-            </td>
-        </tr>
-    </table>
-
-    <!-- 1. Company Name & Contract Details -->
-    <div class="company-box">
-        <table style="width: 100%; border: none;" cellspacing="0" cellpadding="0">
+    <!-- Main Container Table for Repeating Letterhead Header -->
+    <table class="report-container">
+        <thead>
             <tr>
-                <td style="width: 50%; border: none; vertical-align: top;">
-                    <div style="font-size: 14px; font-weight: 800; color: #0f172a;"><?= htmlspecialchars($organization['name'] ?? 'Organization'); ?></div>
-                    <div style="color: #475569; margin-top: 2px;">Email: <?= htmlspecialchars($organization['email'] ?? 'N/A'); ?></div>
-                    <div style="color: #475569;">Phone: <?= htmlspecialchars($organization['phone'] ?? 'N/A'); ?></div>
-                </td>
-                <td style="width: 50%; border: none; vertical-align: top; text-align: right;">
-                    <div style="font-size: 13px; font-weight: 700; color: #0f172a;"><?= htmlspecialchars($contract['contract_name']); ?></div>
-                    <div style="margin-top: 2px;">
-                        <strong>Type:</strong> <?= ucwords(str_replace('_', ' ', $contract['contract_type'])); ?>
-                        &nbsp;|&nbsp;
-                        <span class="contract-badge badge-<?= $statusInfo['color']; ?>"><?= htmlspecialchars($statusInfo['status_label']); ?></span>
-                    </div>
-                    <div style="margin-top: 2px; color: #0f172a; font-weight: 600;">
-                        <strong>Contract Period:</strong> <?= date('M d, Y', strtotime($contract['start_date'])); ?> &mdash; <?= date('M d, Y', strtotime($contract['end_date'])); ?>
-                    </div>
+                <td>
+                    <!-- Letterhead Header (Repeated on top of every page) -->
+                    <table class="header-table">
+                        <tr>
+                            <td style="border: none; text-align: left; vertical-align: middle; padding: 0;">
+                                <img src="<?= $logoSrc; ?>" alt="Samtech Solutions" class="logo">
+                            </td>
+                            <td style="border: none; text-align: right; vertical-align: middle; padding: 0;" class="header-date">
+                                <strong>Print Date:</strong> <?= date('F d, Y'); ?>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
-        </table>
-    </div>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
 
-    <!-- 2. List of All Tickets Raised in Contract Period -->
-    <div class="section-heading">1. TICKETS RAISED SUMMARY (<?= count($tickets); ?> Total)</div>
+                    <!-- 1. Company Overview Box -->
+                    <div class="company-box">
+                        <table style="width: 100%; border: none;" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="width: 50%; border: none; vertical-align: top;">
+                                    <div style="font-size: 14px; font-weight: 800; color: #0f172a;"><?= htmlspecialchars($organization['name'] ?? 'Organization'); ?></div>
+                                    <div style="color: #475569; margin-top: 2px;">Email: <?= htmlspecialchars($organization['email'] ?? 'N/A'); ?></div>
+                                    <div style="color: #475569;">Phone: <?= htmlspecialchars($organization['phone'] ?? 'N/A'); ?></div>
+                                </td>
+                                <td style="width: 50%; border: none; vertical-align: top; text-align: right;">
+                                    <div style="font-size: 13px; font-weight: 700; color: #0f172a;"><?= htmlspecialchars($contract['contract_name']); ?></div>
+                                    <div style="margin-top: 2px;">
+                                        <strong>Type:</strong> <?= ucwords(str_replace('_', ' ', $contract['contract_type'])); ?>
+                                        &nbsp;|&nbsp;
+                                        <span class="contract-badge badge-<?= $statusInfo['color']; ?>"><?= htmlspecialchars($statusInfo['status_label']); ?></span>
+                                    </div>
+                                    <div style="margin-top: 2px; color: #0f172a; font-weight: 600;">
+                                        <strong>Contract Period:</strong> <?= date('M d, Y', strtotime($contract['start_date'])); ?> &mdash; <?= date('M d, Y', strtotime($contract['end_date'])); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
-    <?php if (empty($tickets)): ?>
-        <p style="font-style: italic; color: #64748b;">No support tickets were created by <?= htmlspecialchars($organization['name']); ?> during this contract period.</p>
-    <?php else: ?>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width: 10%;">Ticket No</th>
-                    <th style="width: 30%;">Subject</th>
-                    <th style="width: 18%;">Customer User</th>
-                    <th style="width: 18%;">Assigned Agent</th>
-                    <th style="width: 10%;">Priority</th>
-                    <th style="width: 14%;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($tickets as $t): ?>
-                    <tr>
-                        <td><strong>#<?= htmlspecialchars($t['ticket_no'] ?? $t['id']); ?></strong></td>
-                        <td><?= htmlspecialchars($t['subject']); ?></td>
-                        <td><?= htmlspecialchars($t['customer_name'] ?? 'User'); ?></td>
-                        <td><?= htmlspecialchars($t['assigned_agent_name'] ?? 'Unassigned'); ?></td>
-                        <td><?= ucfirst($t['priority']); ?></td>
-                        <td><strong><?= ucwords(str_replace('_', ' ', $t['status'])); ?></strong></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
+                    <!-- 2. Summary Tickets Table -->
+                    <div class="section-heading">1. TICKETS RAISED SUMMARY (<?= count($tickets); ?> Total)</div>
 
-    <!-- 3. Detailed Tickets Report -->
-    <?php if (!empty($tickets)): ?>
-        <div class="section-heading" style="page-break-before: always;">2. DETAILED TICKET REPORTS</div>
+                    <?php if (empty($tickets)): ?>
+                        <p style="font-style: italic; color: #64748b;">No support tickets were created by <?= htmlspecialchars($organization['name']); ?> during this contract period.</p>
+                    <?php else: ?>
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 11%;">Ticket Number</th>
+                                    <th style="width: 22%;">Subject</th>
+                                    <th style="width: 14%;">Customer</th>
+                                    <th style="width: 14%;">Assigned Agent</th>
+                                    <th style="width: 12%;">Open Date</th>
+                                    <th style="width: 12%;">Close Date</th>
+                                    <th style="width: 15%;">Resolution Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($tickets as $t): ?>
+                                    <tr>
+                                        <td><strong>#<?= htmlspecialchars($t['ticket_no'] ?? $t['id']); ?></strong></td>
+                                        <td><?= htmlspecialchars($t['subject']); ?></td>
+                                        <td><?= htmlspecialchars($t['customer_name'] ?? 'User'); ?></td>
+                                        <td><?= htmlspecialchars($t['assigned_agent_name'] ?? 'Unassigned'); ?></td>
+                                        <td><?= date('M d, Y H:i', strtotime($t['created_at'])); ?></td>
+                                        <td><?= htmlspecialchars($t['effective_closed_at'] ?? '-'); ?></td>
+                                        <td style="word-break: break-word;"><?= htmlspecialchars($t['resolution_message'] ?? '-'); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
 
-        <?php foreach ($tickets as $index => $t): ?>
-            <div class="ticket-detail-box">
-                <div class="ticket-detail-header">
-                    Ticket #<?= htmlspecialchars($t['ticket_no'] ?? $t['id']); ?>: <?= htmlspecialchars($t['subject']); ?>
-                </div>
+                    <!-- 3. Detailed Tickets Section (Matching print-ticket-detail.php structure) -->
+                    <?php if (!empty($tickets)): ?>
+                        <div class="section-heading" style="page-break-before: always;">2. DETAILED TICKET REPORTS</div>
 
-                <div class="ticket-meta">
-                    <strong>Raised By:</strong> <?= htmlspecialchars($t['customer_name'] ?? 'User'); ?> (<?= htmlspecialchars($t['customer_email'] ?? ''); ?>) |
-                    <strong>Assigned Agent:</strong> <?= htmlspecialchars($t['assigned_agent_name'] ?? 'Unassigned'); ?> |
-                    <strong>Date:</strong> <?= date('M d, Y H:i', strtotime($t['created_at'])); ?> |
-                    <strong>Status:</strong> <?= ucwords(str_replace('_', ' ', $t['status'])); ?> |
-                    <strong>Priority:</strong> <?= ucfirst($t['priority']); ?>
-                </div>
+                        <?php foreach ($tickets as $index => $t): ?>
+                            <?php
+                            $statusLabel = ucwords(str_replace('_', ' ', $t['status'] ?? 'Open'));
+                            $priorityLabel = ucfirst($t['priority'] ?? 'Medium');
+                            $replies = $t['replies'] ?? [];
+                            $statusHistory = $t['statusHistory'] ?? [];
+                            $attachments = $t['attachments'] ?? [];
+                            $replyAttachments = $t['replyAttachments'] ?? [];
+                            ?>
 
-                <div style="margin-top: 6px; font-size: 11px; white-space: pre-wrap;"><strong>Description:</strong><br><?= htmlspecialchars($t['description']); ?></div>
+                            <div class="ticket-detail-block">
+                                <div class="section-title">Ticket Information &mdash; #<?= htmlspecialchars($t['ticket_no'] ?? $t['id']); ?></div>
+                                <table class="info-table">
+                                    <tr>
+                                        <th>Ticket Number</th>
+                                        <td><strong><?= htmlspecialchars($t['ticket_no'] ?? '-'); ?></strong></td>
+                                        <th>Assigned Agent</th>
+                                        <td>
+                                            <?php if (!empty($t['assigned_agent_name'])): ?>
+                                                <strong><?= htmlspecialchars($t['assigned_agent_name']); ?></strong>
+                                            <?php else: ?>
+                                                <span style="color:#64748b; font-style:italic;">Unassigned</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <td colspan="3"><strong><?= htmlspecialchars($t['subject'] ?? '-'); ?></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Organization</th>
+                                        <td><?= htmlspecialchars($t['organization_name'] ?? $organization['name']); ?></td>
+                                        <th>Customer / User</th>
+                                        <td><?= htmlspecialchars($t['customer_name'] ?? '-'); ?> (<?= htmlspecialchars($t['customer_email'] ?? '-'); ?>)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>
+                                            <span class="badge-pill"><?= htmlspecialchars($statusLabel); ?></span>
+                                        </td>
+                                        <th>Priority</th>
+                                        <td>
+                                            <span class="badge-pill"><?= htmlspecialchars($priorityLabel); ?></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Created Date</th>
+                                        <td><?= date('M d, Y H:i', strtotime($t['created_at'])); ?></td>
+                                        <th>Closed Date</th>
+                                        <td><?= htmlspecialchars($t['effective_closed_at'] ?? '-'); ?></td>
+                                    </tr>
+                                    <?php if (!empty($t['closed_by_agent_name'])): ?>
+                                    <tr>
+                                        <th>Closed By Agent</th>
+                                        <td colspan="3"><?= htmlspecialchars($t['closed_by_agent_name']); ?></td>
+                                    </tr>
+                                    <?php endif; ?>
+                                </table>
 
-                <?php if (!empty($t['replies'])): ?>
-                    <div style="margin-top: 10px; font-weight: 700; font-size: 10.5px; color: #1e293b;">Replies &amp; Updates (<?= count($t['replies']); ?>):</div>
-                    <?php foreach ($t['replies'] as $reply): ?>
-                        <div class="reply-item">
-                            <div style="font-weight: 600; color: #0f172a;">
-                                <?= htmlspecialchars($reply['user_name'] ?? 'User'); ?> (<?= ucfirst($reply['user_role'] ?? 'user'); ?>) &bull; <span style="font-weight: normal; color: #64748b;"><?= date('M d, Y H:i', strtotime($reply['created_at'])); ?></span>
+                                <!-- Description -->
+                                <div class="section-title">Description</div>
+                                <div class="description-box"><?= nl2br(htmlspecialchars(trim($t['description'] ?? 'No description provided.'))); ?></div>
+
+                                <!-- Ticket Attachments -->
+                                <?php if (!empty($attachments)): ?>
+                                    <div class="section-title">Ticket Attachments</div>
+                                    <ul class="attachment-list" style="margin-bottom: 12px;">
+                                        <?php foreach ($attachments as $attachment): ?>
+                                            <li>📄 <?= htmlspecialchars($attachment['original_name']); ?></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
+
+                                <!-- Conversation History -->
+                                <div class="section-title">Conversation History (<?= count($replies); ?> <?= count($replies) === 1 ? 'Reply' : 'Replies'; ?>)</div>
+
+                                <?php if (empty($replies)): ?>
+                                    <div style="color: #64748b; font-style: italic; padding: 4px 0 10px 0; font-size: 10px;">No conversation replies logged for this ticket.</div>
+                                <?php else: ?>
+                                    <?php foreach ($replies as $reply): ?>
+                                        <div class="reply-card">
+                                            <table class="reply-header-table">
+                                                <tr>
+                                                    <td style="border:none; text-align:left; padding:0; font-weight:bold; color:#0f172a;">
+                                                        <?= htmlspecialchars($reply['full_name'] ?? $reply['user_name'] ?? 'User'); ?>
+                                                        <span style="font-weight:normal; color:#475569; font-size:9.5px;">(<?= ucfirst($reply['role'] ?? $reply['user_role'] ?? 'user'); ?>)</span>
+                                                    </td>
+                                                    <td style="border:none; text-align:right; padding:0; color:#64748b; font-size:9.5px;">
+                                                        <?php if (!empty($reply['edit_count']) && (int)$reply['edit_count'] > 0): ?>
+                                                            <span style="font-weight:bold; color:#475569; font-style:italic; margin-right:4px;">(Edited)</span>
+                                                        <?php endif; ?>
+                                                        🕒 <?= date('M d, Y H:i', strtotime($reply['created_at'])); ?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <div class="reply-body"><?= nl2br(htmlspecialchars(trim($reply['message'] ?? ''))); ?></div>
+
+                                            <?php if (!empty($replyAttachments[$reply['id']])): ?>
+                                                <div style="border-top:1px solid #e2e8f0; margin-top:6px; padding:6px 12px;">
+                                                    <strong style="font-size:9.5px; color:#475569;">Attachments:</strong>
+                                                    <ul class="attachment-list">
+                                                        <?php foreach ($replyAttachments[$reply['id']] as $file): ?>
+                                                            <li>📎 <?= htmlspecialchars($file['original_name']); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+
+                                <!-- Status Audit History -->
+                                <?php if (!empty($statusHistory)): ?>
+                                    <div class="section-title" style="margin-top: 10px;">Status Audit History</div>
+                                    <?php foreach ($statusHistory as $history): ?>
+                                        <div class="timeline-item">
+                                            <strong>
+                                                <?= ucwords(str_replace('_', ' ', $history['old_status'])); ?>
+                                                &rarr;
+                                                <?= ucwords(str_replace('_', ' ', $history['new_status'])); ?>
+                                            </strong>
+                                            &bull;
+                                            <span style="color:#475569;"><?= htmlspecialchars($history['full_name']); ?></span>
+                                            &bull;
+                                            <span style="color:#64748b; font-size:9.5px;"><?= date('M d, Y H:i', strtotime($history['created_at'])); ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+
                             </div>
-                            <div style="margin-top: 2px; white-space: pre-wrap;"><?= htmlspecialchars($reply['message']); ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+
+                            <?php if ($index < count($tickets) - 1): ?>
+                                <div class="ticket-divider"></div>
+                            <?php endif; ?>
+
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        window.addEventListener("load", function () {
+            setTimeout(function() {
+                window.print();
+            }, 300);
+        });
+    </script>
 
 </body>
 </html>

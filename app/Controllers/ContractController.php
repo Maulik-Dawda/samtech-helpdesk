@@ -6,6 +6,8 @@ require_once ROOT_PATH . "/app/Models/Organization.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Ticket.php";
 require_once ROOT_PATH . "/app/Models/TicketReply.php";
+require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
+require_once ROOT_PATH . "/app/Models/Attachment.php";
 
 class ContractController extends Controller
 {
@@ -206,10 +208,16 @@ class ContractController extends Controller
             $contract['end_date']
         );
 
-        // Fetch replies for each ticket for detailed report section
+        // Fetch detailed data for each ticket for detailed report section
         $replyModel = new TicketReply();
+        $historyModel = new TicketStatusHistory();
+        $attachmentModel = new Attachment();
+
         foreach ($tickets as &$ticket) {
             $ticket['replies'] = $replyModel->getByTicketId($ticket['id']);
+            $ticket['statusHistory'] = $historyModel->getByTicketId($ticket['id']);
+            $ticket['attachments'] = $attachmentModel->getTicketAttachments($ticket['id']);
+            $ticket['replyAttachments'] = $attachmentModel->getReplyAttachmentsByTicketId($ticket['id']);
         }
 
         $this->view('contracts/print-report', [
