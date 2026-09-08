@@ -23,8 +23,28 @@ require_once "../app/Middleware/AuthMiddleware.php";
 require_once "../app/Helpers/Csrf.php";
 require_once ROOT_PATH . '/app/Helpers/DateTimeHelper.php';
 
-$router = new Router();
+try {
+    $router = new Router();
 
-require_once "../routes/web.php";
+    require_once "../routes/web.php";
 
-$router->dispatch();
+    $router->dispatch();
+} catch (Throwable $e) {
+    error_log("Global exception in index.php: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+
+    if (session_status() === PHP_SESSION_NONE) {
+        @session_start();
+    }
+
+    $_SESSION['error'] = "An unexpected error occurred. Please try again.";
+
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+    if (!empty($referer)) {
+        header("Location: " . $referer);
+        exit;
+    }
+
+    $fallback = defined('BASE_URL') ? BASE_URL : '/';
+    header("Location: " . $fallback);
+    exit;
+}

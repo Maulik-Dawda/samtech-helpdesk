@@ -213,8 +213,8 @@ class TicketController extends Controller
         $user = $userModel->findById($_SESSION['auth_user_id']);
 
         if (!$user || empty($user['organization_id'])) {
-            http_response_code(403);
-            echo "Access denied. Your account is not linked to any organization.";
+            $_SESSION['error'] = "Access denied. Your account is not linked to any organization.";
+            header("Location: " . BASE_URL . "/tickets");
             exit;
         }
 
@@ -226,8 +226,8 @@ class TicketController extends Controller
         );
 
         if (!$ticket) {
-            http_response_code(404);
-            echo "Ticket not found or access denied.";
+            $_SESSION['error'] = "Ticket not found or access denied.";
+            header("Location: " . BASE_URL . "/tickets");
             exit;
         }
 

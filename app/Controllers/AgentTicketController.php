@@ -197,8 +197,11 @@ class AgentTicketController extends Controller
         $ticket = $ticketModel->findForAgent($id);
 
         if (!$ticket) {
-            http_response_code(404);
-            echo "Ticket not found.";
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['error'] = "Ticket not found or access denied.";
+            header("Location: " . BASE_URL . "/agent/tickets");
             exit;
         }
 
