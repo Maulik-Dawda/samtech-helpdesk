@@ -575,7 +575,7 @@ class AgentTicketController extends Controller
         }
 
         $organizationId = (int)($_POST['organization_id'] ?? 0);
-        $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : (int)$_SESSION['auth_user_id'];
+        $userId = (int)($_POST['user_id'] ?? 0);
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
@@ -583,11 +583,12 @@ class AgentTicketController extends Controller
 
         if (
             empty($organizationId) ||
+            empty($userId) ||
             empty($subject) ||
             empty($description) ||
             $assignedAgentId <= 0
         ) {
-            $_SESSION['error'] = 'All required fields including assigned agent must be completed.';
+            $_SESSION['error'] = 'All required fields (Organization, User, Subject, Description, Assigned Agent) must be completed.';
             header("Location: " . BASE_URL . "/agent/tickets/create");
             exit;
         }

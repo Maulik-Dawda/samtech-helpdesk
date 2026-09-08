@@ -157,30 +157,33 @@ $organizations = is_array($organizations ?? null)
                 </div>
 
 
-                <!-- On Behalf Of User (Optional) -->
+                <!-- On Behalf Of User (Compulsory) -->
 
                 <div class="col-md-6">
 
                     <label class="form-label">
 
-                        On Behalf Of User (Optional)
+                        On Behalf Of User
+
+                        <span class="text-danger">*</span>
 
                     </label>
 
                     <select
                         name="user_id"
                         id="orgUserSelect"
-                        class="form-select">
+                        class="form-select"
+                        required>
 
                         <option value="">
-                            Select User (Defaults to Organization Name)
+                            Select User *
                         </option>
 
                     </select>
 
                     <div class="form-text">
 
-                        Select a user from this company, or leave blank to attribute ticket to company name.
+                        Select the customer user from this organization.
 
                     </div>
 
@@ -434,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const selectedOrgId = orgSelect.val();
         userSelect.empty();
-        userSelect.append('<option value="">Select User (Defaults to Organization Name)</option>');
+        userSelect.append('<option value="">Select User *</option>');
 
         if (selectedOrgId && orgUsersMap[selectedOrgId]) {
             const users = orgUsersMap[selectedOrgId];
