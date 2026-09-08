@@ -45,10 +45,10 @@ $organizationTickets = is_array($organizationTickets ?? null)
 $adminName = $_SESSION['auth_user_name'] ?? 'Admin';
 
 $greeting = DateTimeHelper::greeting();
-$dubaiNow = DateTimeHelper::now();
+$now = DateTimeHelper::now();
 
-$currentDate = $dubaiNow->format('l, d F Y');
-$currentTime = $dubaiNow->format('h:i:s A');
+$currentDate = $now->format('l, d F Y');
+$currentTime = $now->format('h:i:s A');
 
 /*
 |--------------------------------------------------------------------------
@@ -749,7 +749,6 @@ function dashboardActivityIcon(string $action): string
                                                     'h:i A'
                                                 )
                                             ); ?>
-                                            Dubai
                                         </div>
 
                                     </td>
@@ -1001,7 +1000,6 @@ function dashboardActivityIcon(string $action): string
                                                 'd M Y, h:i A'
                                             )
                                         ); ?>
-                                        Dubai Time
                                     </span>
 
                                 </div>
