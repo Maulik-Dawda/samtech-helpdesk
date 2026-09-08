@@ -73,9 +73,6 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
                                     End Date <span class="text-danger">*</span>
-                                    <span id="endDateLockBadge" class="badge bg-light text-muted border ms-1" style="font-weight: normal;">
-                                        <i class="bi bi-lock-fill text-secondary"></i> Locked
-                                    </span>
                                 </label>
                                 <input type="date" name="end_date" id="endDate" class="form-control" value="<?= date('Y-m-d', strtotime('+1 year -1 day')); ?>" required readonly style="background-color: #f1f5f9;">
                             </div>
@@ -102,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const typeSelect = document.getElementById('contractTypeSelect');
     const startDate = document.getElementById('startDate');
     const endDate = document.getElementById('endDate');
-    const lockBadge = document.getElementById('endDateLockBadge');
 
     function updateEndDateAndLockState() {
         if (!startDate.value) return;
@@ -116,10 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Unlock End Date for custom duration
             endDate.readOnly = false;
             endDate.style.backgroundColor = '#ffffff';
-            if (lockBadge) {
-                lockBadge.innerHTML = '<i class="bi bi-unlock-fill text-success"></i> Editable';
-                lockBadge.className = 'badge bg-success-subtle text-success-emphasis border border-success-subtle ms-1';
-            }
         } else {
             // Calculate end date based on type
             let end = new Date(start);
@@ -145,10 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Lock End Date
             endDate.readOnly = true;
             endDate.style.backgroundColor = '#f1f5f9';
-            if (lockBadge) {
-                lockBadge.innerHTML = '<i class="bi bi-lock-fill text-secondary"></i> Locked';
-                lockBadge.className = 'badge bg-light text-muted border ms-1';
-            }
         }
     }
 
