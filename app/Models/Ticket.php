@@ -11,7 +11,14 @@ class Ticket extends Model
 
     public function create($data)
     {
+        $userId = !empty($data['user_id']) ? (int)$data['user_id'] : (!empty($data['created_by']) ? (int)$data['created_by'] : null);
         $assignedAgentId = !empty($data['assigned_agent_id']) ? (int)$data['assigned_agent_id'] : null;
+
+        try {
+            $this->db->exec("ALTER TABLE `tickets` MODIFY COLUMN `user_id` INT NULL");
+        } catch (Throwable $e) {
+            // Ignored if column modification fails or is unsupported
+        }
 
         try {
             $stmt = $this->db->prepare("
@@ -34,9 +41,9 @@ class Ticket extends Model
                 )
             ");
 
-            return $stmt->execute([
+            $success = $stmt->execute([
                 $data['ticket_no'],
-                $data['user_id'],
+                $userId,
                 $data['organization_id'],
                 $assignedAgentId,
                 $data['created_by'],
@@ -46,7 +53,14 @@ class Ticket extends Model
                 $data['priority'],
                 $data['status']
             ]);
+
+            if ($success) {
+                return (int)$this->db->lastInsertId() ?: true;
+            }
+            return false;
         } catch (Throwable $e) {
+            error_log("Error in Ticket::create first try: " . $e->getMessage());
+
             $stmt = $this->db->prepare("
                 INSERT INTO tickets
                 (
@@ -66,9 +80,9 @@ class Ticket extends Model
                 )
             ");
 
-            return $stmt->execute([
+            $success = $stmt->execute([
                 $data['ticket_no'],
-                $data['user_id'],
+                $userId,
                 $data['organization_id'],
                 $data['created_by'],
                 $data['created_by_role'],
@@ -77,6 +91,11 @@ class Ticket extends Model
                 $data['priority'],
                 $data['status']
             ]);
+
+            if ($success) {
+                return (int)$this->db->lastInsertId() ?: true;
+            }
+            return false;
         }
     }
 

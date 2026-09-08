@@ -575,7 +575,7 @@ class AgentTicketController extends Controller
         }
 
         $organizationId = (int)($_POST['organization_id'] ?? 0);
-        $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : null;
+        $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : (int)$_SESSION['auth_user_id'];
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
@@ -617,7 +617,7 @@ class AgentTicketController extends Controller
 
         $userModel = new User();
         $agent = $userModel->findById($_SESSION['auth_user_id']);
-        $createdTicket = $ticketModel->findForAgent($created);
+        $createdTicket = $ticketModel->findByTicketNo($ticketNo);
         if ($createdTicket && $agent) {
             TicketNotificationService::ticketCreated($createdTicket, $agent);
         }
