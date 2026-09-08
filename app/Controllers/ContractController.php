@@ -80,13 +80,12 @@ class ContractController extends Controller
         }
 
         $organizationId = (int)($_POST['organization_id'] ?? 0);
-        $contractName = trim($_POST['contract_name'] ?? '');
         $contractType = trim($_POST['contract_type'] ?? 'annual');
         $startDate = trim($_POST['start_date'] ?? '');
         $endDate = trim($_POST['end_date'] ?? '');
 
-        if (empty($organizationId) || empty($contractName) || empty($startDate) || empty($endDate)) {
-            $_SESSION['error'] = "Organization, Contract Name, Start Date, and End Date are required.";
+        if (empty($organizationId) || empty($startDate) || empty($endDate)) {
+            $_SESSION['error'] = "Organization, Start Date, and End Date are required.";
             header("Location: " . BASE_URL . "/contracts/create" . ($organizationId ? "?organization_id=" . $organizationId : ""));
             exit;
         }
@@ -101,6 +100,9 @@ class ContractController extends Controller
         if (!in_array($contractType, $validTypes)) {
             $contractType = 'annual';
         }
+
+        $typeLabel = ucwords(str_replace('_', ' ', $contractType));
+        $contractName = $typeLabel . " Maintenance Contract (" . date('M d, Y', strtotime($startDate)) . " - " . date('M d, Y', strtotime($endDate)) . ")";
 
         $contractModel = new Contract();
         $createdId = $contractModel->create([

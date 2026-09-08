@@ -34,6 +34,10 @@ class Contract extends Model
 
     public function create($data)
     {
+        $contractName = !empty($data['contract_name'])
+            ? $data['contract_name']
+            : (ucwords(str_replace('_', ' ', $data['contract_type'] ?? 'annual')) . " Maintenance Contract (" . date('M d, Y', strtotime($data['start_date'])) . " - " . date('M d, Y', strtotime($data['end_date'])) . ")");
+
         $stmt = $this->db->prepare("
             INSERT INTO contracts
             (organization_id, contract_name, contract_type, start_date, end_date, created_by)
@@ -42,7 +46,7 @@ class Contract extends Model
 
         $success = $stmt->execute([
             $data['organization_id'],
-            $data['contract_name'],
+            $contractName,
             $data['contract_type'],
             $data['start_date'],
             $data['end_date'],

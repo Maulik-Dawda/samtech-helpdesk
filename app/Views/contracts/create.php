@@ -48,16 +48,6 @@
                             </select>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Contract Name / Reference <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" name="contract_name" class="form-control" placeholder="e.g. Annual Support & Maintenance 2026" required>
-                            <div class="form-text">
-                                Provide a descriptive name or contract reference number.
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">
