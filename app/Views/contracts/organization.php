@@ -54,16 +54,14 @@
                     <label class="form-label fw-bold text-dark small">
                         <i class="bi bi-funnel-fill text-primary me-1"></i>Select Contract / Renewal Filter
                     </label>
-                    <select class="form-select form-select-lg shadow-none" onchange="location = this.value;">
+                    <select class="form-select form-select-lg shadow-none fs-6" style="border-radius: 10px;" onchange="if(this.value) window.location.href = this.value;">
                         <?php foreach ($contracts as $c): ?>
                             <?php
                             $isSel = ((int)$c['id'] === (int)$selectedContract['id']);
-                            $cType = ucwords(str_replace('_', ' ', $c['contract_type']));
-                            $cRange = date('M d, Y', strtotime($c['start_date'])) . ' - ' . date('M d, Y', strtotime($c['end_date']));
                             $url = BASE_URL . "/contracts/organization/" . $organization['id'] . "?contract_id=" . $c['id'];
                             ?>
                             <option value="<?= $url; ?>" <?= $isSel ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($c['contract_name']); ?> (<?= $cType; ?>: <?= $cRange; ?>)
+                                <?= htmlspecialchars($c['contract_name']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -219,12 +217,8 @@
                     <label class="form-label fw-bold text-dark small">Choose Contract Period</label>
                     <select id="reportContractSelect" class="form-select form-select-lg shadow-none w-100 fs-6" style="border-radius: 10px; padding: 12px 16px;">
                         <?php foreach ($contracts as $c): ?>
-                            <?php
-                            $cType = ucwords(str_replace('_', ' ', $c['contract_type']));
-                            $cRange = date('M d, Y', strtotime($c['start_date'])) . ' - ' . date('M d, Y', strtotime($c['end_date']));
-                            ?>
                             <option value="<?= $c['id']; ?>" <?= ((int)$c['id'] === (int)$selectedContract['id']) ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($c['contract_name']); ?> (<?= $cType; ?>: <?= $cRange; ?>)
+                                <?= htmlspecialchars($c['contract_name']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -243,11 +237,19 @@
 <script>
 function openPdfReport() {
     const select = document.getElementById('reportContractSelect');
-    const contractId = select.value;
+    const contractId = select ? select.value : '';
     if (contractId) {
-        window.open('<?= BASE_URL ?>/contracts/print-report/' + contractId, '_blank');
-        const modal = bootstrap.Modal.getInstance(document.getElementById('generateReportModal'));
-        if (modal) modal.hide();
+        const targetUrl = '<?= BASE_URL ?>/contracts/print-report/' + contractId;
+        const newWin = window.open(targetUrl, '_blank');
+        if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+            window.location.href = targetUrl;
+        } else {
+            const modalEl = document.getElementById('generateReportModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            }
+        }
     }
 }
 </script>
