@@ -310,6 +310,22 @@ if ($isAdmin) {
 
             </div>
 
+            <div class="sidebar-section">
+
+                <div class="sidebar-title">
+                    Contracts
+                </div>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/contracts'); ?>"
+                    href="<?= BASE_URL ?>/contracts"
+                >
+                    <i class="bi bi-file-text-fill sidebar-link-icon"></i>
+                    <span class="sidebar-link-text">Contracts</span>
+                </a>
+
+            </div>
+
         <?php endif; ?>
 
         <?php if ($role === 'user' && $isOrgAdmin): ?>

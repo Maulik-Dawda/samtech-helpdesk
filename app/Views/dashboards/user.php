@@ -124,6 +124,49 @@ function userDashboardPriorityClass(string $priority): string
 
             </div>
 
+    <?php
+    if (!empty($user['organization_id'])) {
+        require_once ROOT_PATH . "/app/Models/Contract.php";
+        $contractModelObj = new Contract();
+        $userOrgContract = $contractModelObj->getLatestContractForOrganization($user['organization_id']);
+        if ($userOrgContract) {
+            $userContractStatus = $contractModelObj->calculateContractStatus($userOrgContract);
+            ?>
+            <div class="card border-0 shadow-sm mt-3 mb-3 <?= $userContractStatus['card_class']; ?>" style="border-radius: 14px;">
+                <div class="card-body p-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge <?= $userContractStatus['badge_class']; ?> px-2 py-1">
+                                    <i class="bi bi-shield-check me-1"></i> <?= htmlspecialchars($userContractStatus['status_label']); ?>
+                                </span>
+                                <span class="badge bg-light text-dark border small">
+                                    <?= ucwords(str_replace('_', ' ', $userOrgContract['contract_type'])); ?> Contract
+                                </span>
+                            </div>
+                            <div class="fw-bold fs-6">
+                                <?= htmlspecialchars($userOrgContract['contract_name']); ?>
+                            </div>
+                            <div class="small opacity-75">
+                                <i class="bi bi-calendar-range me-1"></i>
+                                <strong>Active Period:</strong> <?= date('M d, Y', strtotime($userOrgContract['start_date'])); ?> &mdash; <?= date('M d, Y', strtotime($userOrgContract['end_date'])); ?>
+                            </div>
+                        </div>
+                        <div class="text-md-end">
+                            <?php if ($userContractStatus['is_expired']): ?>
+                                <span class="fw-bold text-danger">Contract Expired</span>
+                            <?php else: ?>
+                                <span class="fw-bold fs-5"><?= (int)$userContractStatus['days_left']; ?> Days Remaining</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+    }
+    ?>
+
             <!-- Quick Actions -->
             <div class="quick-actions-grid mt-4">
 

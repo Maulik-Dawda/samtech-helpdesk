@@ -88,6 +88,51 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
 
     </section>
 
+    <?php
+    require_once ROOT_PATH . "/app/Models/Contract.php";
+    $contractModelObj = new Contract();
+    $latestOrgContract = $contractModelObj->getLatestContractForOrganization($organizationId);
+    $orgContractStatus = $latestOrgContract ? $contractModelObj->calculateContractStatus($latestOrgContract) : null;
+    ?>
+
+    <?php if ($latestOrgContract && $orgContractStatus): ?>
+        <div class="card border-0 shadow-sm mb-4 <?= $orgContractStatus['card_class']; ?>" style="border-radius: 14px;">
+            <div class="card-body p-3">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge <?= $orgContractStatus['badge_class']; ?> px-2 py-1">
+                                <i class="bi bi-shield-check me-1"></i> <?= htmlspecialchars($orgContractStatus['status_label']); ?>
+                            </span>
+                            <span class="badge bg-light text-dark border small">
+                                <?= ucwords(str_replace('_', ' ', $latestOrgContract['contract_type'])); ?> Contract
+                            </span>
+                        </div>
+                        <div class="fw-bold fs-6 text-dark">
+                            <?= htmlspecialchars($latestOrgContract['contract_name']); ?>
+                        </div>
+                        <div class="small opacity-75">
+                            <i class="bi bi-calendar-range me-1"></i>
+                            <strong>Active Period:</strong> <?= date('M d, Y', strtotime($latestOrgContract['start_date'])); ?> &mdash; <?= date('M d, Y', strtotime($latestOrgContract['end_date'])); ?>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-md-end">
+                            <?php if ($orgContractStatus['is_expired']): ?>
+                                <span class="fw-bold text-danger">Contract Expired</span>
+                            <?php else: ?>
+                                <span class="fw-bold fs-5"><?= (int)$orgContractStatus['days_left']; ?> Days Remaining</span>
+                            <?php endif; ?>
+                        </div>
+                        <a href="<?= BASE_URL ?>/contracts/organization/<?= $organizationId; ?>" class="btn btn-sm btn-outline-dark">
+                            View Contracts &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <!-- =========================================================
          TOP ROW: ORG INFO (LEFT) & USERS (RIGHT)
     ========================================================== -->

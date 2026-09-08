@@ -149,3 +149,9 @@ $router->get('/reports/ticket-detail/print/{id}', 'ReportController@printTicketD
 $router->get('/unsubscribe', 'AuthController@unsubscribePage');
 $router->post('/unsubscribe', 'AuthController@processUnsubscribe');
 
+$router->get('/contracts', 'ContractController@index');
+$router->get('/contracts/create', 'ContractController@create');
+$router->post('/contracts/store', 'ContractController@store');
+$router->get('/contracts/organization/{id}', 'ContractController@organization');
+$router->get('/contracts/print-report/{id}', 'ContractController@printReport');
+
