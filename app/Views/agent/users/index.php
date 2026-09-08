@@ -180,6 +180,29 @@
                                             Edit
                                         </a>
 
+                                        <?php
+                                        $userModelObj = new User();
+                                        $isUserLocked = $userModelObj->isLocked($user['id']);
+                                        ?>
+
+                                        <?php if ($isUserLocked): ?>
+                                            <a
+                                                href="<?= BASE_URL ?>/agent/users/toggle-lock/<?= $user['id']; ?>"
+                                                class="action-link text-danger border-danger me-1"
+                                                onclick="return confirm('Are you sure you want to unlock this user?')"
+                                                title="Locked - Click to Unlock">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a
+                                                href="<?= BASE_URL ?>/agent/users/toggle-lock/<?= $user['id']; ?>"
+                                                class="action-link text-success border-success me-1"
+                                                onclick="return confirm('Are you sure you want to lock this user?')"
+                                                title="Unlocked - Click to Lock">
+                                                <i class="bi bi-unlock-fill"></i>
+                                            </a>
+                                        <?php endif; ?>
+
                                         <?php if ((int)$user['is_active'] === 1): ?>
 
                                             <a

@@ -8,14 +8,32 @@
 
             <div class="card border-0 shadow-sm" style="border-radius:18px;">
 
-                <div class="card-header bg-white p-4">
+                <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center">
 
-                    <h4 class="fw-bold mb-1">
-                        Edit User
-                    </h4>
+                    <div>
+                        <h4 class="fw-bold mb-1">
+                            Edit User
+                        </h4>
 
-                    <div class="text-muted small">
-                        Update user details and permissions.
+                        <div class="text-muted small">
+                            Update user details and permissions.
+                        </div>
+                    </div>
+
+                    <div>
+                        <?php
+                        $userModelObj = new User();
+                        $isUserLocked = $userModelObj->isLocked($user['id']);
+                        ?>
+                        <?php if ($isUserLocked): ?>
+                            <a href="<?= BASE_URL ?>/agent/users/toggle-lock/<?= $user['id']; ?>" class="text-decoration-none" title="User is Locked - Click to Unlock" onclick="return confirm('Are you sure you want to unlock this user?')">
+                                <i class="bi bi-lock-fill text-danger fs-3"></i>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?= BASE_URL ?>/agent/users/toggle-lock/<?= $user['id']; ?>" class="text-decoration-none" title="User is Unlocked - Click to Lock" onclick="return confirm('Are you sure you want to lock this user?')">
+                                <i class="bi bi-unlock-fill text-success fs-3"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
 
                 </div>

@@ -484,4 +484,33 @@ class AdminUserController extends Controller
         header("Location: " . BASE_URL . "/admin/users/show/" . $id);
         exit;
     }
+
+    public function toggleLock($id)
+    {
+        $this->adminGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            $referer = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/admin/users");
+            header("Location: " . $referer);
+            exit;
+        }
+
+        $wasLocked = $userModel->isLocked($id);
+        $userModel->toggleLockUser($id);
+
+        if ($wasLocked) {
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' unlocked successfully.";
+        } else {
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' locked successfully.";
+        }
+
+        $referer = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/admin/users");
+        header("Location: " . $referer);
+        exit;
+    }
 }
+

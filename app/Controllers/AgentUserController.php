@@ -293,4 +293,39 @@ class AgentUserController extends Controller
         header("Location: " . BASE_URL . "/agent/users");
         exit;
     }
+
+    public function toggleLock($id)
+    {
+        $this->agentGuard();
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "User not found.";
+            $referer = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/agent/users");
+            header("Location: " . $referer);
+            exit;
+        }
+
+        if ($user['role'] !== 'user') {
+            $_SESSION['error'] = "Only end-user accounts can be updated by agents.";
+            $referer = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/agent/users");
+            header("Location: " . $referer);
+            exit;
+        }
+
+        $wasLocked = $userModel->isLocked($id);
+        $userModel->toggleLockUser($id);
+
+        if ($wasLocked) {
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' unlocked successfully.";
+        } else {
+            $_SESSION['success'] = "User '" . htmlspecialchars($user['full_name']) . "' locked successfully.";
+        }
+
+        $referer = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . "/agent/users");
+        header("Location: " . $referer);
+        exit;
+    }
 }

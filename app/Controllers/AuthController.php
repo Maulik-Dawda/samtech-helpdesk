@@ -277,9 +277,30 @@ class AuthController extends Controller
         }
 
         $userId = $_SESSION['user_login_otp_user_id'];
+        $userModel = new User();
+        $user = $userModel->findById($userId);
+        $email = $user['email'] ?? ($_SESSION['user_login_otp_email'] ?? '');
+
+        if ($userModel->isLocked($userId)) {
+            $_SESSION['error'] = "Account temporarily locked due to too many failed attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
+
+        require_once ROOT_PATH . "/app/Models/VerificationAttempt.php";
+        $verAttemptModel = new VerificationAttempt();
+
+        if ($verAttemptModel->countRecentFailed($email, $this->getIpAddress(), 15) >= 10) {
+            $userModel->lockUser($userId, 15);
+            $_SESSION['error'] = "Account temporarily locked due to too many failed verification attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
+
         $otp = trim($_POST['otp'] ?? '');
 
         if (!preg_match('/^\d{6}$/', $otp)) {
+            $verAttemptModel->record($email, $this->getIpAddress(), 'user_login_otp', false);
             $_SESSION['error'] = "Please enter a valid 6-digit OTP.";
             header("Location: " . BASE_URL . "/user-login-otp");
             exit;
@@ -289,15 +310,21 @@ class AuthController extends Controller
         $otpRow = $otpModel->verifyOtp($userId, $otp);
 
         if (!$otpRow) {
+            $verAttemptModel->record($email, $this->getIpAddress(), 'user_login_otp', false);
+            $failedCount = $verAttemptModel->countRecentFailed($email, $this->getIpAddress(), 15);
+            if ($failedCount >= 10) {
+                $userModel->lockUser($userId, 15);
+                $_SESSION['error'] = "Account temporarily locked due to too many failed verification attempts. Please try again after 15 minutes.";
+                header("Location: " . BASE_URL . "/user-login");
+                exit;
+            }
             $_SESSION['error'] = "Invalid or expired OTP.";
             header("Location: " . BASE_URL . "/user-login-otp");
             exit;
         }
 
+        $verAttemptModel->record($email, $this->getIpAddress(), 'user_login_otp', true);
         $otpModel->markUsed($otpRow['id']);
-
-        $userModel = new User();
-        $user = $userModel->findById($userId);
 
         if (!$user) {
             $_SESSION['error'] = "User not found.";
@@ -536,9 +563,30 @@ class AuthController extends Controller
         }
 
         $userId = $_SESSION['forgot_password_user_id'];
+        $userModel = new User();
+        $user = $userModel->findById($userId);
+        $email = $user['email'] ?? '';
+
+        if ($userModel->isLocked($userId)) {
+            $_SESSION['error'] = "Account temporarily locked due to too many failed attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/forgot-password");
+            exit;
+        }
+
+        require_once ROOT_PATH . "/app/Models/VerificationAttempt.php";
+        $verAttemptModel = new VerificationAttempt();
+
+        if ($verAttemptModel->countRecentFailed($email, $this->getIpAddress(), 15) >= 10) {
+            $userModel->lockUser($userId, 15);
+            $_SESSION['error'] = "Account temporarily locked due to too many failed verification attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/forgot-password");
+            exit;
+        }
+
         $otp = trim($_POST['otp'] ?? '');
 
         if (!preg_match('/^\d{6}$/', $otp)) {
+            $verAttemptModel->record($email, $this->getIpAddress(), 'forgot_password_otp', false);
             $_SESSION['error'] = "Please enter a valid 6-digit OTP.";
             header("Location: " . BASE_URL . "/forgot-password-verify");
             exit;
@@ -548,11 +596,20 @@ class AuthController extends Controller
         $otpRow = $otpModel->verifyOtp($userId, $otp);
 
         if (!$otpRow) {
+            $verAttemptModel->record($email, $this->getIpAddress(), 'forgot_password_otp', false);
+            $failedCount = $verAttemptModel->countRecentFailed($email, $this->getIpAddress(), 15);
+            if ($failedCount >= 10) {
+                $userModel->lockUser($userId, 15);
+                $_SESSION['error'] = "Account temporarily locked due to too many failed verification attempts. Please try again after 15 minutes.";
+                header("Location: " . BASE_URL . "/forgot-password");
+                exit;
+            }
             $_SESSION['error'] = "Invalid or expired OTP.";
             header("Location: " . BASE_URL . "/forgot-password-verify");
             exit;
         }
 
+        $verAttemptModel->record($email, $this->getIpAddress(), 'forgot_password_otp', true);
         $otpModel->markUsed($otpRow['id']);
 
         $_SESSION['forgot_password_verified'] = true;

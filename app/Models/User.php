@@ -734,4 +734,109 @@ class User extends Model
 
         return $stmt->execute([$userId]);
     }
+
+    public function ensureLockoutColumnExists()
+    {
+        try {
+            $this->db->exec("ALTER TABLE `users` ADD COLUMN `locked_until` DATETIME DEFAULT NULL");
+        } catch (Throwable $e) {
+            // Ignored if column already exists
+        }
+    }
+
+    public function isLocked($userIdOrEmail)
+    {
+        $this->ensureLockoutColumnExists();
+
+        if (is_numeric($userIdOrEmail)) {
+            $user = $this->findById($userIdOrEmail);
+        } else {
+            $user = $this->findByEmail($userIdOrEmail);
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        if ((int)($user['is_active'] ?? 1) === 0) {
+            return true;
+        }
+
+        if (!empty($user['locked_until'])) {
+            if (strtotime($user['locked_until']) > time()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function lockUser($userIdOrEmail, $minutes = 15)
+    {
+        $this->ensureLockoutColumnExists();
+        $minutes = (int)$minutes;
+
+        if (is_numeric($userIdOrEmail)) {
+            $stmt = $this->db->prepare("
+                UPDATE users
+                SET locked_until = DATE_ADD(NOW(), INTERVAL {$minutes} MINUTE)
+                WHERE id = ?
+            ");
+            return $stmt->execute([$userIdOrEmail]);
+        } else {
+            $stmt = $this->db->prepare("
+                UPDATE users
+                SET locked_until = DATE_ADD(NOW(), INTERVAL {$minutes} MINUTE)
+                WHERE email = ?
+            ");
+            return $stmt->execute([$userIdOrEmail]);
+        }
+    }
+
+    public function unlockUser($userIdOrEmail)
+    {
+        $this->ensureLockoutColumnExists();
+
+        if (is_numeric($userIdOrEmail)) {
+            $user = $this->findById($userIdOrEmail);
+        } else {
+            $user = $this->findByEmail($userIdOrEmail);
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET locked_until = NULL, is_active = 1
+            WHERE id = ?
+        ");
+        $result = $stmt->execute([$user['id']]);
+
+        // Clear failed login attempts
+        try {
+            $stmtLogin = $this->db->prepare("DELETE FROM login_attempts WHERE email = ?");
+            $stmtLogin->execute([$user['email']]);
+        } catch (Throwable $e) {}
+
+        // Clear failed verification attempts
+        try {
+            require_once ROOT_PATH . "/app/Models/VerificationAttempt.php";
+            $verModel = new VerificationAttempt();
+            $verModel->clearAttempts($user['email']);
+        } catch (Throwable $e) {}
+
+        return $result;
+    }
+
+    public function toggleLockUser($userIdOrEmail)
+    {
+        if ($this->isLocked($userIdOrEmail)) {
+            return $this->unlockUser($userIdOrEmail);
+        } else {
+            return $this->lockUser($userIdOrEmail, 15);
+        }
+    }
 }
+

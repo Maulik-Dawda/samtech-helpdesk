@@ -454,6 +454,31 @@ $totalActive = count(array_filter(
 
                                             </a>
 
+                                            <?php
+                                            $userModelObj = new User();
+                                            $isUserLocked = $userModelObj->isLocked($user['id']);
+                                            ?>
+
+                                            <?php if ($isUserLocked): ?>
+                                                <a
+                                                    href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $user['id']; ?>"
+                                                    class="table-action-btn text-danger"
+                                                    style="border-color: #fecdd3; background-color: #fff1f2;"
+                                                    onclick="return confirm('Are you sure you want to unlock this user?')"
+                                                    title="Locked - Click to Unlock">
+                                                    <i class="bi bi-lock-fill"></i>
+                                                </a>
+                                            <?php else: ?>
+                                                <a
+                                                    href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $user['id']; ?>"
+                                                    class="table-action-btn text-success"
+                                                    style="border-color: #bbf7d0; background-color: #f0fdf4;"
+                                                    onclick="return confirm('Are you sure you want to lock this user?')"
+                                                    title="Unlocked - Click to Lock">
+                                                    <i class="bi bi-unlock-fill"></i>
+                                                </a>
+                                            <?php endif; ?>
+
                                             <a
                                                 href="<?= BASE_URL ?>/admin/users/disable/<?= $user['id']; ?>"
                                                 class="table-action-btn"

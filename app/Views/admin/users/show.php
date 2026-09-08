@@ -285,6 +285,21 @@ function getProfileTicketPriorityClass(string $priority): string
 
                             <?php endif; ?>
 
+                            <?php
+                            $userModelObj = new User();
+                            $isUserLocked = $userModelObj->isLocked($userId);
+                            ?>
+
+                            <?php if ($isUserLocked): ?>
+                                <a href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $userId; ?>" class="text-decoration-none ms-2" title="User is Locked - Click to Unlock" onclick="return confirm('Are you sure you want to unlock this user?')">
+                                    <i class="bi bi-lock-fill text-danger fs-4 align-middle"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $userId; ?>" class="text-decoration-none ms-2" title="User is Unlocked - Click to Lock" onclick="return confirm('Are you sure you want to lock this user?')">
+                                    <i class="bi bi-unlock-fill text-success fs-4 align-middle"></i>
+                                </a>
+                            <?php endif; ?>
+
                         </div>
 
                     </div>

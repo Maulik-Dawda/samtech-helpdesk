@@ -158,9 +158,31 @@ class MfaController extends Controller
         }
 
         $userId = $_SESSION['mfa_pending_user_id'];
+        $userModel = new User();
+        $user = $userModel->findById($userId);
+        $email = $_SESSION['mfa_pending_email'] ?? ($user['email'] ?? '');
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+        if ($userModel->isLocked($userId)) {
+            $_SESSION['error'] = "Account temporarily locked due to too many failed attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
+
+        require_once ROOT_PATH . "/app/Models/VerificationAttempt.php";
+        $verAttemptModel = new VerificationAttempt();
+
+        if ($verAttemptModel->countRecentFailed($email, $ipAddress, 15) >= 10) {
+            $userModel->lockUser($userId, 15);
+            $_SESSION['error'] = "Account temporarily locked due to too many failed MFA verification attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/user-login");
+            exit;
+        }
+
         $code = trim($_POST['code'] ?? '');
 
         if (!preg_match('/^\d{6}$/', $code)) {
+            $verAttemptModel->record($email, $ipAddress, 'mfa_verify', false);
             $_SESSION['error'] = "Please enter a valid 6-digit authenticator code.";
             header("Location: " . BASE_URL . "/mfa-verify");
             exit;
@@ -178,10 +200,20 @@ class MfaController extends Controller
         $tfa = $this->tfa();
 
         if (!$tfa->verifyCode($secretRow['secret_key'], $code)) {
+            $verAttemptModel->record($email, $ipAddress, 'mfa_verify', false);
+            $failedCount = $verAttemptModel->countRecentFailed($email, $ipAddress, 15);
+            if ($failedCount >= 10) {
+                $userModel->lockUser($userId, 15);
+                $_SESSION['error'] = "Account temporarily locked due to too many failed MFA verification attempts. Please try again after 15 minutes.";
+                header("Location: " . BASE_URL . "/user-login");
+                exit;
+            }
             $_SESSION['error'] = "Invalid authenticator code.";
             header("Location: " . BASE_URL . "/mfa-verify");
             exit;
         }
+
+        $verAttemptModel->record($email, $ipAddress, 'mfa_verify', true);
 
         session_regenerate_id(true);
 
@@ -349,9 +381,31 @@ class MfaController extends Controller
         }
 
         $userId = $_SESSION['mfa_recovery_user_id'];
+        $userModel = new User();
+        $user = $userModel->findById($userId);
+        $email = $_SESSION['mfa_recovery_email'] ?? ($user['email'] ?? '');
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+        if ($userModel->isLocked($userId)) {
+            $_SESSION['error'] = "Account temporarily locked due to too many failed attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/mfa-recovery");
+            exit;
+        }
+
+        require_once ROOT_PATH . "/app/Models/VerificationAttempt.php";
+        $verAttemptModel = new VerificationAttempt();
+
+        if ($verAttemptModel->countRecentFailed($email, $ipAddress, 15) >= 10) {
+            $userModel->lockUser($userId, 15);
+            $_SESSION['error'] = "Account temporarily locked due to too many failed verification attempts. Please try again after 15 minutes.";
+            header("Location: " . BASE_URL . "/mfa-recovery");
+            exit;
+        }
+
         $otp = trim($_POST['otp'] ?? '');
 
         if (!preg_match('/^\d{6}$/', $otp)) {
+            $verAttemptModel->record($email, $ipAddress, 'mfa_recovery_otp', false);
             $_SESSION['error'] = "Please enter a valid 6-digit OTP.";
             header("Location: " . BASE_URL . "/mfa-recovery-verify");
             exit;
@@ -361,10 +415,20 @@ class MfaController extends Controller
         $otpRow = $otpModel->verifyOtp($userId, $otp);
 
         if (!$otpRow) {
+            $verAttemptModel->record($email, $ipAddress, 'mfa_recovery_otp', false);
+            $failedCount = $verAttemptModel->countRecentFailed($email, $ipAddress, 15);
+            if ($failedCount >= 10) {
+                $userModel->lockUser($userId, 15);
+                $_SESSION['error'] = "Account temporarily locked due to too many failed verification attempts. Please try again after 15 minutes.";
+                header("Location: " . BASE_URL . "/mfa-recovery");
+                exit;
+            }
             $_SESSION['error'] = "Invalid or expired OTP.";
             header("Location: " . BASE_URL . "/mfa-recovery-verify");
             exit;
         }
+
+        $verAttemptModel->record($email, $ipAddress, 'mfa_recovery_otp', true);
 
         $marked = $otpModel->markUsed($otpRow['id']);
 

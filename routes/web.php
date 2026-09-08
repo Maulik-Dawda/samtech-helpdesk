@@ -76,6 +76,7 @@ $router->get('/admin/users/edit/{id}', 'AdminUserController@edit');
 $router->post('/admin/users/update/{id}', 'AdminUserController@update');
 
 $router->get('/admin/users/disable/{id}', 'AdminUserController@disable');
+$router->get('/admin/users/toggle-lock/{id}', 'AdminUserController@toggleLock');
 $router->get('/admin/users/delete/{id}', 'AdminUserController@delete');
 $router->post('/admin/users/delete/{id}', 'AdminUserController@delete');
 $router->post('/admin/users/toggle-mfa-login/{id}', 'AdminUserController@toggleMfaLogin');
@@ -135,6 +136,7 @@ $router->get('/agent/users/edit/{id}', 'AgentUserController@edit');
 $router->post('/agent/users/update/{id}', 'AgentUserController@update');
 
 $router->get('/agent/users/disable/{id}', 'AgentUserController@disable');
+$router->get('/agent/users/toggle-lock/{id}', 'AgentUserController@toggleLock');
 $router->get('/agent/users/delete/{id}', 'AgentUserController@delete');
 $router->post('/agent/users/delete/{id}', 'AgentUserController@delete');
 
