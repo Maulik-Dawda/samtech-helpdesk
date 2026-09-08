@@ -1,35 +1,39 @@
 <?php require_once ROOT_PATH . "/app/Views/layouts/header.php"; ?>
 
-<div class="container-fluid mt-4">
+<div class="container-fluid px-0">
 
     <!-- Header Navigation & Action Row -->
-    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="<?= BASE_URL ?>/contracts" class="text-muted text-decoration-none small">
-                    <i class="bi bi-arrow-left"></i> Contracts
-                </a>
-                <span class="text-muted small">/</span>
-                <span class="badge bg-light text-dark border"><?= htmlspecialchars($organization['name']); ?></span>
+    <section class="ui-panel mb-4">
+        <div class="ui-panel-body">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <a href="<?= BASE_URL ?>/contracts" class="text-muted text-decoration-none small">
+                            <i class="bi bi-arrow-left me-1"></i> Contracts
+                        </a>
+                        <span class="text-muted small">/</span>
+                        <span class="badge bg-light text-dark border"><?= htmlspecialchars($organization['name']); ?></span>
+                    </div>
+                    <h2 class="fw-bold mb-0">
+                        <i class="bi bi-building text-primary me-2"></i><?= htmlspecialchars($organization['name']); ?>
+                    </h2>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <!-- Modal Trigger: Generate Contract Report -->
+                    <button type="button" class="btn btn-outline-danger fw-semibold" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#generateReportModal">
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Generate Contract Report
+                    </button>
+
+                    <?php if ($canCreate): ?>
+                        <a href="<?= BASE_URL ?>/contracts/create?organization_id=<?= $organization['id']; ?>" class="btn btn-primary-custom">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Add Contract / Renewal
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
-            <h2 class="fw-bold mb-0">
-                <i class="bi bi-building text-primary me-2"></i><?= htmlspecialchars($organization['name']); ?>
-            </h2>
         </div>
-
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <!-- Modal Trigger: Generate Contract Report -->
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#generateReportModal">
-                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Generate Contract Report
-            </button>
-
-            <?php if ($canCreate): ?>
-                <a href="<?= BASE_URL ?>/contracts/create?organization_id=<?= $organization['id']; ?>" class="btn btn-primary-custom">
-                    <i class="bi bi-plus-circle-fill me-1"></i> Add Contract / Renewal
-                </a>
-            <?php endif; ?>
-        </div>
-    </div>
+    </section>
 
     <!-- Top Card: Company Details & Contract Filter Dropdown -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
@@ -38,12 +42,16 @@
                 <div class="col-lg-6 mb-3 mb-lg-0">
                     <h5 class="fw-bold mb-2">Company Overview</h5>
                     <div class="d-flex flex-wrap gap-3 text-muted small">
-                        <div>
-                            <i class="bi bi-envelope me-1"></i><?= htmlspecialchars($organization['email'] ?? 'N/A'); ?>
-                        </div>
-                        <div>
-                            <i class="bi bi-telephone me-1"></i><?= htmlspecialchars($organization['phone'] ?? 'N/A'); ?>
-                        </div>
+                        <?php if (!empty($organization['email'])): ?>
+                            <div>
+                                <i class="bi bi-envelope me-1"></i><?= htmlspecialchars($organization['email']); ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($organization['phone'])): ?>
+                            <div>
+                                <i class="bi bi-telephone me-1"></i><?= htmlspecialchars($organization['phone']); ?>
+                            </div>
+                        <?php endif; ?>
                         <div>
                             <i class="bi bi-ticket-perforated me-1"></i><?= count($tickets); ?> Tickets in Contract Period
                         </div>
@@ -51,10 +59,10 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <label class="form-label fw-bold text-dark small">
+                    <label class="form-label fw-bold text-dark small mb-1">
                         <i class="bi bi-funnel-fill text-primary me-1"></i>Select Contract / Renewal Filter
                     </label>
-                    <select class="form-select form-select-lg shadow-none fs-6" style="border-radius: 10px;" onchange="if(this.value) window.location.href = this.value;">
+                    <select class="form-select shadow-none" style="border-radius: 10px;" onchange="if(this.value) window.location.href = this.value;">
                         <?php foreach ($contracts as $c): ?>
                             <?php
                             $isSel = ((int)$c['id'] === (int)$selectedContract['id']);
@@ -118,7 +126,7 @@
     </div>
 
     <!-- Tickets List Section for Contract Timeframe -->
-    <div class="card border-0 shadow-sm" style="border-radius: 18px;">
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
         <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="fw-bold mb-1">
@@ -128,7 +136,7 @@
                     All support tickets created between <?= date('M d, Y', strtotime($selectedContract['start_date'])); ?> and <?= date('M d, Y', strtotime($selectedContract['end_date'])); ?>.
                 </p>
             </div>
-            <span class="badge bg-primary rounded-pill fs-6"><?= count($tickets); ?> Tickets</span>
+            <span class="badge bg-primary rounded-pill fs-6 px-3 py-2"><?= count($tickets); ?> Tickets</span>
         </div>
 
         <div class="card-body p-0">
@@ -143,14 +151,14 @@
                     <table class="table align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">Ticket No</th>
-                                <th>Subject</th>
-                                <th>Customer User</th>
-                                <th>Assigned Agent</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Created Date</th>
-                                <th class="text-end pe-4">Action</th>
+                                <th class="ps-4">TICKET NO</th>
+                                <th>SUBJECT</th>
+                                <th>CUSTOMER USER</th>
+                                <th>ASSIGNED AGENT</th>
+                                <th>PRIORITY</th>
+                                <th>STATUS</th>
+                                <th>CREATED DATE</th>
+                                <th class="text-end pe-4">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -184,8 +192,8 @@
                                         <?= date('M d, Y H:i', strtotime($t['created_at'])); ?>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $t['id']; ?>" class="btn btn-sm btn-outline-secondary" target="_blank">
-                                            <i class="bi bi-box-arrow-up-right"></i> View
+                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $t['id']; ?>" class="btn btn-sm btn-outline-secondary fw-semibold" style="border-radius: 6px;" target="_blank">
+                                            <i class="bi bi-box-arrow-up-right me-1"></i> View
                                         </a>
                                     </td>
                                 </tr>
