@@ -175,29 +175,29 @@ function getProfileTicketPriorityClass(string $priority): string
     ========================================================== -->
     <section class="ui-panel mb-4">
 
-        <div class="ui-panel-body">
+        <div class="ui-panel-body p-4">
 
-            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-4">
 
-                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                <div class="d-flex align-items-start gap-3">
 
-                    <div class="table-avatar">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-primary flex-shrink-0" style="width:56px; height:56px; background-color:#e0f2fe; color:#0284c7; font-size:22px;">
                         <?= htmlspecialchars($avatarText); ?>
                     </div>
 
                     <div>
 
-                        <h2 class="page-title mb-1">
+                        <h2 class="page-title mb-1 fw-bold fs-3">
                             <?= htmlspecialchars($fullName); ?>
                         </h2>
 
-                        <div class="text-muted mb-3">
+                        <div class="text-muted small mb-2">
 
                             <?php if ($email !== ''): ?>
 
                                 <a
                                     href="mailto:<?= htmlspecialchars($email); ?>"
-                                    class="text-decoration-none">
+                                    class="text-muted text-decoration-none">
 
                                     <i class="bi bi-envelope me-1"></i>
 
@@ -215,7 +215,7 @@ function getProfileTicketPriorityClass(string $priority): string
 
                         </div>
 
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
 
                             <?php if ($role === 'admin'): ?>
 
@@ -291,12 +291,12 @@ function getProfileTicketPriorityClass(string $priority): string
                             ?>
 
                             <?php if ($isUserLocked): ?>
-                                <a href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $userId; ?>" class="text-decoration-none ms-2" title="User is Locked - Click to Unlock" onclick="return confirm('Are you sure you want to unlock this user?')">
-                                    <i class="bi bi-lock-fill text-danger fs-4 align-middle"></i>
+                                <a href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $userId; ?>" class="status-badge status-closed text-decoration-none" title="User is Locked - Click to Unlock" onclick="return confirm('Are you sure you want to unlock this user?')">
+                                    <i class="bi bi-lock-fill me-1 text-danger"></i> Locked
                                 </a>
                             <?php else: ?>
-                                <a href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $userId; ?>" class="text-decoration-none ms-2" title="User is Unlocked - Click to Lock" onclick="return confirm('Are you sure you want to lock this user?')">
-                                    <i class="bi bi-unlock-fill text-success fs-4 align-middle"></i>
+                                <a href="<?= BASE_URL ?>/admin/users/toggle-lock/<?= $userId; ?>" class="status-badge status-resolved text-decoration-none" title="User is Unlocked - Click to Lock" onclick="return confirm('Are you sure you want to lock this user?')">
+                                    <i class="bi bi-unlock-fill me-1 text-success"></i> Unlocked
                                 </a>
                             <?php endif; ?>
 
@@ -307,19 +307,19 @@ function getProfileTicketPriorityClass(string $priority): string
                 </div>
 
 
-                <div class="d-flex flex-wrap gap-2">
+                <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-end gap-2">
 
-                    <button type="button" class="btn <?= $isMfaLogin ? 'btn-outline-warning' : 'btn-outline-primary' ?>" data-bs-toggle="modal" data-bs-target="#toggleMfaLoginModal">
+                    <button type="button" class="btn btn-sm <?= $isMfaLogin ? 'btn-outline-warning' : 'btn-outline-primary' ?>" data-bs-toggle="modal" data-bs-target="#toggleMfaLoginModal">
                         <i class="bi bi-shield-lock-fill me-1"></i>
-                        <?= $isMfaLogin ? 'Disable MFA Login (Use OTP)' : 'Allow Login with MFA' ?>
+                        <?= $isMfaLogin ? 'Disable MFA Login' : 'Allow Login with MFA' ?>
                     </button>
 
-                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changeUserPasswordModal">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changeUserPasswordModal">
                         <i class="bi bi-key-fill me-1"></i>
                         Change Password
                     </button>
 
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetUserMfaModal">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetUserMfaModal">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>
                         Reset MFA
                     </button>
@@ -328,9 +328,9 @@ function getProfileTicketPriorityClass(string $priority): string
 
                         <a
                             href="<?= BASE_URL ?>/admin/users/edit/<?= $userId; ?>"
-                            class="btn btn-primary-custom">
+                            class="btn btn-sm btn-success">
 
-                            <i class="bi bi-pencil-fill me-2"></i>
+                            <i class="bi bi-pencil-fill me-1"></i>
 
                             Edit Profile
 
@@ -340,10 +340,10 @@ function getProfileTicketPriorityClass(string $priority): string
 
                             <a
                                 href="<?= BASE_URL ?>/admin/users/disable/<?= $userId; ?>"
-                                class="btn btn-outline-danger"
+                                class="btn btn-sm btn-outline-danger"
                                 onclick="return confirm('Are you sure you want to disable this user?');">
 
-                                <i class="bi bi-person-x-fill me-2"></i>
+                                <i class="bi bi-person-x-fill me-1"></i>
 
                                 Disable User
 
