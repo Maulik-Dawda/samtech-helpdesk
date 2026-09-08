@@ -62,7 +62,7 @@
                     <label class="form-label fw-bold text-dark small mb-1">
                         <i class="bi bi-funnel-fill text-primary me-1"></i>Select Contract / Renewal Filter
                     </label>
-                    <select class="form-select shadow-none" onchange="if(this.value) window.location.href = this.value;">
+                    <select class="form-select no-select2" style="min-height: 42px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-weight: 600; color: #0f172a; background-color: #ffffff;" onchange="if(this.value) window.location.href = this.value;">
                         <?php foreach ($contracts as $c): ?>
                             <?php
                             $isSel = ((int)$c['id'] === (int)$selectedContract['id']);
@@ -199,8 +199,8 @@
                                         <?= date('M d, Y H:i', strtotime($t['created_at'])); ?>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $t['id']; ?>" class="btn btn-sm btn-outline-secondary" target="_blank">
-                                            <i class="bi bi-box-arrow-up-right me-1"></i> View
+                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $t['id']; ?>" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-eye me-1"></i> View
                                         </a>
                                     </td>
                                 </tr>
