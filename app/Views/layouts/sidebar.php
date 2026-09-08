@@ -400,7 +400,7 @@ if ($isAdmin) {
 
     <div class="sidebar-footer">
 
-        <div class="sidebar-account">
+        <a href="<?= BASE_URL ?>/profile" class="sidebar-account">
 
             <div class="sidebar-account-avatar">
                 <?= htmlspecialchars($sidebarInitials); ?>
@@ -418,17 +418,9 @@ if ($isAdmin) {
 
             </div>
 
-            <button
-                type="button"
-                class="sidebar-account-logout"
-                data-bs-toggle="modal"
-                data-bs-target="#logoutModal"
-                aria-label="Logout"
-            >
-                <i class="bi bi-box-arrow-right"></i>
-            </button>
+            <i class="bi bi-chevron-right sidebar-account-arrow"></i>
 
-        </div>
+        </a>
 
     </div>
 

@@ -73,165 +73,152 @@ function agentDashboardPriorityClass(string $priority): string
     <!-- =========================================================
          AGENT DASHBOARD HERO
     ========================================================== -->
-    <section class="ui-panel mb-3">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
 
-        <div class="ui-panel-body p-3">
+        <div>
 
-            <div class="page-header mb-0">
-
-                <div class="page-header-content">
-
-                    <div class="app-badge app-badge-primary mb-2">
-                        <i class="bi bi-headset"></i>
-                        Agent Workspace
-                    </div>
-
-                    <h2 class="page-title fs-4 mb-1">
-                        <?= htmlspecialchars($greeting); ?>,
-                        <?= htmlspecialchars($agentName); ?>! 👋
-                    </h2>
-
-                    <p class="page-description small mb-3 mb-md-0 text-muted">
-                        Manage customer requests, monitor ticket progress and
-                        keep support operations running smoothly.
-                    </p>
-
-                </div>
-
-                <div class="page-actions mt-3 mt-md-0">
-
-                    <div class="date-pill">
-
-                        <i class="bi bi-calendar3"></i>
-
-                        <div>
-
-                            <div class="dashboard-date" data-live-date="true">
-                                <?= htmlspecialchars($currentDate); ?>
-                            </div>
-
-                            <div class="dashboard-time" data-live-time="true">
-                                <?= htmlspecialchars($currentTime); ?>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div class="text-muted small fw-semibold d-inline-flex align-items-center gap-1 mb-1">
+                <i class="bi bi-bookmark text-muted"></i>
+                Agent Workspace
             </div>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions-grid mt-4">
+            <h1 class="fw-bold text-dark fs-3 mb-1">
+                <?= htmlspecialchars($greeting); ?>,
+                <?= htmlspecialchars($agentName); ?>! 👋
+            </h1>
 
-                <a
-                    href="<?= BASE_URL ?>/agent/tickets/create"
-                    class="quick-action-link">
+            <p class="text-muted small mb-0">
+                Manage customer requests, monitor ticket progress and keep support operations running smoothly.
+            </p>
 
-                    <span class="quick-action-icon">
-                        <i class="bi bi-plus-circle-fill"></i>
-                    </span>
+        </div>
 
-                    <span class="quick-action-content">
+        <div class="date-pill flex-shrink-0">
 
-                        <span class="quick-action-title">
-                            Create Ticket
-                        </span>
+            <i class="bi bi-calendar3"></i>
 
-                        <span class="quick-action-description">
-                            Open a new support ticket.
-                        </span>
+            <div>
 
-                    </span>
+                <div class="dashboard-date" data-live-date="true">
+                    <?= htmlspecialchars($currentDate); ?>
+                </div>
 
-                    <i class="bi bi-chevron-right quick-action-arrow"></i>
-
-                </a>
-
-                <a
-                    href="<?= BASE_URL ?>/agent/tickets"
-                    class="quick-action-link">
-
-                    <span class="quick-action-icon">
-                        <i class="bi bi-ticket-perforated-fill"></i>
-                    </span>
-
-                    <span class="quick-action-content">
-
-                        <span class="quick-action-title">
-                            View All Tickets
-                        </span>
-
-                        <span class="quick-action-description">
-                            Review the complete support queue.
-                        </span>
-
-                    </span>
-
-                    <i class="bi bi-chevron-right quick-action-arrow"></i>
-
-                </a>
-
-                <a
-                    href="<?= BASE_URL ?>/organizations/create"
-                    class="quick-action-link">
-
-                    <span class="quick-action-icon">
-                        <i class="bi bi-building-add"></i>
-                    </span>
-
-                    <span class="quick-action-content">
-
-                        <span class="quick-action-title">
-                            Create Organization
-                        </span>
-
-                        <span class="quick-action-description">
-                            Add a customer organization.
-                        </span>
-
-                    </span>
-
-                    <i class="bi bi-chevron-right quick-action-arrow"></i>
-
-                </a>
-
-                <a
-                    href="<?= BASE_URL ?>/agent/users/create"
-                    class="quick-action-link">
-
-                    <span class="quick-action-icon">
-                        <i class="bi bi-person-plus-fill"></i>
-                    </span>
-
-                    <span class="quick-action-content">
-
-                        <span class="quick-action-title">
-                            Create User
-                        </span>
-
-                        <span class="quick-action-description">
-                            Add a user to an organization.
-                        </span>
-
-                    </span>
-
-                    <i class="bi bi-chevron-right quick-action-arrow"></i>
-
-                </a>
+                <div class="dashboard-time" data-live-time="true">
+                    <?= htmlspecialchars($currentTime); ?>
+                </div>
 
             </div>
 
         </div>
 
-    </section>
+    </div>
+
+    <!-- Quick Actions (4 Grid Cards) -->
+    <div class="quick-actions-grid mb-4">
+
+        <a
+            href="<?= BASE_URL ?>/agent/tickets/create"
+            class="quick-action-link">
+
+            <span class="quick-action-icon" style="background: #dcfce7; color: #16a34a;">
+                <i class="bi bi-plus-lg"></i>
+            </span>
+
+            <span class="quick-action-content">
+
+                <span class="quick-action-title">
+                    Create Ticket
+                </span>
+
+                <span class="quick-action-description">
+                    Open a new support ticket.
+                </span>
+
+            </span>
+
+            <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+        </a>
+
+        <a
+            href="<?= BASE_URL ?>/organizations/create"
+            class="quick-action-link">
+
+            <span class="quick-action-icon" style="background: #dbeafe; color: #2563eb;">
+                <i class="bi bi-people-fill"></i>
+            </span>
+
+            <span class="quick-action-content">
+
+                <span class="quick-action-title">
+                    Create Organization
+                </span>
+
+                <span class="quick-action-description">
+                    Add a customer organization.
+                </span>
+
+            </span>
+
+            <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+        </a>
+
+        <a
+            href="<?= BASE_URL ?>/agent/tickets"
+            class="quick-action-link">
+
+            <span class="quick-action-icon" style="background: #f3e8ff; color: #9333ea;">
+                <i class="bi bi-person-badge-fill"></i>
+            </span>
+
+            <span class="quick-action-content">
+
+                <span class="quick-action-title">
+                    View All Tickets
+                </span>
+
+                <span class="quick-action-description">
+                    Review the complete support queue.
+                </span>
+
+            </span>
+
+            <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+        </a>
+
+        <a
+            href="<?= BASE_URL ?>/agent/users/create"
+            class="quick-action-link">
+
+            <span class="quick-action-icon" style="background: #dcfce7; color: #15803d;">
+                <i class="bi bi-person-plus-fill"></i>
+            </span>
+
+            <span class="quick-action-content">
+
+                <span class="quick-action-title">
+                    Create User
+                </span>
+
+                <span class="quick-action-description">
+                    Add a user to an organization.
+                </span>
+
+            </span>
+
+            <i class="bi bi-chevron-right quick-action-arrow"></i>
+
+        </a>
+
+    </div>
 
     <?php require ROOT_PATH . "/app/Views/partials/sla-overdue-alert.php"; ?>
 
 
     <!-- =========================================================
-         TICKET METRICS
+         TICKET METRICS (6 KPI Cards)
     ========================================================== -->
     <section class="content-section">
 
@@ -240,15 +227,13 @@ function agentDashboardPriorityClass(string $priority): string
             <!-- Total Tickets -->
             <a
                 href="<?= BASE_URL ?>/agent/tickets"
-                class="metric-card text-decoration-none">
+                class="metric-card metric-card-total text-decoration-none">
 
                 <div class="metric-card-header">
 
                     <div class="metric-card-icon">
-                        <i class="bi bi-ticket-perforated-fill"></i>
+                        <i class="bi bi-ticket-perforated"></i>
                     </div>
-
-                    <i class="bi bi-arrow-up-right text-muted"></i>
 
                 </div>
 
@@ -261,7 +246,6 @@ function agentDashboardPriorityClass(string $priority): string
                 </div>
 
                 <div class="metric-card-meta">
-                    <i class="bi bi-collection"></i>
                     All helpdesk tickets
                 </div>
 
@@ -271,15 +255,13 @@ function agentDashboardPriorityClass(string $priority): string
             <!-- Open Tickets -->
             <a
                 href="<?= BASE_URL ?>/agent/tickets?status=open"
-                class="metric-card metric-card-info text-decoration-none">
+                class="metric-card metric-card-open text-decoration-none">
 
                 <div class="metric-card-header">
 
                     <div class="metric-card-icon">
-                        <i class="bi bi-folder2-open"></i>
+                        <i class="bi bi-clock-history"></i>
                     </div>
-
-                    <i class="bi bi-arrow-up-right text-muted"></i>
 
                 </div>
 
@@ -292,7 +274,6 @@ function agentDashboardPriorityClass(string $priority): string
                 </div>
 
                 <div class="metric-card-meta">
-                    <i class="bi bi-exclamation-circle"></i>
                     Waiting for attention
                 </div>
 
@@ -302,15 +283,13 @@ function agentDashboardPriorityClass(string $priority): string
             <!-- In Progress -->
             <a
                 href="<?= BASE_URL ?>/agent/tickets?status=in_progress"
-                class="metric-card text-decoration-none">
+                class="metric-card metric-card-progress text-decoration-none">
 
                 <div class="metric-card-header">
 
                     <div class="metric-card-icon">
-                        <i class="bi bi-clock-history"></i>
+                        <i class="bi bi-arrow-repeat"></i>
                     </div>
-
-                    <i class="bi bi-arrow-up-right text-muted"></i>
 
                 </div>
 
@@ -323,7 +302,6 @@ function agentDashboardPriorityClass(string $priority): string
                 </div>
 
                 <div class="metric-card-meta">
-                    <i class="bi bi-person-workspace"></i>
                     Currently being handled
                 </div>
 
@@ -333,15 +311,13 @@ function agentDashboardPriorityClass(string $priority): string
             <!-- Pending Tickets -->
             <a
                 href="<?= BASE_URL ?>/agent/tickets?status=pending"
-                class="metric-card metric-card-warning text-decoration-none">
+                class="metric-card metric-card-pending text-decoration-none">
 
                 <div class="metric-card-header">
 
                     <div class="metric-card-icon">
                         <i class="bi bi-hourglass-split"></i>
                     </div>
-
-                    <i class="bi bi-arrow-up-right text-muted"></i>
 
                 </div>
 
@@ -353,8 +329,7 @@ function agentDashboardPriorityClass(string $priority): string
                     <?= (int) $ticketCounts['pending_count']; ?>
                 </div>
 
-                <div class="metric-card-meta warning">
-                    <i class="bi bi-hourglass"></i>
+                <div class="metric-card-meta">
                     Awaiting further action
                 </div>
 
@@ -364,15 +339,13 @@ function agentDashboardPriorityClass(string $priority): string
             <!-- Resolved Tickets -->
             <a
                 href="<?= BASE_URL ?>/agent/tickets?status=resolved"
-                class="metric-card metric-card-success text-decoration-none">
+                class="metric-card metric-card-resolved text-decoration-none">
 
                 <div class="metric-card-header">
 
                     <div class="metric-card-icon">
-                        <i class="bi bi-check2-circle"></i>
+                        <i class="bi bi-check-circle"></i>
                     </div>
-
-                    <i class="bi bi-arrow-up-right text-muted"></i>
 
                 </div>
 
@@ -384,8 +357,7 @@ function agentDashboardPriorityClass(string $priority): string
                     <?= (int) $ticketCounts['resolved_count']; ?>
                 </div>
 
-                <div class="metric-card-meta positive">
-                    <i class="bi bi-check-circle"></i>
+                <div class="metric-card-meta">
                     Resolution completed
                 </div>
 
@@ -395,15 +367,13 @@ function agentDashboardPriorityClass(string $priority): string
             <!-- Closed Tickets -->
             <a
                 href="<?= BASE_URL ?>/agent/tickets?status=closed"
-                class="metric-card metric-card-danger text-decoration-none">
+                class="metric-card metric-card-closed text-decoration-none">
 
                 <div class="metric-card-header">
 
                     <div class="metric-card-icon">
-                        <i class="bi bi-archive-fill"></i>
+                        <i class="bi bi-archive"></i>
                     </div>
-
-                    <i class="bi bi-arrow-up-right text-muted"></i>
 
                 </div>
 
@@ -416,7 +386,6 @@ function agentDashboardPriorityClass(string $priority): string
                 </div>
 
                 <div class="metric-card-meta">
-                    <i class="bi bi-lock-fill"></i>
                     Completed and archived
                 </div>
 
@@ -436,11 +405,11 @@ function agentDashboardPriorityClass(string $priority): string
 
             <div>
 
-                <div class="table-card-title">
+                <div class="table-card-title fs-5 fw-bold text-dark">
                     Recent Tickets
                 </div>
 
-                <div class="table-card-subtitle">
+                <div class="table-card-subtitle text-muted small">
                     Showing the five most recently created support tickets.
                 </div>
 
@@ -448,7 +417,7 @@ function agentDashboardPriorityClass(string $priority): string
 
             <a
                 href="<?= BASE_URL ?>/agent/tickets"
-                class="btn btn-light btn-sm">
+                class="btn btn-outline-secondary btn-sm px-3 rounded-pill">
 
                 View All Tickets
 
@@ -531,7 +500,7 @@ function agentDashboardPriorityClass(string $priority): string
                                         <div>
                                             <a
                                                 href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>"
-                                                class="fw-bold text-decoration-none">
+                                                class="fw-bold text-decoration-none" style="color: #16a34a;">
                                                 <?= htmlspecialchars(
                                                     $ticket['ticket_no'] ?? '-'
                                                 ); ?>
@@ -562,7 +531,7 @@ function agentDashboardPriorityClass(string $priority): string
                                     <td data-label="Assigned Agent">
                                          <?php if (!empty($ticket['assigned_agent_name'])): ?>
                                              <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
-                                                 <i class="bi bi-person-badge me-1"></i>
+                                                 <i class="bi bi-person me-1"></i>
                                                  <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
                                              </span>
                                          <?php else: ?>
@@ -605,7 +574,7 @@ function agentDashboardPriorityClass(string $priority): string
 
                                     <td data-label="Created">
 
-                                        <div class="fw-semibold">
+                                        <div class="fw-semibold text-dark">
 
                                             <?= htmlspecialchars(
                                                 DateTimeHelper::format(
@@ -636,25 +605,31 @@ function agentDashboardPriorityClass(string $priority): string
                                         <div class="d-inline-flex align-items-center gap-1">
                                             <a
                                                 href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>"
-                                                class="table-action-btn table-action-view"
+                                                class="table-action-btn"
                                                 title="View ticket"
                                                 aria-label="View ticket">
 
-                                                <i class="bi bi-eye-fill"></i>
+                                                <i class="bi bi-eye"></i>
 
                                             </a>
 
-                                            <a
-                                                href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
-                                                target="_blank"
-                                                class="table-action-btn table-action-view text-success"
-                                                style="background: #e8f5e9; color: #2e7d32;"
-                                                title="Print Ticket Report"
-                                                aria-label="Print Ticket Report">
-
-                                                <i class="bi bi-printer-fill"></i>
-
-                                            </a>
+                                            <div class="dropdown">
+                                                <button type="button" class="table-action-btn border-0" data-bs-toggle="dropdown" aria-expanded="false" title="More options">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3" style="font-size: 12px;">
+                                                    <li>
+                                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="dropdown-item py-2">
+                                                            <i class="bi bi-eye me-2 text-primary"></i> View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>" target="_blank" class="dropdown-item py-2 text-success">
+                                                            <i class="bi bi-printer me-2"></i> Print Ticket Report
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
 
                                     </td>

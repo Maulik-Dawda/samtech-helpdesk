@@ -177,27 +177,14 @@ function assetVersion(string $relativePath): string
                         <i class="bi bi-list"></i>
                     </button>
 
-                    <div class="top-navbar-brand">
-
-                        <img
-                            src="<?= BASE_URL ?>/assets/images/samtech-icon.png"
-                            alt="Samtech"
-                            class="top-navbar-icon"
-                            width="40"
-                            height="40">
-
-                        <div class="top-navbar-brand-text">
-
-                            <div class="top-navbar-title">
-                                Samtech Helpdesk
-                            </div>
-
-                            <div class="top-navbar-subtitle">
-                                Support Management System
-                            </div>
-
-                        </div>
-
+                    <div class="global-search-container">
+                        <i class="bi bi-search global-search-icon"></i>
+                        <input
+                            type="text"
+                            class="global-search-input"
+                            placeholder="Search tickets, customers, or anything..."
+                            aria-label="Global search">
+                        <span class="global-search-shortcut">⌘ K</span>
                     </div>
 
                 </div>
@@ -213,11 +200,12 @@ function assetVersion(string $relativePath): string
 
                     <div class="top-navbar-actions">
 
-                        <div class="dropdown me-2">
+                        <!-- Notifications Dropdown -->
+                        <div class="dropdown">
 
                             <button
                                 type="button"
-                                class="topbar-icon-btn position-relative dropdown-toggle"
+                                class="topbar-icon-btn position-relative"
                                 id="notificationDropdown"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
@@ -226,11 +214,13 @@ function assetVersion(string $relativePath): string
                                 <i class="bi bi-bell"></i>
 
                                 <?php if ($unreadCount > 0): ?>
-
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 10px;">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 9px; padding: 3px 5px;">
                                         <?= $unreadCount > 9 ? '9+' : $unreadCount; ?>
                                     </span>
-
+                                <?php else: ?>
+                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="font-size: 0;">
+                                        <span class="visually-hidden">New notifications</span>
+                                    </span>
                                 <?php endif; ?>
 
                             </button>
@@ -238,102 +228,86 @@ function assetVersion(string $relativePath): string
                             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0 rounded-4" style="width: 360px; max-width: 90vw; margin-top: 10px;" aria-labelledby="notificationDropdown">
 
                                 <div class="p-3 bg-dark text-white rounded-top-4 d-flex align-items-center justify-content-between">
-
                                     <div class="fw-bold">
                                         <i class="bi bi-bell-fill me-2 text-warning"></i>
                                         Notifications
                                     </div>
-
                                     <span class="badge bg-primary rounded-pill"><?= count($headerNotifications); ?> recent</span>
-
                                 </div>
 
                                 <div class="notification-list" style="max-height: 380px; overflow-y: auto;">
-
                                     <?php if (empty($headerNotifications)): ?>
-
                                         <div class="p-4 text-center text-muted">
                                             <i class="bi bi-bell-slash fs-3 d-block mb-2"></i>
                                             No notifications at this time.
                                         </div>
-
                                     <?php else: ?>
-
                                         <?php foreach ($headerNotifications as $notif): ?>
-
                                             <a href="<?= $notif['link']; ?>" class="dropdown-item p-3 border-bottom text-wrap d-flex align-items-start gap-3 hover-bg-light" style="white-space: normal;">
-
                                                 <div class="rounded-circle p-2 flex-shrink-0" style="background:#f1f5f9;">
-
                                                     <i class="bi <?= $notif['icon']; ?> fs-6 text-<?= $notif['color']; ?>"></i>
-
                                                 </div>
-
                                                 <div class="flex-grow-1">
-
                                                     <div class="fw-bold text-dark small mb-1">
                                                         <?= htmlspecialchars($notif['title']); ?>
                                                     </div>
-
                                                     <div class="text-secondary small mb-1">
                                                         <?= htmlspecialchars($notif['message']); ?>
                                                     </div>
-
                                                     <div class="text-muted" style="font-size: 11px;">
                                                         <i class="bi bi-clock me-1"></i>
                                                         <?= date('M d, g:i A', strtotime($notif['time'])); ?>
                                                     </div>
-
                                                 </div>
-
                                             </a>
-
                                         <?php endforeach; ?>
-
                                     <?php endif; ?>
-
                                 </div>
 
                                 <div class="p-2 bg-light text-center rounded-bottom-4 border-top">
-
                                     <a href="<?= ($role === 'user') ? (BASE_URL . '/tickets') : (BASE_URL . '/agent/tickets'); ?>" class="small text-decoration-none fw-bold text-primary">
                                         View All Tickets &rarr;
                                     </a>
-
                                 </div>
 
                             </div>
 
                         </div>
 
+                        <!-- Help Icon Button -->
+                        <a href="#" class="topbar-icon-btn" title="Help & Documentation">
+                            <i class="bi bi-question-circle"></i>
+                        </a>
+
+                        <!-- Settings Icon Button -->
+                        <a href="<?= BASE_URL ?>/profile" class="topbar-icon-btn" title="Settings">
+                            <i class="bi bi-gear"></i>
+                        </a>
+
+                        <!-- User Profile Pill Dropdown -->
                         <div class="dropdown">
 
-                            <button
-                                class="user-card-btn dropdown-toggle"
-                                type="button"
+                            <a
+                                href="#"
+                                class="user-profile-chip dropdown-toggle"
                                 id="profileDropdown"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
 
-                                <span class="avatar-circle">
+                                <span class="user-profile-avatar">
                                     <?= htmlspecialchars($initials); ?>
                                 </span>
 
-                                <span class="user-info">
-
-                                    <span class="user-name">
+                                <span class="user-profile-info">
+                                    <span class="user-profile-name">
                                         <?= htmlspecialchars($fullName); ?>
                                     </span>
-
-                                    <span class="user-role">
+                                    <span class="user-profile-role">
                                         <?= htmlspecialchars($roleLabel); ?>
                                     </span>
-
                                 </span>
 
-                                <i class="bi bi-chevron-down user-menu-arrow"></i>
-
-                            </button>
+                            </a>
 
                             <ul
                                 class="dropdown-menu dropdown-menu-end profile-dropdown-menu"
