@@ -1325,7 +1325,7 @@ function getAgentReplyRoleClass(string $role): string
                                     <?php endif; ?>
 
                                     <?php
-                                    $canCloseTicket = PermissionHelper::isAdmin() || PermissionHelper::isAdminAgent();
+                                    $canCloseTicket = PermissionHelper::canCloseTicket();
                                     if ($status !== 'closed' && $canCloseTicket):
                                     ?>
                                         <option value="closed">
@@ -1337,7 +1337,7 @@ function getAgentReplyRoleClass(string $role): string
 
                                 <?php if (!$canCloseTicket): ?>
                                     <small class="text-muted d-block mt-2">
-                                        <i class="bi bi-info-circle me-1"></i> Note: Only administrators and admin agents can close tickets.
+                                        <i class="bi bi-info-circle me-1"></i> Note: Only administrators and agents can close tickets.
                                     </small>
                                 <?php endif; ?>
 

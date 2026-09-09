@@ -73,6 +73,11 @@ class PermissionHelper
             && (($_SESSION['is_admin_agent'] ?? 0) == 0);
     }
 
+    public static function canCloseTicket()
+    {
+        return self::isAdmin() || self::isAgent();
+    }
+
     public static function canManageUsers()
     {
         return self::isAdmin() || self::isAdminAgent();

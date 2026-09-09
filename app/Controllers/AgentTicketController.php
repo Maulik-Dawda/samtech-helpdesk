@@ -430,9 +430,9 @@ class AgentTicketController extends Controller
         $status = $_POST['status'] ?? '';
         $resolutionMessage = trim($_POST['resolution_message'] ?? '');
 
-        $canCloseTicket = PermissionHelper::isAdmin() || PermissionHelper::isAdminAgent();
+        $canCloseTicket = PermissionHelper::canCloseTicket();
         if ($status === 'closed' && !$canCloseTicket) {
-            $_SESSION['error'] = "Only administrators and admin agents can close tickets.";
+            $_SESSION['error'] = "Only administrators and agents can close tickets.";
             header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
             exit;
         }
