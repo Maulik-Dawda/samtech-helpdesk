@@ -84,13 +84,25 @@ class ActivityLog extends Model
         }
 
         if (!empty($filters['date_from'])) {
-            $sql .= " AND DATE(activity_logs.created_at) >= ?";
-            $params[] = $filters['date_from'];
+            $dateFrom = str_replace('T', ' ', trim($filters['date_from']));
+            if (strlen($dateFrom) === 10) {
+                $dateFrom .= ' 00:00:00';
+            } elseif (strlen($dateFrom) === 16) {
+                $dateFrom .= ':00';
+            }
+            $sql .= " AND activity_logs.created_at >= ?";
+            $params[] = $dateFrom;
         }
 
         if (!empty($filters['date_to'])) {
-            $sql .= " AND DATE(activity_logs.created_at) <= ?";
-            $params[] = $filters['date_to'];
+            $dateTo = str_replace('T', ' ', trim($filters['date_to']));
+            if (strlen($dateTo) === 10) {
+                $dateTo .= ' 23:59:59';
+            } elseif (strlen($dateTo) === 16) {
+                $dateTo .= ':59';
+            }
+            $sql .= " AND activity_logs.created_at <= ?";
+            $params[] = $dateTo;
         }
 
         return $sql;

@@ -13,6 +13,12 @@ $filters = is_array($filters ?? null) ? $filters : [];
 $page = (int)($page ?? 1);
 $totalPages = (int)($totalPages ?? 1);
 $totalRecords = (int)($totalRecords ?? count($logs));
+
+$dateFrom = $filters['date_from'] ?? '';
+$dateTo = $filters['date_to'] ?? '';
+$selectedUserId = $filters['user_id'] ?? '';
+$selectedRole = $filters['role'] ?? '';
+$actionSearch = $filters['action'] ?? '';
 ?>
 
 <div class="container-fluid px-0">
@@ -27,14 +33,101 @@ $totalRecords = (int)($totalRecords ?? count($logs));
                     </div>
                     <h1 class="page-title">Activity Logs</h1>
                     <p class="page-description">
-                        View, search and filter all system activities, authentication events, and user actions.
+                        View, search and filter all system activities, security events, and user actions by date & time range.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- TABLE CARD WITH SEARCH & FILTERS -->
+    <!-- FILTER CARD -->
+    <section class="ui-card mb-4">
+        <div class="ui-card-body p-4">
+            <form method="GET" action="<?= BASE_URL ?>/admin/activity-logs" id="activityLogFilterForm">
+                
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-funnel-fill me-1 text-primary"></i> Filter Audit Logs
+                    </h6>
+
+                    <!-- Quick Range Presets -->
+                    <div class="btn-group btn-group-sm flex-wrap gap-1" role="group">
+                        <button type="button" class="btn btn-outline-secondary" onclick="setQuickDateRange('today')">Today</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="setQuickDateRange('yesterday')">Yesterday</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="setQuickDateRange('7days')">Last 7 Days</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="setQuickDateRange('30days')">Last 30 Days</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="setQuickDateRange('thisMonth')">This Month</button>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label text-muted small fw-semibold">Start Date & Time</label>
+                        <input
+                            type="datetime-local"
+                            name="date_from"
+                            id="filterDateFrom"
+                            class="form-control form-control-sm"
+                            value="<?= htmlspecialchars($dateFrom); ?>">
+                    </div>
+
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label text-muted small fw-semibold">End Date & Time</label>
+                        <input
+                            type="datetime-local"
+                            name="date_to"
+                            id="filterDateTo"
+                            class="form-control form-control-sm"
+                            value="<?= htmlspecialchars($dateTo); ?>">
+                    </div>
+
+                    <div class="col-md-2 col-sm-6">
+                        <label class="form-label text-muted small fw-semibold">User</label>
+                        <select name="user_id" class="form-select form-select-sm">
+                            <option value="">All Users</option>
+                            <?php foreach ($users as $u): ?>
+                                <option value="<?= $u['id']; ?>" <?= (string)$selectedUserId === (string)$u['id'] ? 'selected' : ''; ?>>
+                                    <?= htmlspecialchars($u['full_name'] ?? $u['email']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6">
+                        <label class="form-label text-muted small fw-semibold">Role</label>
+                        <select name="role" class="form-select form-select-sm">
+                            <option value="">All Roles</option>
+                            <option value="admin" <?= $selectedRole === 'admin' ? 'selected' : ''; ?>>Admin</option>
+                            <option value="agent" <?= $selectedRole === 'agent' ? 'selected' : ''; ?>>Agent</option>
+                            <option value="user" <?= $selectedRole === 'user' ? 'selected' : ''; ?>>User / Customer</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-12">
+                        <label class="form-label text-muted small fw-semibold">Action Keywords</label>
+                        <input
+                            type="text"
+                            name="action"
+                            class="form-control form-control-sm"
+                            placeholder="e.g. Login, Update"
+                            value="<?= htmlspecialchars($actionSearch); ?>">
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end gap-2 mt-3 pt-2 border-top">
+                    <a href="<?= BASE_URL ?>/admin/activity-logs" class="btn btn-sm btn-light border">
+                        <i class="bi bi-x-circle me-1"></i> Clear Filters
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-search me-1"></i> Apply Filters
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- TABLE CARD WITH RESULTS -->
     <section class="table-card content-section">
 
         <div class="table-card-header">
@@ -48,19 +141,8 @@ $totalRecords = (int)($totalRecords ?? count($logs));
             </div>
 
             <div class="d-flex align-items-center gap-3 flex-wrap">
-                <div class="position-relative">
-                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 14px;"></i>
-                    <input
-                        type="search"
-                        id="activityLogSearchInput"
-                        class="form-control ps-5"
-                        style="min-width: 260px;"
-                        placeholder="Search logs..."
-                        autocomplete="off">
-                </div>
-
                 <div class="app-badge app-badge-primary">
-                    <i class="bi bi-list-check me-1"></i> <?= $totalRecords; ?> Total Logs
+                    <i class="bi bi-list-check me-1"></i> <?= number_format($totalRecords); ?> Total Logs
                 </div>
             </div>
         </div>
@@ -74,8 +156,11 @@ $totalRecords = (int)($totalRecords ?? count($logs));
                     </div>
                     <h3 class="empty-state-title">No Activity Logs Found</h3>
                     <p class="empty-state-description">
-                        No activity records match your criteria.
+                        No activity records match your date range or filter criteria.
                     </p>
+                    <a href="<?= BASE_URL ?>/admin/activity-logs" class="btn btn-sm btn-light border mt-2">
+                        Reset Filters
+                    </a>
                 </div>
             <?php else: ?>
 
@@ -129,36 +214,7 @@ $totalRecords = (int)($totalRecords ?? count($logs));
                 </div>
 
                 <!-- PAGINATION -->
-                <?php if ($totalPages > 1): ?>
-                    <div class="pagination-wrapper mt-3">
-                        <div class="pagination-info">
-                            Showing Page <strong><?= $page; ?></strong> of <strong><?= $totalPages; ?></strong>
-                        </div>
-                        <ul class="pagination mb-0">
-                            <?php if ($page > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= BASE_URL ?>/admin/activity-logs?page=<?= $page - 1; ?>">
-                                        <i class="bi bi-chevron-left"></i>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <li class="page-item <?= $i === $page ? 'active' : ''; ?>">
-                                    <a class="page-link" href="<?= BASE_URL ?>/admin/activity-logs?page=<?= $i; ?>">
-                                        <?= $i; ?>
-                                    </a>
-                                </li>
-                            <?php endfor; ?>
-                            <?php if ($page < $totalPages): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= BASE_URL ?>/admin/activity-logs?page=<?= $page + 1; ?>">
-                                        <i class="bi bi-chevron-right"></i>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
+                <?php require ROOT_PATH . "/app/Views/partials/pagination.php"; ?>
 
             <?php endif; ?>
 
@@ -169,20 +225,52 @@ $totalRecords = (int)($totalRecords ?? count($logs));
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const input = document.getElementById('activityLogSearchInput');
-    const tbody = document.getElementById('activityLogTableBody');
-    if (!input || !tbody) return;
+function formatDateForInput(date) {
+    const pad = (n) => (n < 10 ? '0' + n : n);
+    const yyyy = date.getFullYear();
+    const mm = pad(date.getMonth() + 1);
+    const dd = pad(date.getDate());
+    const hh = pad(date.getHours());
+    const min = pad(date.getMinutes());
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
 
-    input.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        const rows = tbody.querySelectorAll('tr');
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
-        });
-    });
-});
+function setQuickDateRange(rangeType) {
+    const fromInput = document.getElementById('filterDateFrom');
+    const toInput = document.getElementById('filterDateTo');
+    const form = document.getElementById('activityLogFilterForm');
+    
+    if (!fromInput || !toInput || !form) return;
+
+    const now = new Date();
+    let startDate = new Date();
+    let endDate = new Date();
+
+    if (rangeType === 'today') {
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+    } else if (rangeType === 'yesterday') {
+        startDate.setDate(now.getDate() - 1);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setDate(now.getDate() - 1);
+        endDate.setHours(23, 59, 59, 999);
+    } else if (rangeType === '7days') {
+        startDate.setDate(now.getDate() - 7);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+    } else if (rangeType === '30days') {
+        startDate.setDate(now.getDate() - 30);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+    } else if (rangeType === 'thisMonth') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+    }
+
+    fromInput.value = formatDateForInput(startDate);
+    toInput.value = formatDateForInput(endDate);
+    form.submit();
+}
 </script>
 
 <?php require_once ROOT_PATH . "/app/Views/layouts/footer.php"; ?>

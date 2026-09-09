@@ -601,54 +601,10 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                 </div>
 
                 <!-- PAGINATION -->
-                <div class="pagination-wrapper">
-
-                    <div class="pagination-info">
-                        Showing Page <strong><?= $page; ?></strong> of <strong><?= $totalPages; ?></strong>
-                        (Total <?= $totalTickets; ?> <?= $totalTickets === 1 ? 'ticket' : 'tickets'; ?>)
-                    </div>
-
-                    <?php if ($totalPages > 1): ?>
-
-                        <ul class="pagination mb-0">
-
-                            <?php if ($page > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= BASE_URL ?>/organizations/show/<?= $organizationId; ?>?page=<?= $page - 1; ?>">
-                                        <i class="bi bi-chevron-left"></i>
-                                    </a>
-                                </li>
-                            <?php else: ?>
-                                <li class="page-item disabled">
-                                    <span class="page-link"><i class="bi bi-chevron-left"></i></span>
-                                </li>
-                            <?php endif; ?>
-
-                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <li class="page-item <?= $i === $page ? 'active' : ''; ?>">
-                                    <a class="page-link" href="<?= BASE_URL ?>/organizations/show/<?= $organizationId; ?>?page=<?= $i; ?>">
-                                        <?= $i; ?>
-                                    </a>
-                                </li>
-                            <?php endfor; ?>
-
-                            <?php if ($page < $totalPages): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= BASE_URL ?>/organizations/show/<?= $organizationId; ?>?page=<?= $page + 1; ?>">
-                                        <i class="bi bi-chevron-right"></i>
-                                    </a>
-                                </li>
-                            <?php else: ?>
-                                <li class="page-item disabled">
-                                    <span class="page-link"><i class="bi bi-chevron-right"></i></span>
-                                </li>
-                            <?php endif; ?>
-
-                        </ul>
-
-                    <?php endif; ?>
-
-                </div>
+                <?php
+                $totalRecords = $totalTickets ?? 0;
+                require ROOT_PATH . "/app/Views/partials/pagination.php";
+                ?>
 
             <?php endif; ?>
 
