@@ -264,6 +264,7 @@ function dashboardActivityIcon(string $action): string
 
     </section>
 
+    <?php require ROOT_PATH . "/app/Views/partials/unassigned-alert.php"; ?>
     <?php require ROOT_PATH . "/app/Views/partials/sla-overdue-alert.php"; ?>
 
     <!-- Ticket Metrics -->

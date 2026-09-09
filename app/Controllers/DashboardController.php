@@ -58,6 +58,7 @@ class DashboardController extends Controller
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
         $overdueTickets = $ticketModel->getOverdueSlaTickets();
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
 
         $this->view('dashboards/admin', [
             'ticketCounts' => $ticketCounts,
@@ -67,7 +68,8 @@ class DashboardController extends Controller
             'recentActivities' => $recentActivities,
             'monthlyTickets' => $monthlyTickets,
             'organizationTickets' => $organizationTickets,
-            'overdueTickets' => $overdueTickets
+            'overdueTickets' => $overdueTickets,
+            'unassignedCount' => $unassignedCount
         ]);
     }
 
@@ -100,6 +102,7 @@ class DashboardController extends Controller
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
         $overdueTickets = $ticketModel->getOverdueSlaTickets();
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
 
         $this->view('dashboards/admin-agent', [
             'ticketCounts' => $ticketCounts,
@@ -109,7 +112,8 @@ class DashboardController extends Controller
             'recentActivities' => $recentActivities,
             'monthlyTickets' => $monthlyTickets,
             'organizationTickets' => $organizationTickets,
-            'overdueTickets' => $overdueTickets
+            'overdueTickets' => $overdueTickets,
+            'unassignedCount' => $unassignedCount
         ]);
     }
 
@@ -136,13 +140,15 @@ class DashboardController extends Controller
         $monthlyTickets = $ticketModel->getMonthlyTicketCounts();
         $organizationTickets = $ticketModel->getOrganizationTicketCounts();
         $overdueTickets = $ticketModel->getOverdueSlaTickets();
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
 
         $this->view('dashboards/agent', [
             'ticketCounts' => $ticketCounts,
             'recentTickets' => $recentTickets,
             'monthlyTickets' => $monthlyTickets,
             'organizationTickets' => $organizationTickets,
-            'overdueTickets' => $overdueTickets
+            'overdueTickets' => $overdueTickets,
+            'unassignedCount' => $unassignedCount
         ]);
     }
 
