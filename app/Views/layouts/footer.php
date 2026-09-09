@@ -215,6 +215,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Disable Right-Click Context Menu & Inspect Code Shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) ||
+            (e.ctrlKey && ['U', 'u', 'S', 's'].includes(e.key))
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
 });
 </script>
 
