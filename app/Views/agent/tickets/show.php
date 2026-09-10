@@ -1139,6 +1139,25 @@ function getAgentReplyRoleClass(string $role): string
 
                         <?php endif; ?>
 
+                        <?php if (!empty($ticket['branch_name'])): ?>
+
+                            <div class="list-group-item px-0 d-flex justify-content-between align-items-start gap-3">
+
+                                <div class="text-muted">
+                                    Branch
+                                </div>
+
+                                <div class="fw-semibold text-end">
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-building me-1 text-primary"></i>
+                                        <?= htmlspecialchars($ticket['branch_name']); ?>
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        <?php endif; ?>
+
                         <div class="list-group-item px-0 d-flex justify-content-between align-items-start gap-3">
 
                             <div class="text-muted">

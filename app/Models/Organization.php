@@ -62,34 +62,46 @@ class Organization extends Model
 
     public function create($data)
     {
-        $stmt = $this->db->prepare("
-        INSERT INTO organizations
-        (name, email, phone, address, max_users, is_active)
-        VALUES (?, ?, ?, ?, ?, 1)
-    ");
+        $hasBranches = !empty($data['has_branches']) ? 1 : 0;
 
-        return $stmt->execute([
+        $stmt = $this->db->prepare("
+            INSERT INTO organizations
+            (name, email, phone, address, max_users, has_branches, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
+        ");
+
+        $success = $stmt->execute([
             $data['name'],
             $data['email'],
             $data['phone'],
             $data['address'],
-            $data['max_users']
+            $data['max_users'],
+            $hasBranches
         ]);
+
+        if ($success) {
+            return (int)$this->db->lastInsertId() ?: true;
+        }
+
+        return false;
     }
 
     public function update($id, $data)
     {
+        $hasBranches = !empty($data['has_branches']) ? 1 : 0;
+
         $stmt = $this->db->prepare("
-        UPDATE organizations
-        SET
-            name = ?,
-            email = ?,
-            phone = ?,
-            address = ?,
-            max_users = ?,
-            is_active = ?
-        WHERE id = ?
-    ");
+            UPDATE organizations
+            SET
+                name = ?,
+                email = ?,
+                phone = ?,
+                address = ?,
+                max_users = ?,
+                has_branches = ?,
+                is_active = ?
+            WHERE id = ?
+        ");
 
         return $stmt->execute([
             $data['name'],
@@ -97,6 +109,7 @@ class Organization extends Model
             $data['phone'],
             $data['address'],
             $data['max_users'],
+            $hasBranches,
             $data['is_active'],
             $id
         ]);

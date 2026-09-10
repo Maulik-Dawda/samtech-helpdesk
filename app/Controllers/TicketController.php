@@ -5,6 +5,7 @@ require_once ROOT_PATH . "/app/Models/Ticket.php";
 require_once ROOT_PATH . "/app/Models/TicketReply.php";
 require_once ROOT_PATH . "/app/Models/TicketStatusHistory.php";
 require_once ROOT_PATH . "/app/Models/User.php";
+require_once ROOT_PATH . "/app/Models/OrganizationBranch.php";
 require_once ROOT_PATH . "/app/Models/Attachment.php";
 require_once ROOT_PATH . "/app/Services/UploadService.php";
 require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
@@ -25,9 +26,16 @@ class TicketController extends Controller
 
         $userModel = new User();
         $agents = $userModel->getRegularAgents();
+        $user = $userModel->findWithOrganization($_SESSION['auth_user_id'] ?? 0);
+        $branches = [];
+        if ($user && !empty($user['organization_id'])) {
+            $branchModel = new OrganizationBranch();
+            $branches = $branchModel->getActiveByOrganizationId($user['organization_id']);
+        }
 
         $this->view('tickets/create', [
-            'agents' => $agents
+            'agents' => $agents,
+            'branches' => $branches
         ]);
     }
 
@@ -46,6 +54,7 @@ class TicketController extends Controller
         $description = trim($_POST['description'] ?? '');
         $priority = $_POST['priority'] ?? 'medium';
         $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : null;
+        $branchId = !empty($_POST['branch_id']) ? (int)$_POST['branch_id'] : null;
 
         if (empty($subject) || empty($description)) {
             $_SESSION['error'] = "Subject and description are required.";
@@ -85,6 +94,7 @@ class TicketController extends Controller
             'ticket_no' => $ticketNo,
             'user_id' => $user['id'],
             'organization_id' => $user['organization_id'],
+            'branch_id' => $branchId,
             'assigned_agent_id' => $assignedAgentId,
             'created_by' => $user['id'],
             'created_by_role' => $user['role'],

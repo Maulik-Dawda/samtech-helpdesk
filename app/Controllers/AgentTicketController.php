@@ -554,15 +554,27 @@ class AgentTicketController extends Controller
 
         $organizationModel = new Organization();
         $userModel = new User();
+        $branchModel = new OrganizationBranch();
 
         $organizations = $organizationModel->getAllActive();
         $agents = $userModel->getRegularAgents();
         $orgUsersGrouped = $userModel->getAllActiveUsersByOrganization();
 
+        $orgBranchesGrouped = [];
+        foreach ($organizations as $org) {
+            $orgId = (int)$org['id'];
+            if (!empty($org['has_branches'])) {
+                $orgBranchesGrouped[$orgId] = $branchModel->getActiveByOrganizationId($orgId);
+            } else {
+                $orgBranchesGrouped[$orgId] = [];
+            }
+        }
+
         $this->view('agent/tickets/create', [
             'organizations' => $organizations,
             'agents' => $agents,
-            'orgUsersGrouped' => $orgUsersGrouped
+            'orgUsersGrouped' => $orgUsersGrouped,
+            'orgBranchesGrouped' => $orgBranchesGrouped
         ]);
     }
 
@@ -578,6 +590,7 @@ class AgentTicketController extends Controller
         }
 
         $organizationId = (int)($_POST['organization_id'] ?? 0);
+        $branchId = !empty($_POST['branch_id']) ? (int)$_POST['branch_id'] : null;
         $userId = (int)($_POST['user_id'] ?? 0);
         $subject = trim($_POST['subject'] ?? '');
         $description = trim($_POST['description'] ?? '');
@@ -620,6 +633,7 @@ class AgentTicketController extends Controller
             'ticket_no' => $ticketNo,
             'user_id' => $userId,
             'organization_id' => $organizationId,
+            'branch_id' => $branchId,
             'assigned_agent_id' => $assignedAgentId,
             'created_by' => $_SESSION['auth_user_id'],
             'created_by_role' => 'agent',

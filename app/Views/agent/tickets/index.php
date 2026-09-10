@@ -504,14 +504,19 @@ function getAgentTicketPriorityClass(string $priority): string
 
                                             </div>
 
-                                            <div class="fw-semibold">
-
-                                                <?= htmlspecialchars(
-                                                    $customerName !== ''
-                                                        ? $customerName
-                                                        : 'Unknown Customer'
-                                                ); ?>
-
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    <?= htmlspecialchars(
+                                                        $customerName !== ''
+                                                            ? $customerName
+                                                            : 'Unknown Customer'
+                                                    ); ?>
+                                                </div>
+                                                <?php if (!empty($ticket['branch_name'])): ?>
+                                                    <div class="small text-muted opacity-75">
+                                                        <i class="bi bi-building me-1"></i><?= htmlspecialchars($ticket['branch_name']); ?>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
 
                                         </div>

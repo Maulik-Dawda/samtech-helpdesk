@@ -229,10 +229,34 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                             <div>
                                 <span class="profile-summary-label">Address</span>
                                 <span class="profile-summary-value">
-                                    <?= !empty($organizationAddress) ? htmlspecialchars($organizationAddress) : '<em class="text-muted">Not specified</em>'; ?>
+                                    <?= !empty($organizationAddress) ? nl2br(htmlspecialchars($organizationAddress)) : '<em class="text-muted">Not specified</em>'; ?>
                                 </span>
                             </div>
                         </div>
+
+                        <?php $branchesList = is_array($branches ?? null) ? $branches : []; ?>
+                        <?php if (!empty($organization['has_branches']) || !empty($branchesList)): ?>
+                            <div class="profile-summary-item">
+                                <div class="profile-summary-icon">
+                                    <i class="bi bi-diagram-3"></i>
+                                </div>
+                                <div class="w-100">
+                                    <span class="profile-summary-label">Branches</span>
+                                    <div class="d-flex flex-wrap gap-1 mt-1">
+                                        <?php if (!empty($branchesList)): ?>
+                                            <?php foreach ($branchesList as $br): ?>
+                                                <span class="badge bg-white text-dark border px-2 py-1 shadow-sm">
+                                                    <i class="bi bi-building me-1 text-primary"></i>
+                                                    <?= htmlspecialchars($br['name'] ?? ''); ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <em class="text-muted small">No active branches added yet.</em>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="profile-summary-item">
                             <div class="profile-summary-icon">

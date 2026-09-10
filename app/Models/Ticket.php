@@ -13,6 +13,7 @@ class Ticket extends Model
     {
         $userId = !empty($data['user_id']) ? (int)$data['user_id'] : (!empty($data['created_by']) ? (int)$data['created_by'] : null);
         $assignedAgentId = !empty($data['assigned_agent_id']) ? (int)$data['assigned_agent_id'] : null;
+        $branchId = !empty($data['branch_id']) ? (int)$data['branch_id'] : null;
 
         try {
             $this->db->exec("ALTER TABLE `tickets` MODIFY COLUMN `user_id` INT NULL");
@@ -27,6 +28,7 @@ class Ticket extends Model
                     ticket_no,
                     user_id,
                     organization_id,
+                    branch_id,
                     assigned_agent_id,
                     created_by,
                     created_by_role,
@@ -37,7 +39,7 @@ class Ticket extends Model
                 )
                 VALUES
                 (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
             ");
 
@@ -45,6 +47,7 @@ class Ticket extends Model
                 $data['ticket_no'],
                 $userId,
                 $data['organization_id'],
+                $branchId,
                 $assignedAgentId,
                 $data['created_by'],
                 $data['created_by_role'],
@@ -67,6 +70,7 @@ class Ticket extends Model
                     ticket_no,
                     user_id,
                     organization_id,
+                    branch_id,
                     created_by,
                     created_by_role,
                     subject,
@@ -76,7 +80,7 @@ class Ticket extends Model
                 )
                 VALUES
                 (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
             ");
 
@@ -84,6 +88,7 @@ class Ticket extends Model
                 $data['ticket_no'],
                 $userId,
                 $data['organization_id'],
+                $branchId,
                 $data['created_by'],
                 $data['created_by_role'],
                 $data['subject'],
@@ -104,9 +109,11 @@ class Ticket extends Model
         $stmt = $this->db->prepare("
             SELECT 
                 tickets.*,
-                assigned_agent.full_name AS assigned_agent_name
+                assigned_agent.full_name AS assigned_agent_name,
+                organization_branches.name AS branch_name
             FROM tickets
             LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
+            LEFT JOIN organization_branches ON organization_branches.id = tickets.branch_id
             WHERE tickets.user_id = ?
             ORDER BY tickets.created_at DESC
         ");
@@ -119,9 +126,10 @@ class Ticket extends Model
     public function findById($ticketId)
     {
         $stmt = $this->db->prepare("
-            SELECT *
+            SELECT tickets.*, organization_branches.name AS branch_name
             FROM tickets
-            WHERE id = ?
+            LEFT JOIN organization_branches ON organization_branches.id = tickets.branch_id
+            WHERE tickets.id = ?
             LIMIT 1
         ");
 
@@ -135,10 +143,12 @@ class Ticket extends Model
         $stmt = $this->db->prepare("
         SELECT 
             tickets.*,
-            closed_agent.full_name AS closed_by_agent_name
+            closed_agent.full_name AS closed_by_agent_name,
+            organization_branches.name AS branch_name
         FROM tickets
         LEFT JOIN users AS closed_agent 
             ON closed_agent.id = tickets.closed_by_agent_id
+        LEFT JOIN organization_branches ON organization_branches.id = tickets.branch_id
         WHERE tickets.id = ?
         AND tickets.user_id = ?
         LIMIT 1
@@ -209,10 +219,12 @@ class Ticket extends Model
                 COALESCE(users.full_name, organizations.name) AS customer_name,
                 COALESCE(users.email, organizations.email, '') AS customer_email,
                 organizations.name AS organization_name,
+                organization_branches.name AS branch_name,
                 assigned_agent.full_name AS assigned_agent_name
             FROM tickets
             LEFT JOIN users ON users.id = tickets.user_id
             LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            LEFT JOIN organization_branches ON organization_branches.id = tickets.branch_id
             LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
             WHERE 1=1
             AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
@@ -230,9 +242,10 @@ class Ticket extends Model
                 OR users.full_name LIKE ?
                 OR users.email LIKE ?
                 OR organizations.name LIKE ?
+                OR organization_branches.name LIKE ?
                 OR assigned_agent.full_name LIKE ?
             )";
-            $params = [$term, $term, $term, $term, $term, $term, $term, $term, $term];
+            $params = [$term, $term, $term, $term, $term, $term, $term, $term, $term, $term];
         }
 
         $sql .= " ORDER BY tickets.created_at DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
@@ -251,11 +264,13 @@ class Ticket extends Model
             COALESCE(users.full_name, organizations.name) AS customer_name,
             COALESCE(users.email, organizations.email, '') AS customer_email,
             organizations.name AS organization_name,
+            organization_branches.name AS branch_name,
             closed_agent.full_name AS closed_by_agent_name,
             assigned_agent.full_name AS assigned_agent_name
         FROM tickets
         LEFT JOIN users ON users.id = tickets.user_id
         LEFT JOIN organizations ON organizations.id = tickets.organization_id
+        LEFT JOIN organization_branches ON organization_branches.id = tickets.branch_id
         LEFT JOIN users AS closed_agent ON closed_agent.id = tickets.closed_by_agent_id
         LEFT JOIN users AS assigned_agent ON assigned_agent.id = tickets.assigned_agent_id
         WHERE tickets.id = ?

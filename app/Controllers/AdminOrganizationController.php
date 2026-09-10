@@ -2,6 +2,7 @@
 
 require_once ROOT_PATH . "/app/Core/Controller.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
+require_once ROOT_PATH . "/app/Models/OrganizationBranch.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Ticket.php";
 
@@ -53,6 +54,8 @@ class AdminOrganizationController extends Controller
         $phone = trim($_POST['phone'] ?? '');
         $address = trim($_POST['address'] ?? '');
         $maxUsers = (int)($_POST['max_users'] ?? 3);
+        $hasBranches = isset($_POST['has_branches']) ? 1 : 0;
+        $branches = is_array($_POST['branches'] ?? null) ? $_POST['branches'] : [];
 
         if (empty($name)) {
             $_SESSION['error'] = "Organization name is required.";
@@ -80,18 +83,24 @@ class AdminOrganizationController extends Controller
             exit;
         }
 
-        $created = $organizationModel->create([
+        $orgId = $organizationModel->create([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
             'address' => $address,
-            'max_users' => $maxUsers
+            'max_users' => $maxUsers,
+            'has_branches' => $hasBranches
         ]);
 
-        if (!$created) {
+        if (!$orgId) {
             $_SESSION['error'] = "Unable to create organization.";
             header("Location: " . BASE_URL . "/organizations/create");
             exit;
+        }
+
+        if ($hasBranches && is_numeric($orgId) && $orgId > 0) {
+            $branchModel = new OrganizationBranch();
+            $branchModel->syncBranches($orgId, $branches);
         }
 
         $_SESSION['success'] = "Organization created successfully.";
@@ -113,8 +122,12 @@ class AdminOrganizationController extends Controller
             exit;
         }
 
+        $branchModel = new OrganizationBranch();
+        $branches = $branchModel->getByOrganizationId($id);
+
         $this->view('admin/organizations/edit', [
-            'organization' => $organization
+            'organization' => $organization,
+            'branches' => $branches
         ]);
     }
 
@@ -138,6 +151,8 @@ class AdminOrganizationController extends Controller
         $address = trim($_POST['address'] ?? '');
         $maxUsers = (int)($_POST['max_users'] ?? 3);
         $isActive = isset($_POST['is_active']) ? 1 : 0;
+        $hasBranches = isset($_POST['has_branches']) ? 1 : 0;
+        $branches = is_array($_POST['branches'] ?? null) ? $_POST['branches'] : [];
 
         if (empty($name)) {
             $_SESSION['error'] = "Organization name is required.";
@@ -169,6 +184,7 @@ class AdminOrganizationController extends Controller
             'phone' => $phone,
             'address' => $address,
             'max_users' => $maxUsers,
+            'has_branches' => $hasBranches,
             'is_active' => $isActive
         ]);
 
@@ -176,6 +192,13 @@ class AdminOrganizationController extends Controller
             $_SESSION['error'] = "Unable to update organization.";
             header("Location: " . BASE_URL . "/organizations/edit/" . $id);
             exit;
+        }
+
+        $branchModel = new OrganizationBranch();
+        if ($hasBranches) {
+            $branchModel->syncBranches($id, $branches);
+        } else {
+            $branchModel->syncBranches($id, []);
         }
 
         $_SESSION['success'] = "Organization updated successfully.";
@@ -191,6 +214,7 @@ class AdminOrganizationController extends Controller
         $organizationModel = new Organization();
         $userModel = new User();
         $ticketModel = new Ticket();
+        $branchModel = new OrganizationBranch();
 
         $organization = $organizationModel->findById($id);
 
@@ -201,6 +225,7 @@ class AdminOrganizationController extends Controller
         }
 
         $users = $userModel->getOrganizationUsers($id);
+        $branches = $branchModel->getByOrganizationId($id);
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($page < 1) {
@@ -221,11 +246,21 @@ class AdminOrganizationController extends Controller
             'organization' => $organization,
             'users' => $users,
             'tickets' => $tickets,
+            'branches' => $branches,
             'totalTickets' => $totalTickets,
             'page' => $page,
             'totalPages' => $totalPages,
             'limit' => $limit
         ]);
+    }
+
+    public function getBranchesJson($id)
+    {
+        header('Content-Type: application/json');
+        $branchModel = new OrganizationBranch();
+        $branches = $branchModel->getActiveByOrganizationId($id);
+        echo json_encode($branches);
+        exit;
     }
 
     public function disable($id)

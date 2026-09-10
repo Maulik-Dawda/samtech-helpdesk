@@ -398,30 +398,36 @@ $organizations = is_array($organizations ?? null)
 
                     <hr>
 
+                <!-- Branch Selection (Conditional) -->
+                <div class="col-md-6 d-none" id="branchSelectWrapper">
+                    <label class="form-label">
+                        Branch
+                        <span class="text-muted small">(Optional)</span>
+                    </label>
+                    <select
+                        name="branch_id"
+                        id="branchSelect"
+                        class="form-select">
+                        <option value="">Select Branch (Optional)</option>
+                    </select>
+                    <div class="form-text">
+                        Select the specific branch associated with this ticket.
+                    </div>
                 </div>
 
-
-
                 <div class="col-12 d-flex justify-content-end gap-2">
-
                     <a
                         href="<?= BASE_URL ?>/agent/tickets"
                         class="btn btn-light">
-
                         Cancel
-
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary-custom">
-
                         <i class="bi bi-plus-circle-fill me-2"></i>
-
                         Create Ticket
-
                     </button>
-
                 </div>
 
             </form>
@@ -434,6 +440,7 @@ $organizations = is_array($organizations ?? null)
 
 <script>
 const orgUsersMap = <?= json_encode($orgUsersGrouped ?? []); ?>;
+const orgBranchesMap = <?= json_encode($orgBranchesGrouped ?? []); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Select2 on form selects
@@ -445,28 +452,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const orgSelect = $('#organizationSelect');
     const userSelect = $('#orgUserSelect');
+    const branchSelect = $('#branchSelect');
+    const branchWrapper = $('#branchSelectWrapper');
     const noUsersNotice = $('#noUsersNotice');
     const submitBtn = $('button[type="submit"]');
 
-    function updateOrgUsers() {
+    function updateOrgUsersAndBranches() {
         if (!orgSelect.length || !userSelect.length) return;
 
         const selectedOrgId = orgSelect.val();
         userSelect.empty();
         userSelect.append('<option value="">Select User *</option>');
 
+        branchSelect.empty();
+        branchSelect.append('<option value="">Select Branch (Optional)</option>');
+
         if (!selectedOrgId) {
             noUsersNotice.addClass('d-none');
+            branchWrapper.addClass('d-none');
             userSelect.prop('disabled', false);
             submitBtn.prop('disabled', false);
             if (window.jQuery && $.fn.select2) {
                 userSelect.trigger('change.select2');
+                branchSelect.trigger('change.select2');
             }
             return;
         }
 
+        // Handle Users
         const users = orgUsersMap[selectedOrgId] || [];
-
         if (users.length === 0) {
             noUsersNotice.removeClass('d-none');
             userSelect.prop('disabled', true);
@@ -481,14 +495,27 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        // Handle Branches
+        const branches = orgBranchesMap[selectedOrgId] || [];
+        if (branches.length > 0) {
+            branchWrapper.removeClass('d-none');
+            branches.forEach(function(b) {
+                const bOption = new Option(b.name, b.id, false, false);
+                branchSelect.append(bOption);
+            });
+        } else {
+            branchWrapper.addClass('d-none');
+        }
+
         if (window.jQuery && $.fn.select2) {
             userSelect.trigger('change.select2');
+            branchSelect.trigger('change.select2');
         }
     }
 
     if (orgSelect.length) {
-        orgSelect.on('change', updateOrgUsers);
-        updateOrgUsers();
+        orgSelect.on('change', updateOrgUsersAndBranches);
+        updateOrgUsersAndBranches();
     }
 });
 </script>

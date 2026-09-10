@@ -64,8 +64,21 @@
                 <div class="attachment-staged-list d-flex flex-column gap-2 mt-2"></div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-md-12">
+            <div class="row mb-4 g-3">
+                <?php $branchesList = is_array($branches ?? null) ? $branches : []; ?>
+                <?php if (!empty($branchesList)): ?>
+                    <div class="col-md-6">
+                        <label class="form-label">Branch <span class="text-muted small">(Optional)</span></label>
+                        <select name="branch_id" class="form-select">
+                            <option value="">Select Branch (Optional)</option>
+                            <?php foreach ($branchesList as $b): ?>
+                                <option value="<?= $b['id']; ?>"><?= htmlspecialchars($b['name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                <?php endif; ?>
+
+                <div class="<?= !empty($branchesList) ? 'col-md-6' : 'col-md-12'; ?>">
                     <label class="form-label">Priority</label>
                     <select name="priority" class="form-select" required>
                         <option value="low">Low</option>
