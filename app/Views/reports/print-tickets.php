@@ -133,16 +133,17 @@ $logoSrc = file_exists($logoPath)
             text-align: center;
         }
 
+        .sr-no { width: 4%; text-align: center; }
         .ticket-no { width: 10%; }
         .org { width: 11%; }
         .user { width: 10%; }
         .agent { width: 10%; }
-        .subject { width: 18%; }
-        .priority { width: 7%; }
+        .subject { width: 16%; }
+        .priority { width: 6%; }
         .status { width: 7%; }
         .created { width: 9%; }
         .closed-date { width: 9%; }
-        .closed-by { width: 9%; }
+        .closed-by { width: 8%; }
 
         @media print {
             .print-actions, .print-btn {
@@ -259,30 +260,33 @@ $logoSrc = file_exists($logoPath)
     <table class="data-table">
         <thead>
             <tr>
+                <th style="width: 4%; text-align: center;">Sr. No</th>
                 <th style="width: 10%;">Ticket No</th>
                 <th style="width: 11%;">Organization</th>
                 <th style="width: 10%;">User</th>
                 <th style="width: 10%;">Assigned Agent</th>
-                <th style="width: 18%;">Subject</th>
-                <th style="width: 7%;">Priority</th>
+                <th style="width: 16%;">Subject</th>
+                <th style="width: 6%;">Priority</th>
                 <th style="width: 7%;">Status</th>
                 <th style="width: 9%;">Created</th>
                 <th style="width: 9%;">Closed Date</th>
-                <th style="width: 9%;">Closed By</th>
+                <th style="width: 8%;">Closed By</th>
             </tr>
         </thead>
         <tbody>
 
         <?php if (empty($tickets)): ?>
             <tr>
-                <td colspan="10" style="text-align: center; padding: 18px; color: #64748b;">
+                <td colspan="11" style="text-align: center; padding: 18px; color: #64748b;">
                     No tickets found matching the selected report criteria.
                 </td>
             </tr>
         <?php else: ?>
 
+            <?php $srNo = 1; ?>
             <?php foreach ($tickets as $ticket): ?>
                 <tr>
+                    <td class="sr-no" style="text-align: center;"><?= $srNo++; ?></td>
                     <td class="ticket-no"><strong><?= htmlspecialchars($ticket['ticket_no'] ?? '-'); ?></strong></td>
                     <td class="org"><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
                     <td class="user"><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>

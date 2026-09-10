@@ -89,27 +89,30 @@
 <table>
     <thead>
         <tr>
-            <th width="11%">Ticket No</th>
-            <th width="13%">Organization</th>
-            <th width="12%">User</th>
-            <th width="20%">Subject</th>
-            <th width="8%">Priority</th>
-            <th width="9%">Status</th>
-            <th width="13.5%">Created</th>
-            <th width="13.5%">Closed Date</th>
+            <th width="5%" style="text-align:center;">Sr. No</th>
+            <th width="10%">Ticket No</th>
+            <th width="12%">Organization</th>
+            <th width="11%">User</th>
+            <th width="19%">Subject</th>
+            <th width="7%">Priority</th>
+            <th width="8%">Status</th>
+            <th width="14%">Created</th>
+            <th width="14%">Closed Date</th>
         </tr>
     </thead>
 
     <tbody>
         <?php if (empty($tickets)): ?>
             <tr>
-                <td colspan="8" style="text-align:center;">
+                <td colspan="9" style="text-align:center;">
                     No records found.
                 </td>
             </tr>
         <?php else: ?>
+            <?php $srNo = 1; ?>
             <?php foreach ($tickets as $ticket): ?>
                 <tr>
+                    <td style="text-align:center;"><?= $srNo++; ?></td>
                     <td><?= htmlspecialchars($ticket['ticket_no']); ?></td>
                     <td><?= htmlspecialchars($ticket['organization_name'] ?? '-'); ?></td>
                     <td><?= htmlspecialchars($ticket['customer_name'] ?? '-'); ?></td>
