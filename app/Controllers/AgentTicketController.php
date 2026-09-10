@@ -9,6 +9,7 @@ require_once ROOT_PATH . "/app/Services/UploadService.php";
 require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
 require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
+require_once ROOT_PATH . "/app/Models/OrganizationBranch.php";
 require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
 
 class AgentTicketController extends Controller
