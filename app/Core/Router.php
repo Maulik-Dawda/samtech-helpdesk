@@ -70,7 +70,9 @@ class Router
                 @session_start();
             }
 
-            $_SESSION['error'] = "An unexpected error occurred. Please try again or contact support.";
+            if (empty($_SESSION['error'])) {
+                $_SESSION['error'] = "An unexpected error occurred: " . $e->getMessage();
+            }
 
             $referer = $_SERVER['HTTP_REFERER'] ?? '';
             $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";

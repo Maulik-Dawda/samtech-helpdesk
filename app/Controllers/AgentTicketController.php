@@ -580,88 +580,98 @@ class AgentTicketController extends Controller
 
     public function store()
     {
-        Csrf::verify();
+        try {
+            Csrf::verify();
 
-        AuthMiddleware::timeout();
-        AuthMiddleware::check(['admin', 'agent']);
+            AuthMiddleware::timeout();
+            AuthMiddleware::check(['admin', 'agent']);
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $organizationId = (int)($_POST['organization_id'] ?? 0);
-        $branchId = !empty($_POST['branch_id']) ? (int)$_POST['branch_id'] : null;
-        $userId = (int)($_POST['user_id'] ?? 0);
-        $subject = trim($_POST['subject'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $priority = $_POST['priority'] ?? 'medium';
-        $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : 0;
-
-        if (
-            empty($organizationId) ||
-            empty($userId) ||
-            empty($subject) ||
-            empty($description) ||
-            $assignedAgentId <= 0
-        ) {
-            $_SESSION['error'] = 'All required fields (Organization, User, Subject, Description, Assigned Agent) must be completed.';
-            header("Location: " . BASE_URL . "/agent/tickets/create");
-            exit;
-        }
-
-        $userModel = new User();
-
-        $orgUsers = $userModel->getOrganizationUsers($organizationId);
-        if (empty($orgUsers)) {
-            $_SESSION['error'] = 'Selected organization has no registered users. You must add at least one user to the organization before creating a ticket on its behalf.';
-            header("Location: " . BASE_URL . "/agent/tickets/create");
-            exit;
-        }
-
-        $user = $userModel->findById($userId);
-        if (!$user || (int)$user['organization_id'] !== $organizationId) {
-            $_SESSION['error'] = 'Selected user does not belong to the selected organization.';
-            header("Location: " . BASE_URL . "/agent/tickets/create");
-            exit;
-        }
-
-        $ticketModel = new Ticket();
-
-        $ticketNo = $ticketModel->generateTicketNo();
-
-        $created = $ticketModel->create([
-            'ticket_no' => $ticketNo,
-            'user_id' => $userId,
-            'organization_id' => $organizationId,
-            'branch_id' => $branchId,
-            'assigned_agent_id' => $assignedAgentId,
-            'created_by' => $_SESSION['auth_user_id'],
-            'created_by_role' => 'agent',
-            'subject' => $subject,
-            'description' => $description,
-            'priority' => $priority,
-            'status' => 'open'
-        ]);
-
-        if (!$created) {
-            $_SESSION['error'] = 'Unable to create ticket.';
-            header("Location: " . BASE_URL . "/agent/tickets/create");
-            exit;
-        }
-
-        $userModel = new User();
-        $agent = $userModel->findById($_SESSION['auth_user_id']);
-        $createdTicket = $ticketModel->findByTicketNo($ticketNo);
-        if ($createdTicket && $agent) {
-            try {
-                TicketNotificationService::ticketCreated($createdTicket, $agent);
-            } catch (Throwable $e) {
-                error_log("Ticket notification error: " . $e->getMessage());
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
             }
-        }
 
-        $_SESSION['success'] = 'Ticket created successfully.';
-        header("Location: " . BASE_URL . "/agent/tickets");
-        exit;
+            $organizationId = (int)($_POST['organization_id'] ?? 0);
+            $branchId = !empty($_POST['branch_id']) ? (int)$_POST['branch_id'] : null;
+            $userId = (int)($_POST['user_id'] ?? 0);
+            $subject = trim($_POST['subject'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $priority = $_POST['priority'] ?? 'medium';
+            $assignedAgentId = !empty($_POST['assigned_agent_id']) ? (int)$_POST['assigned_agent_id'] : 0;
+
+            if (
+                empty($organizationId) ||
+                empty($userId) ||
+                empty($subject) ||
+                empty($description) ||
+                $assignedAgentId <= 0
+            ) {
+                $_SESSION['error'] = 'All required fields (Organization, User, Subject, Description, Assigned Agent) must be completed.';
+                header("Location: " . BASE_URL . "/agent/tickets/create");
+                exit;
+            }
+
+            $userModel = new User();
+
+            $orgUsers = $userModel->getOrganizationUsers($organizationId);
+            if (empty($orgUsers)) {
+                $_SESSION['error'] = 'Selected organization has no registered users. You must add at least one user to the organization before creating a ticket on its behalf.';
+                header("Location: " . BASE_URL . "/agent/tickets/create");
+                exit;
+            }
+
+            $user = $userModel->findById($userId);
+            if (!$user || (int)$user['organization_id'] !== $organizationId) {
+                $_SESSION['error'] = 'Selected user does not belong to the selected organization.';
+                header("Location: " . BASE_URL . "/agent/tickets/create");
+                exit;
+            }
+
+            $ticketModel = new Ticket();
+
+            $ticketNo = $ticketModel->generateTicketNo();
+
+            $created = $ticketModel->create([
+                'ticket_no' => $ticketNo,
+                'user_id' => $userId,
+                'organization_id' => $organizationId,
+                'branch_id' => $branchId,
+                'assigned_agent_id' => $assignedAgentId,
+                'created_by' => $_SESSION['auth_user_id'],
+                'created_by_role' => 'agent',
+                'subject' => $subject,
+                'description' => $description,
+                'priority' => $priority,
+                'status' => 'open'
+            ]);
+
+            if (!$created) {
+                $_SESSION['error'] = 'Unable to create ticket in database.';
+                header("Location: " . BASE_URL . "/agent/tickets/create");
+                exit;
+            }
+
+            $userModel = new User();
+            $agent = $userModel->findById($_SESSION['auth_user_id']);
+            $createdTicket = $ticketModel->findByTicketNo($ticketNo);
+            if ($createdTicket && $agent) {
+                try {
+                    TicketNotificationService::ticketCreated($createdTicket, $agent);
+                } catch (Throwable $e) {
+                    error_log("Ticket notification error: " . $e->getMessage());
+                }
+            }
+
+            $_SESSION['success'] = 'Ticket created successfully.';
+            header("Location: " . BASE_URL . "/agent/tickets");
+            exit;
+        } catch (Throwable $e) {
+            error_log("Error in AgentTicketController::store: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['error'] = 'Unable to create ticket: ' . $e->getMessage();
+            header("Location: " . BASE_URL . "/agent/tickets/create");
+            exit;
+        }
     }
 }
