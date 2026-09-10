@@ -133,15 +133,16 @@ $logoSrc = file_exists($logoPath)
             text-align: center;
         }
 
-        .ticket-no { width: 11%; }
-        .org { width: 12%; }
+        .ticket-no { width: 10%; }
+        .org { width: 11%; }
         .user { width: 10%; }
         .agent { width: 10%; }
-        .subject { width: 22%; }
+        .subject { width: 18%; }
         .priority { width: 7%; }
-        .status { width: 8%; }
-        .created { width: 10%; }
-        .closed-by { width: 10%; }
+        .status { width: 7%; }
+        .created { width: 9%; }
+        .closed-date { width: 9%; }
+        .closed-by { width: 9%; }
 
         @media print {
             .print-actions, .print-btn {
@@ -258,22 +259,23 @@ $logoSrc = file_exists($logoPath)
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 11%;">Ticket No</th>
-                <th style="width: 12%;">Organization</th>
+                <th style="width: 10%;">Ticket No</th>
+                <th style="width: 11%;">Organization</th>
                 <th style="width: 10%;">User</th>
                 <th style="width: 10%;">Assigned Agent</th>
-                <th style="width: 22%;">Subject</th>
+                <th style="width: 18%;">Subject</th>
                 <th style="width: 7%;">Priority</th>
-                <th style="width: 8%;">Status</th>
-                <th style="width: 10%;">Created</th>
-                <th style="width: 10%;">Closed By</th>
+                <th style="width: 7%;">Status</th>
+                <th style="width: 9%;">Created</th>
+                <th style="width: 9%;">Closed Date</th>
+                <th style="width: 9%;">Closed By</th>
             </tr>
         </thead>
         <tbody>
 
         <?php if (empty($tickets)): ?>
             <tr>
-                <td colspan="9" style="text-align: center; padding: 18px; color: #64748b;">
+                <td colspan="10" style="text-align: center; padding: 18px; color: #64748b;">
                     No tickets found matching the selected report criteria.
                 </td>
             </tr>
@@ -289,6 +291,7 @@ $logoSrc = file_exists($logoPath)
                     <td class="priority"><?= htmlspecialchars(ucfirst($ticket['priority'] ?? '')); ?></td>
                     <td class="status"><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status'] ?? ''))); ?></td>
                     <td class="created"><?= !empty($ticket['created_at']) ? date('Y-m-d H:i', strtotime($ticket['created_at'])) : '-'; ?></td>
+                    <td class="closed-date"><?= !empty($ticket['closed_at']) ? date('Y-m-d H:i', strtotime($ticket['closed_at'])) : '-'; ?></td>
                     <td class="closed-by"><?= htmlspecialchars($ticket['closed_by_agent_name'] ?? '-'); ?></td>
                 </tr>
             <?php endforeach; ?>

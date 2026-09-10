@@ -226,6 +226,7 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created</th>
+                                <th>Closed</th>
                                 <th class="text-end">Action</th>
                             </tr>
                         </thead>
@@ -298,6 +299,14 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                                             <div class="text-muted" style="font-size:11px;"><?= date('h:i A', $createdAt); ?></div>
                                         <?php else: ?>
                                             -
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($ticket['closed_at'])): ?>
+                                            <div class="fw-semibold text-dark" style="font-size:11.5px;"><?= date('d M Y', strtotime($ticket['closed_at'])); ?></div>
+                                            <div class="text-muted" style="font-size:10.5px;"><?= date('h:i A', strtotime($ticket['closed_at'])); ?></div>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-end">

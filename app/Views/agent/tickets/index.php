@@ -417,6 +417,7 @@ function getAgentTicketPriorityClass(string $priority): string
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created</th>
+                                <th>Closed</th>
                                 <th class="text-end">Action</th>
                             </tr>
 
@@ -559,6 +560,33 @@ function getAgentTicketPriorityClass(string $priority): string
                                                 )
                                             ); ?>
                                         </div>
+
+                                    </td>
+
+
+                                    <td data-label="Closed">
+
+                                        <?php if (!empty($ticket['closed_at'])): ?>
+                                            <div class="fw-semibold" style="font-size: 12px; color: #334155;">
+                                                <?= htmlspecialchars(
+                                                    DateTimeHelper::format(
+                                                        $ticket['closed_at'],
+                                                        'd M Y'
+                                                    )
+                                                ); ?>
+                                            </div>
+
+                                            <div class="text-muted small mt-1">
+                                                <?= htmlspecialchars(
+                                                    DateTimeHelper::format(
+                                                        $ticket['closed_at'],
+                                                        'h:i A'
+                                                    )
+                                                ); ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
 
                                     </td>
 

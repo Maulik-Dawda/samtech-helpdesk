@@ -303,9 +303,9 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             </tr>
             <tr>
                 <th>Created Date</th>
-                <td><?= htmlspecialchars($ticket['created_at'] ?? '-'); ?></td>
+                <td><?= !empty($ticket['created_at']) ? htmlspecialchars(date('d M Y, h:i A', strtotime($ticket['created_at']))) : '-'; ?></td>
                 <th>Closed Date</th>
-                <td><?= !empty($ticket['closed_at']) ? htmlspecialchars($ticket['closed_at']) : '-'; ?></td>
+                <td><?= !empty($ticket['closed_at']) ? htmlspecialchars(date('d M Y, h:i A', strtotime($ticket['closed_at']))) : '-'; ?></td>
             </tr>
             <?php if (!empty($ticket['closed_by_agent_name'])): ?>
             <tr>

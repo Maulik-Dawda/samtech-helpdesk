@@ -89,20 +89,21 @@
 <table>
     <thead>
         <tr>
-            <th width="13%">Ticket No</th>
-            <th width="15%">Organization</th>
-            <th width="14%">User</th>
-            <th width="24%">Subject</th>
-            <th width="9%">Priority</th>
-            <th width="10%">Status</th>
-            <th width="15%">Created</th>
+            <th width="11%">Ticket No</th>
+            <th width="13%">Organization</th>
+            <th width="12%">User</th>
+            <th width="20%">Subject</th>
+            <th width="8%">Priority</th>
+            <th width="9%">Status</th>
+            <th width="13.5%">Created</th>
+            <th width="13.5%">Closed Date</th>
         </tr>
     </thead>
 
     <tbody>
         <?php if (empty($tickets)): ?>
             <tr>
-                <td colspan="7" style="text-align:center;">
+                <td colspan="8" style="text-align:center;">
                     No records found.
                 </td>
             </tr>
@@ -116,6 +117,7 @@
                     <td><?= htmlspecialchars(ucfirst($ticket['priority'])); ?></td>
                     <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticket['status']))); ?></td>
                     <td><?= htmlspecialchars($ticket['created_at']); ?></td>
+                    <td><?= !empty($ticket['closed_at']) ? htmlspecialchars(date('Y-m-d H:i', strtotime($ticket['closed_at']))) : '-'; ?></td>
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>

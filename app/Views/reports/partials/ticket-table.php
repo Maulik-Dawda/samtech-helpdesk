@@ -11,6 +11,7 @@
                 <th>Priority</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th>Closed Date</th>
                 <th>Closed By</th>
                 <th class="text-end">Action</th>
             </tr>
@@ -21,7 +22,7 @@
             <?php if (empty($tickets)): ?>
 
                 <tr>
-                    <td colspan="9" class="text-center text-muted py-4">
+                    <td colspan="10" class="text-center text-muted py-4">
                         No records found.
                     </td>
                 </tr>
@@ -97,6 +98,15 @@
                                 <div class="text-muted" style="font-size:11px;"><?= date('h:i A', $createdAt); ?></div>
                             <?php else: ?>
                                 -
+                            <?php endif; ?>
+                        </td>
+
+                        <td>
+                            <?php if (!empty($ticket['closed_at'])): ?>
+                                <div class="fw-semibold text-dark" style="font-size:11.5px;"><?= date('d M Y', strtotime($ticket['closed_at'])); ?></div>
+                                <div class="text-muted" style="font-size:10.5px;"><?= date('h:i A', strtotime($ticket['closed_at'])); ?></div>
+                            <?php else: ?>
+                                <span class="text-muted">-</span>
                             <?php endif; ?>
                         </td>
 
