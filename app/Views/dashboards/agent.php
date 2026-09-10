@@ -532,14 +532,14 @@ function agentDashboardPriorityClass(string $priority): string
                                         <div>
                                             <a
                                                 href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>"
-                                                class="fw-bold text-decoration-none">
+                                                class="ticket-no-link">
                                                 <?= htmlspecialchars(
                                                     $ticket['ticket_no'] ?? '-'
                                                 ); ?>
                                             </a>
 
                                             <?php if (!empty($ticket['organization_name'])): ?>
-                                                <div class="text-muted small mt-1 text-truncate" style="max-width: 180px;" title="<?= htmlspecialchars($ticket['organization_name']); ?>">
+                                                <div class="ticket-org-subtext" title="<?= htmlspecialchars($ticket['organization_name']); ?>">
                                                     <?= htmlspecialchars($ticket['organization_name']); ?>
                                                 </div>
                                             <?php endif; ?>
@@ -547,28 +547,28 @@ function agentDashboardPriorityClass(string $priority): string
                                     </td>
 
                                     <td data-label="Subject">
-                                        <span class="d-inline-block text-truncate fw-medium text-dark" style="max-width: 200px;" title="<?= htmlspecialchars($ticket['subject'] ?? ''); ?>">
+                                        <span class="ticket-subject-text" title="<?= htmlspecialchars($ticket['subject'] ?? ''); ?>">
                                             <?= htmlspecialchars($ticket['subject'] ?? 'Untitled Ticket'); ?>
                                         </span>
                                     </td>
 
                                     <td data-label="Customer">
-
-                                        <?= htmlspecialchars(
-                                            $ticket['customer_name'] ?? '-'
-                                        ); ?>
-
+                                        <div class="fw-medium text-dark">
+                                            <?= htmlspecialchars(
+                                                $ticket['customer_name'] ?? '-'
+                                            ); ?>
+                                        </div>
                                     </td>
 
                                     <td data-label="Assigned Agent">
                                          <?php if (!empty($ticket['assigned_agent_name'])): ?>
-                                             <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
-                                                 <i class="bi bi-person-badge me-1"></i>
+                                             <span class="badge-agent-pill">
+                                                 <i class="bi bi-phone me-1"></i>
                                                  <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
                                              </span>
                                          <?php else: ?>
-                                             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill fw-semibold" style="font-size:11.5px;">
-                                                 <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+                                             <span class="badge-unassigned-pill">
+                                                 <i class="bi bi-exclamation-triangle-fill me-1"></i>
                                                  Not Assigned Yet
                                              </span>
                                          <?php endif; ?>
@@ -576,7 +576,7 @@ function agentDashboardPriorityClass(string $priority): string
 
                                     <td data-label="Priority">
 
-                                        <span class="priority-badge <?= agentDashboardPriorityClass($ticketPriority); ?>">
+                                        <span class="priority-badge priority-<?= strtolower($ticketPriority); ?>">
 
                                             <?= htmlspecialchars(
                                                 ucfirst($ticketPriority)
@@ -588,7 +588,7 @@ function agentDashboardPriorityClass(string $priority): string
 
                                     <td data-label="Status">
 
-                                        <span class="status-badge <?= agentDashboardStatusClass($ticketStatus); ?>">
+                                        <span class="status-badge status-<?= str_replace([' ', '_'], '-', strtolower($ticketStatus)); ?>">
 
                                             <?= htmlspecialchars(
                                                 ucwords(
@@ -606,7 +606,7 @@ function agentDashboardPriorityClass(string $priority): string
 
                                     <td data-label="Created">
 
-                                        <div class="fw-semibold">
+                                        <div class="fw-semibold" style="font-size: 12px; color: #334155;">
 
                                             <?= htmlspecialchars(
                                                 DateTimeHelper::format(
@@ -637,23 +637,22 @@ function agentDashboardPriorityClass(string $priority): string
                                         <div class="d-inline-flex align-items-center gap-1">
                                             <a
                                                 href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>"
-                                                class="table-action-btn table-action-view"
+                                                class="ticket-btn-icon ticket-btn-view"
                                                 title="View ticket"
                                                 aria-label="View ticket">
 
-                                                <i class="bi bi-eye-fill"></i>
+                                                <i class="bi bi-eye"></i>
 
                                             </a>
 
                                             <a
                                                 href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
                                                 target="_blank"
-                                                class="table-action-btn table-action-view text-success"
-                                                style="background: #e8f5e9; color: #2e7d32;"
+                                                class="ticket-btn-icon ticket-btn-print"
                                                 title="Print Ticket Report"
                                                 aria-label="Print Ticket Report">
 
-                                                <i class="bi bi-printer-fill"></i>
+                                                <i class="bi bi-printer"></i>
 
                                             </a>
                                         </div>

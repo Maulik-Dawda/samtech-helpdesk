@@ -538,78 +538,97 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
 
                                 <tr>
 
-                                    <td>
-                                        <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticket['id']; ?>" class="fw-bold text-decoration-none text-dark">
-                                            <?= htmlspecialchars($ticket['ticket_no'] ?? ''); ?>
-                                        </a>
-                                    </td>
-
-                                    <td>
-                                        <div class="fw-semibold text-dark">
-                                            <?= htmlspecialchars($ticket['subject'] ?? ''); ?>
-                                        </div>
-                                    </td>
-
-                                    <td>
+                                    <td data-label="Ticket">
                                         <div>
-                                            <div class="fw-semibold">
-                                                <?= htmlspecialchars($ticket['customer_name'] ?? 'User'); ?>
-                                            </div>
-                                            <?php if (!empty($ticket['customer_email'])): ?>
-                                                <div class="text-muted small">
-                                                    <?= htmlspecialchars($ticket['customer_email']); ?>
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticket['id']; ?>" class="ticket-no-link">
+                                                <?= htmlspecialchars($ticket['ticket_no'] ?? ''); ?>
+                                            </a>
+                                            <?php if (!empty($organizationName)): ?>
+                                                <div class="ticket-org-subtext" title="<?= htmlspecialchars($organizationName); ?>">
+                                                    <?= htmlspecialchars($organizationName); ?>
                                                 </div>
                                             <?php endif; ?>
                                         </div>
                                     </td>
 
-                                    <td>
+                                    <td data-label="Subject">
+                                        <span class="ticket-subject-text" title="<?= htmlspecialchars($ticket['subject'] ?? ''); ?>">
+                                            <?= htmlspecialchars($ticket['subject'] ?? 'Untitled Ticket'); ?>
+                                        </span>
+                                    </td>
+
+                                    <td data-label="Customer">
+                                        <div class="fw-medium text-dark">
+                                            <?= htmlspecialchars($ticket['customer_name'] ?? 'User'); ?>
+                                        </div>
+                                        <?php if (!empty($ticket['branch_name'])): ?>
+                                            <div class="ticket-org-subtext">
+                                                <i class="bi bi-building me-1"></i><?= htmlspecialchars($ticket['branch_name']); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td data-label="Assigned Agent">
                                         <?php if (!empty($ticket['assigned_agent_name'])): ?>
-                                            <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
-                                                <i class="bi bi-person-badge me-1"></i>
+                                            <span class="badge-agent-pill">
+                                                <i class="bi bi-phone me-1"></i>
                                                 <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
                                             </span>
                                         <?php else: ?>
-                                            <span class="text-muted small">
-                                                Unassigned
+                                            <span class="badge-unassigned-pill">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                                Not Assigned Yet
                                             </span>
                                         <?php endif; ?>
                                     </td>
 
-                                    <td>
-                                        <span class="priority-badge <?= $priorityClass; ?>">
+                                    <td data-label="Priority">
+                                        <span class="priority-badge priority-<?= strtolower($ticket['priority'] ?? 'medium'); ?>">
                                             <?= ucfirst($ticket['priority'] ?? 'Medium'); ?>
                                         </span>
                                     </td>
 
-                                    <td>
-                                        <span class="status-badge <?= $statusClass; ?>">
+                                    <td data-label="Status">
+                                        <span class="status-badge status-<?= str_replace('_', '-', strtolower($ticket['status'] ?? 'open')); ?>">
                                             <?= ucfirst(str_replace('_', ' ', $ticket['status'] ?? 'Open')); ?>
                                         </span>
                                     </td>
 
-                                    <td>
-                                        <div class="text-muted small">
-                                            <?= date('M d, Y H:i', strtotime($ticket['created_at'] ?? 'now')); ?>
+                                    <td data-label="Created">
+                                        <div class="fw-semibold" style="font-size: 12px; color: #334155;">
+                                            <?= htmlspecialchars(
+                                                DateTimeHelper::format(
+                                                    $ticket['created_at'] ?? null,
+                                                    'd M Y'
+                                                )
+                                            ); ?>
+                                        </div>
+
+                                        <div class="text-muted small mt-1">
+                                            <?= htmlspecialchars(
+                                                DateTimeHelper::format(
+                                                    $ticket['created_at'] ?? null,
+                                                    'h:i A'
+                                                )
+                                            ); ?>
                                         </div>
                                     </td>
 
-                                    <td class="text-end">
+                                    <td data-label="Action" class="text-end">
                                         <div class="d-inline-flex align-items-center gap-1">
                                             <a
                                                 href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticket['id']; ?>"
-                                                class="table-action-btn table-action-view"
+                                                class="ticket-btn-icon ticket-btn-view"
                                                 title="View Ticket">
-                                                <i class="bi bi-eye-fill"></i>
+                                                <i class="bi bi-eye"></i>
                                             </a>
 
                                             <a
                                                 href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticket['id']; ?>"
                                                 target="_blank"
-                                                class="table-action-btn table-action-view text-success"
-                                                style="background: #e8f5e9; color: #2e7d32;"
+                                                class="ticket-btn-icon ticket-btn-print"
                                                 title="Print Ticket Report">
-                                                <i class="bi bi-printer-fill"></i>
+                                                <i class="bi bi-printer"></i>
                                             </a>
                                         </div>
                                     </td>
