@@ -335,6 +335,32 @@ class MailService
         );
     }
 
+    public static function sendTicketReplyMail(
+        string $to,
+        string $subject,
+        string $recipientName,
+        string $introText,
+        string $replyMessage,
+        array $ticketDetails,
+        string $actionUrl
+    ): bool {
+        $body = self::ticketReplyTemplate(
+            $subject,
+            $recipientName,
+            $introText,
+            $replyMessage,
+            $ticketDetails,
+            $actionUrl
+        );
+
+        return self::send(
+            $to,
+            $subject,
+            $body,
+            'ticket'
+        );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HTML to Plain Text
@@ -1147,6 +1173,169 @@ class MailService
         </body>
         </html>';
     }
+
+    private static function ticketReplyTemplate(
+        string $subject,
+        string $recipientName,
+        string $introText,
+        string $replyMessage,
+        array $ticketDetails,
+        string $actionUrl
+    ): string {
+        $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
+        $safeRecipientName = htmlspecialchars($recipientName, ENT_QUOTES, 'UTF-8');
+        $safeIntroText = htmlspecialchars($introText, ENT_QUOTES, 'UTF-8');
+        $safeReplyMessage = nl2br(htmlspecialchars($replyMessage, ENT_QUOTES, 'UTF-8'));
+        $safeActionUrl = htmlspecialchars($actionUrl, ENT_QUOTES, 'UTF-8');
+
+        $safeTicketNo = htmlspecialchars($ticketDetails['ticket_no'] ?? '-', ENT_QUOTES, 'UTF-8');
+        $safeTicketSubject = htmlspecialchars($ticketDetails['subject'] ?? '-', ENT_QUOTES, 'UTF-8');
+        $safeRepliedBy = htmlspecialchars($ticketDetails['replied_by'] ?? '-', ENT_QUOTES, 'UTF-8');
+        $safeStatus = htmlspecialchars($ticketDetails['status'] ?? '-', ENT_QUOTES, 'UTF-8');
+        $safeOrganization = !empty($ticketDetails['organization']) && $ticketDetails['organization'] !== '-' ? htmlspecialchars($ticketDetails['organization'], ENT_QUOTES, 'UTF-8') : '';
+        $safeBranch = !empty($ticketDetails['branch']) && $ticketDetails['branch'] !== '-' ? htmlspecialchars($ticketDetails['branch'], ENT_QUOTES, 'UTF-8') : '';
+
+        $detailsRows = '
+            <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#64748b; font-weight:600; width:35%;">Ticket Number</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#111827; font-weight:700;">' . $safeTicketNo . '</td>
+            </tr>
+            <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#64748b; font-weight:600;">Subject</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#111827; font-weight:600;">' . $safeTicketSubject . '</td>
+            </tr>
+            <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#64748b; font-weight:600;">Replied By</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#111827; font-weight:600;">' . $safeRepliedBy . '</td>
+            </tr>
+            <tr>
+                <td style="padding:10px 16px; ' . (!empty($safeOrganization) || !empty($safeBranch) ? 'border-bottom:1px solid #e5e7eb;' : '') . ' font-size:13px; color:#64748b; font-weight:600;">Current Status</td>
+                <td style="padding:10px 16px; ' . (!empty($safeOrganization) || !empty($safeBranch) ? 'border-bottom:1px solid #e5e7eb;' : '') . ' font-size:13px; color:#111827; font-weight:600;">' . $safeStatus . '</td>
+            </tr>';
+
+        if (!empty($safeOrganization)) {
+            $detailsRows .= '
+            <tr>
+                <td style="padding:10px 16px; ' . (!empty($safeBranch) ? 'border-bottom:1px solid #e5e7eb;' : '') . ' font-size:13px; color:#64748b; font-weight:600;">Organization</td>
+                <td style="padding:10px 16px; ' . (!empty($safeBranch) ? 'border-bottom:1px solid #e5e7eb;' : '') . ' font-size:13px; color:#111827; font-weight:600;">' . $safeOrganization . '</td>
+            </tr>';
+        }
+
+        if (!empty($safeBranch)) {
+            $detailsRows .= '
+            <tr>
+                <td style="padding:10px 16px; font-size:13px; color:#64748b; font-weight:600;">Branch</td>
+                <td style="padding:10px 16px; font-size:13px; color:#111827; font-weight:600;">' . $safeBranch . '</td>
+            </tr>';
+        }
+
+        return '
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>' . $safeSubject . '</title>
+        </head>
+        <body style="margin:0; padding:0; background:#f3f6f1; font-family:Arial,Helvetica,sans-serif; color:#111827;">
+            <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent;">
+                New reply on ticket ' . $safeTicketNo . '
+            </div>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background:#f3f6f1; padding:28px 12px;">
+                <tr>
+                    <td align="center">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:640px; background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; overflow:hidden; box-shadow:0 12px 34px rgba(15,23,42,.08);">
+                            <tr>
+                                <td style="height:6px; background:#b1e96f; font-size:0; line-height:0;">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:26px 30px; background:#111827;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                        <tr>
+                                            <td width="58" valign="middle">
+                                                <img src="' . htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') . '/assets/images/samtech-icon.png" alt="Samtech" width="52" height="52" style="display:block; width:52px; height:52px; border-radius:12px;">
+                                            </td>
+                                            <td valign="middle" style="padding-left:12px;">
+                                                <div style="color:#ffffff; font-size:22px; line-height:29px; font-weight:800;">Samtech Helpdesk</div>
+                                                <div style="color:#cbd5e1; font-size:12px; line-height:19px; margin-top:3px;">Ticket Reply Notification</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:32px 30px 24px;">
+
+                                    <!-- 1. FIRST: REPLY MESSAGE IN MINOR FONTS -->
+                                    <div style="margin-bottom:26px;">
+                                        <div style="font-size:11px; font-weight:800; color:#4f772d; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">
+                                            Reply Message:
+                                        </div>
+                                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-left:4px solid #b1e96f; border-radius:8px; padding:16px 18px; font-size:13px; line-height:21px; color:#475569; font-family:Arial,Helvetica,sans-serif; word-break:break-word;">
+                                            ' . $safeReplyMessage . '
+                                        </div>
+                                    </div>
+
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:24px;">
+                                        <tr>
+                                            <td style="border-top:1px dashed #e2e8f0; font-size:0; line-height:0; height:1px;">&nbsp;</td>
+                                        </tr>
+                                    </table>
+
+                                    <!-- 2. THEN: OTHER DETAILS OF TICKET -->
+                                    <div style="margin-bottom:16px;">
+                                        <p style="margin:0 0 14px; color:#111827; font-size:15px; line-height:22px;">
+                                            Hello <strong>' . $safeRecipientName . '</strong>,
+                                        </p>
+                                        <p style="margin:0 0 16px; color:#4b5563; font-size:14px; line-height:22px;">
+                                            ' . $safeIntroText . '
+                                        </p>
+                                    </div>
+
+                                    <div style="font-size:14px; font-weight:800; color:#111827; margin-bottom:10px;">
+                                        Ticket Details
+                                    </div>
+
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
+                                        ' . $detailsRows . '
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding:0 30px 34px;">
+                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                        <tr>
+                                            <td align="center" bgcolor="#b1e96f" style="border-radius:10px;">
+                                                <a href="' . $safeActionUrl . '" style="display:inline-block; padding:13px 24px; color:#111827; font-size:14px; line-height:20px; font-weight:800; text-decoration:none; border-radius:10px;">
+                                                    View Ticket Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding:19px 26px; background:#f8fafc; border-top:1px solid #e5e7eb;">
+                                    <div style="color:#475569; font-size:12px; line-height:20px;">
+                                        This is an automated notification from Samtech Helpdesk.
+                                    </div>
+                                    <div style="margin-top:5px; color:#94a3b8; font-size:11px; line-height:18px;">
+                                        Reply to this email to contact the Samtech Helpdesk mailbox.
+                                    </div>
+                                    <div style="margin-top:5px; color:#94a3b8; font-size:11px; line-height:18px;">
+                                        © ' . date('Y') . ' Samtech Solutions. All rights reserved.
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>';
+    }
+
     private static function passwordChangedTemplate(
         string $fullName,
         string $ipAddress,

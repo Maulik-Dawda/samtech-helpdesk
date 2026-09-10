@@ -105,7 +105,18 @@ class TicketNotificationService
         $ticketNo = $ticket['ticket_no'] ?? '-';
         $subject = $ticket['subject'] ?? '-';
         $status = self::formatStatus($ticket['status'] ?? '');
-        $organization = $user['organization_name'] ?? '-';
+        $organization = $user['organization_name'] ?? $ticket['organization_name'] ?? '-';
+        $branch = $ticket['branch_name'] ?? '';
+        $repliedBy = $user['full_name'] ?? 'User';
+
+        $ticketDetails = [
+            'ticket_no' => $ticketNo,
+            'subject' => $subject,
+            'status' => $status,
+            'replied_by' => $repliedBy,
+            'organization' => $organization,
+            'branch' => $branch
+        ];
 
         $agents = self::getActiveAgents();
 
@@ -114,25 +125,18 @@ class TicketNotificationService
                 continue;
             }
 
-            $mailSubject =
-                "New User Reply: {$ticketNo} - {$subject}";
+            $mailSubject = "New User Reply: {$ticketNo} - {$subject}";
+            $recipientName = $agent['full_name'] ?? 'Agent';
+            $introText = "A user has added a new reply to a support ticket.";
 
-            $mailMessage =
-                "Hello " . ($agent['full_name'] ?? 'Agent') . ",\n\n" .
-                "A user has added a new reply to a support ticket.\n\n" .
-                "Ticket Number: {$ticketNo}\n" .
-                "Subject: {$subject}\n" .
-                "Organization: {$organization}\n" .
-                "Replied By: " . ($user['full_name'] ?? '-') . "\n" .
-                "Current Status: {$status}\n\n" .
-                "Reply:\n{$message}\n\n" .
-                "Open the ticket here:\n" .
-                $agentUrl;
-
-            self::sendSafely(
+            self::sendSafelyReply(
                 $agent['email'],
                 $mailSubject,
-                $mailMessage,
+                $recipientName,
+                $introText,
+                $message,
+                $ticketDetails,
+                $agentUrl,
                 'user_reply_agent',
                 $ticket['id'] ?? null,
                 $agent['id'] ?? null
@@ -169,26 +173,42 @@ class TicketNotificationService
         $subject = $ticket['subject'] ?? '-';
         $status = self::formatStatus($ticket['status'] ?? '');
         $agentName = $agent['full_name'] ?? 'Support Agent';
+        $branch = $ticket['branch_name'] ?? '';
+
+        $organization = '-';
+        if (!empty($ticketCreator['organization_name'])) {
+            $organization = $ticketCreator['organization_name'];
+        } elseif (!empty($ticket['organization_id'])) {
+            require_once ROOT_PATH . "/app/Models/Organization.php";
+            $orgModel = new Organization();
+            $org = $orgModel->findById($ticket['organization_id']);
+            if ($org) {
+                $organization = $org['name'];
+            }
+        }
+
+        $ticketDetails = [
+            'ticket_no' => $ticketNo,
+            'subject' => $subject,
+            'status' => $status,
+            'replied_by' => $agentName,
+            'organization' => $organization,
+            'branch' => $branch
+        ];
 
         if ($ticketCreator && !empty($ticketCreator['email'])) {
-            $mailSubject =
-                "New Agent Reply: {$ticketNo} - {$subject}";
+            $mailSubject = "New Agent Reply: {$ticketNo} - {$subject}";
+            $recipientName = $ticketCreator['full_name'] ?? 'User';
+            $introText = "A support agent has replied to your ticket.";
 
-            $mailMessage =
-                "Hello " . ($ticketCreator['full_name'] ?? 'User') . ",\n\n" .
-                "A support agent has replied to your ticket.\n\n" .
-                "Ticket Number: {$ticketNo}\n" .
-                "Subject: {$subject}\n" .
-                "Replied By: {$agentName}\n" .
-                "Current Status: {$status}\n\n" .
-                "Reply:\n{$message}\n\n" .
-                "View and respond to the ticket here:\n" .
-                $userUrl;
-
-            self::sendSafely(
+            self::sendSafelyReply(
                 $ticketCreator['email'],
                 $mailSubject,
-                $mailMessage,
+                $recipientName,
+                $introText,
+                $message,
+                $ticketDetails,
+                $userUrl,
                 'agent_reply_creator',
                 $ticket['id'] ?? null
             );
@@ -201,24 +221,18 @@ class TicketNotificationService
                 continue;
             }
 
-            $mailSubject =
-                "Agent Reply Added: {$ticketNo} - {$subject}";
+            $mailSubject = "Agent Reply Added: {$ticketNo} - {$subject}";
+            $recipientName = $recipientAgent['full_name'] ?? 'Agent';
+            $introText = "An agent has replied to a support ticket.";
 
-            $mailMessage =
-                "Hello " . ($recipientAgent['full_name'] ?? 'Agent') . ",\n\n" .
-                "An agent has replied to a support ticket.\n\n" .
-                "Ticket Number: {$ticketNo}\n" .
-                "Subject: {$subject}\n" .
-                "Replied By: {$agentName}\n" .
-                "Current Status: {$status}\n\n" .
-                "Reply:\n{$message}\n\n" .
-                "Open the ticket here:\n" .
-                $agentUrl;
-
-            self::sendSafely(
+            self::sendSafelyReply(
                 $recipientAgent['email'],
                 $mailSubject,
-                $mailMessage,
+                $recipientName,
+                $introText,
+                $message,
+                $ticketDetails,
+                $agentUrl,
                 'agent_reply_agent',
                 $ticket['id'] ?? null,
                 $recipientAgent['id'] ?? null
@@ -376,6 +390,55 @@ class TicketNotificationService
         } catch (Throwable $e) {
             error_log(
                 "Ticket notification exception | " .
+                "Event: {$event} | " .
+                "Ticket ID: " . ($ticketId ?? '-') . " | " .
+                "Recipient User ID: " . ($recipientUserId ?? '-') . " | " .
+                "Email: {$recipient} | " .
+                "Error: " . $e->getMessage()
+            );
+
+            return false;
+        }
+    }
+
+    private static function sendSafelyReply(
+        string $recipient,
+        string $subject,
+        string $recipientName,
+        string $introText,
+        string $replyMessage,
+        array $ticketDetails,
+        string $actionUrl,
+        string $event,
+        $ticketId = null,
+        $recipientUserId = null
+    ): bool {
+        try {
+            $sent = MailService::sendTicketReplyMail(
+                $recipient,
+                $subject,
+                $recipientName,
+                $introText,
+                $replyMessage,
+                $ticketDetails,
+                $actionUrl
+            );
+
+            if (!$sent) {
+                error_log(
+                    "Ticket reply notification failed | " .
+                    "Event: {$event} | " .
+                    "Ticket ID: " . ($ticketId ?? '-') . " | " .
+                    "Recipient User ID: " . ($recipientUserId ?? '-') . " | " .
+                    "Email: {$recipient}"
+                );
+            }
+
+            return $sent;
+
+        } catch (Throwable $e) {
+            error_log(
+                "Ticket reply notification exception | " .
                 "Event: {$event} | " .
                 "Ticket ID: " . ($ticketId ?? '-') . " | " .
                 "Recipient User ID: " . ($recipientUserId ?? '-') . " | " .
