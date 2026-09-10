@@ -144,10 +144,14 @@ class TicketController extends Controller
             header("Location: " . BASE_URL . "/tickets/show/" . $ticket['id']);
             exit;
         }
-        TicketNotificationService::ticketCreated(
-            $ticket,
-            $user
-        );
+        try {
+            TicketNotificationService::ticketCreated(
+                $ticket,
+                $user
+            );
+        } catch (Throwable $e) {
+            error_log("Ticket notification error: " . $e->getMessage());
+        }
 
         $_SESSION['success'] = "Ticket created successfully.";
         header("Location: " . BASE_URL . "/tickets");

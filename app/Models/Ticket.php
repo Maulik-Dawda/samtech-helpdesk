@@ -18,9 +18,16 @@ class Ticket extends Model
         try {
             $this->db->exec("ALTER TABLE `tickets` MODIFY COLUMN `user_id` INT NULL");
         } catch (Throwable $e) {
-            // Ignored if column modification fails or is unsupported
+            // Ignored if column modification fails
         }
 
+        try {
+            $this->db->exec("ALTER TABLE `tickets` ADD COLUMN `branch_id` BIGINT UNSIGNED NULL AFTER `organization_id`");
+        } catch (Throwable $e) {
+            // Ignored if column already exists
+        }
+
+        // Try 1: Full insert with branch_id and assigned_agent_id
         try {
             $stmt = $this->db->prepare("
                 INSERT INTO tickets
@@ -60,17 +67,19 @@ class Ticket extends Model
             if ($success) {
                 return (int)$this->db->lastInsertId() ?: true;
             }
-            return false;
         } catch (Throwable $e) {
-            error_log("Error in Ticket::create first try: " . $e->getMessage());
+            error_log("Error in Ticket::create Try 1: " . $e->getMessage());
+        }
 
+        // Try 2: Insert without branch_id (in case branch_id column doesn't exist yet)
+        try {
             $stmt = $this->db->prepare("
                 INSERT INTO tickets
                 (
                     ticket_no,
                     user_id,
                     organization_id,
-                    branch_id,
+                    assigned_agent_id,
                     created_by,
                     created_by_role,
                     subject,
@@ -88,7 +97,7 @@ class Ticket extends Model
                 $data['ticket_no'],
                 $userId,
                 $data['organization_id'],
-                $branchId,
+                $assignedAgentId,
                 $data['created_by'],
                 $data['created_by_role'],
                 $data['subject'],
@@ -100,8 +109,51 @@ class Ticket extends Model
             if ($success) {
                 return (int)$this->db->lastInsertId() ?: true;
             }
-            return false;
+        } catch (Throwable $e) {
+            error_log("Error in Ticket::create Try 2: " . $e->getMessage());
         }
+
+        // Try 3: Basic fallback insert without assigned_agent_id or branch_id
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO tickets
+                (
+                    ticket_no,
+                    user_id,
+                    organization_id,
+                    created_by,
+                    created_by_role,
+                    subject,
+                    description,
+                    priority,
+                    status
+                )
+                VALUES
+                (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )
+            ");
+
+            $success = $stmt->execute([
+                $data['ticket_no'],
+                $userId,
+                $data['organization_id'],
+                $data['created_by'],
+                $data['created_by_role'],
+                $data['subject'],
+                $data['description'],
+                $data['priority'],
+                $data['status']
+            ]);
+
+            if ($success) {
+                return (int)$this->db->lastInsertId() ?: true;
+            }
+        } catch (Throwable $e) {
+            error_log("Error in Ticket::create Try 3: " . $e->getMessage());
+        }
+
+        return false;
     }
 
     public function getUserTickets($userId)

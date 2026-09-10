@@ -653,7 +653,11 @@ class AgentTicketController extends Controller
         $agent = $userModel->findById($_SESSION['auth_user_id']);
         $createdTicket = $ticketModel->findByTicketNo($ticketNo);
         if ($createdTicket && $agent) {
-            TicketNotificationService::ticketCreated($createdTicket, $agent);
+            try {
+                TicketNotificationService::ticketCreated($createdTicket, $agent);
+            } catch (Throwable $e) {
+                error_log("Ticket notification error: " . $e->getMessage());
+            }
         }
 
         $_SESSION['success'] = 'Ticket created successfully.';
