@@ -276,7 +276,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                      <td data-label="Assigned Agent">
                                          <?php if ($assignedAgentName !== ''): ?>
                                              <span class="badge-agent-pill">
-                                                 <i class="bi bi-phone me-1"></i>
+                                                 <i class="bi bi-person me-1"></i>
                                                  <?= htmlspecialchars($assignedAgentName); ?>
                                              </span>
                                          <?php else: ?>

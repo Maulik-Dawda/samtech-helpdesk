@@ -563,7 +563,7 @@ function agentDashboardPriorityClass(string $priority): string
                                     <td data-label="Assigned Agent">
                                          <?php if (!empty($ticket['assigned_agent_name'])): ?>
                                              <span class="badge-agent-pill">
-                                                 <i class="bi bi-phone me-1"></i>
+                                                 <i class="bi bi-person me-1"></i>
                                                  <?= htmlspecialchars($ticket['assigned_agent_name']); ?>
                                              </span>
                                          <?php else: ?>
