@@ -39,7 +39,7 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
 
                 <div class="page-header-content">
 
-                    <div class="app-badge app-badge-primary mb-3">
+                    <div class="app-badge app-badge-primary mb-2">
                         <i class="bi bi-building-gear"></i>
                         Organization Details
                     </div>
