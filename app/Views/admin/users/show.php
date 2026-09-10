@@ -964,84 +964,56 @@ function getProfileTicketPriorityClass(string $priority): string
                                 <tr>
 
                                     <td data-label="Ticket">
-
-                                        <span class="fw-semibold">
-                                            <?= htmlspecialchars($ticketNumber); ?>
-                                        </span>
-
+                                        <div>
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="ticket-no-link">
+                                                <?= htmlspecialchars($ticketNumber !== '' ? $ticketNumber : '-'); ?>
+                                            </a>
+                                            <?php if (!empty($ticket['organization_name'])): ?>
+                                                <div class="ticket-org-subtext" title="<?= htmlspecialchars($ticket['organization_name']); ?>">
+                                                    <?= htmlspecialchars($ticket['organization_name']); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
 
                                     <td data-label="Subject">
-
-                                        <div class="fw-semibold">
+                                        <span class="ticket-subject-text" title="<?= htmlspecialchars($ticketSubject); ?>">
                                             <?= htmlspecialchars($ticketSubject); ?>
-                                        </div>
-
+                                        </span>
                                     </td>
 
                                     <td data-label="Priority">
-
-                                        <span class="status-badge <?= getProfileTicketPriorityClass($priority); ?>">
-
+                                        <span class="status-badge priority-<?= $priority; ?>">
                                             <?= htmlspecialchars(ucfirst($priority)); ?>
-
                                         </span>
-
                                     </td>
 
                                     <td data-label="Status">
-
-                                        <span class="status-badge <?= getProfileTicketStatusClass($ticketStatus); ?>">
-
-                                            <?= htmlspecialchars(
-                                                ucwords(
-                                                    str_replace(
-                                                        '_',
-                                                        ' ',
-                                                        $ticketStatus
-                                                    )
-                                                )
-                                            ); ?>
-
+                                        <span class="status-badge status-<?= str_replace('_', '-', $ticketStatus); ?>">
+                                            <?= htmlspecialchars(ucwords(str_replace('_', ' ', $ticketStatus))); ?>
                                         </span>
-
                                     </td>
 
                                     <td data-label="Created">
-
-                                        <?= htmlspecialchars($ticketCreatedAt); ?>
-
+                                        <?php if (!empty($ticket['created_at'])): ?>
+                                            <div class="fw-semibold text-dark" style="font-size:12px;"><?= date('d M Y', strtotime($ticket['created_at'])); ?></div>
+                                            <div class="text-muted" style="font-size:11px;"><?= date('h:i A', strtotime($ticket['created_at'])); ?></div>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
                                     </td>
 
-                                    <td
-                                        data-label="Action"
-                                        class="text-end">
-
+                                    <td data-label="Action" class="text-end">
                                         <div class="d-inline-flex align-items-center gap-1">
-                                            <a
-                                                href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>"
-                                                class="table-action-btn table-action-view"
-                                                title="View ticket"
-                                                aria-label="View ticket">
-
-                                                <i class="bi bi-eye-fill"></i>
-
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="ticket-btn-icon ticket-btn-view" title="View ticket" aria-label="View ticket">
+                                                <i class="bi bi-eye"></i>
                                             </a>
-
-                                            <a
-                                                href="<?= BASE_URL ?>/reports/print-ticket-detail/<?= $ticketId; ?>"
-                                                target="_blank"
-                                                class="table-action-btn table-action-view text-success"
-                                                style="background: #e8f5e9; color: #2e7d32;"
-                                                title="Print Ticket Report"
-                                                aria-label="Print Ticket Report">
-
-                                                <i class="bi bi-printer-fill"></i>
-
+                                            <a href="<?= BASE_URL ?>/tickets/print/<?= $ticketId; ?>" target="_blank" class="ticket-btn-icon ticket-btn-print" title="Print ticket" aria-label="Print ticket">
+                                                <i class="bi bi-printer"></i>
                                             </a>
                                         </div>
-
                                     </td>
+                                </tr>
 
                                 </tr>
 

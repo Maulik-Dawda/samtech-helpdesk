@@ -220,13 +220,12 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                         <thead>
                             <tr>
                                 <th>Ticket</th>
+                                <th>Subject</th>
                                 <th>Customer</th>
                                 <th>Assigned Agent</th>
-                                <th>Subject</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created</th>
-                                <th>Closed</th>
                                 <th class="text-end">Action</th>
                             </tr>
                         </thead>
@@ -240,62 +239,74 @@ if (!function_exists('getAssignedTicketPriorityClass')) {
                                 $subject = trim((string)($ticket['subject'] ?? ''));
                                 $priorityVal = strtolower((string)($ticket['priority'] ?? 'low'));
                                 $statusVal = strtolower((string)($ticket['status'] ?? 'open'));
-                                $createdAt = !empty($ticket['created_at']) ? date('M d, Y H:i', strtotime($ticket['created_at'])) : '-';
-                                $closedAt = !empty($ticket['closed_at']) ? date('M d, Y H:i', strtotime($ticket['closed_at'])) : '-';
-                                $initial = $customerName !== '' ? strtoupper(substr($customerName, 0, 1)) : 'C';
+                                $createdAt = !empty($ticket['created_at']) ? strtotime($ticket['created_at']) : null;
                                 ?>
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold">
-                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="text-decoration-none text-primary">
-                                                <?= htmlspecialchars($ticketNumber); ?>
+                                        <div>
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="ticket-no-link">
+                                                <?= htmlspecialchars($ticketNumber !== '' ? $ticketNumber : '-'); ?>
                                             </a>
+                                            <?php if (!empty($ticket['organization_name'])): ?>
+                                                <div class="ticket-org-subtext" title="<?= htmlspecialchars($ticket['organization_name']); ?>">
+                                                    <?= htmlspecialchars($ticket['organization_name']); ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="table-avatar">
-                                                <?= htmlspecialchars($initial); ?>
-                                            </div>
-                                            <div class="fw-semibold">
-                                                <?= htmlspecialchars($customerName ?: 'Unknown Customer'); ?>
-                                            </div>
+                                        <span class="ticket-subject-text" title="<?= htmlspecialchars($subject !== '' ? $subject : 'Untitled Ticket'); ?>">
+                                            <?= htmlspecialchars($subject !== '' ? $subject : 'Untitled Ticket'); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">
+                                            <?= htmlspecialchars($customerName !== '' ? $customerName : '-'); ?>
                                         </div>
+                                        <?php if (!empty($ticket['branch_name'])): ?>
+                                            <div class="ticket-org-subtext">
+                                                <i class="bi bi-building me-1"></i><?= htmlspecialchars($ticket['branch_name']); ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                          <?php if ($assignedAgentName !== ''): ?>
-                                             <span class="badge" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600;">
-                                                 <i class="bi bi-person-badge me-1"></i>
+                                             <span class="badge-agent-pill">
+                                                 <i class="bi bi-person me-1"></i>
                                                  <?= htmlspecialchars($assignedAgentName); ?>
                                              </span>
                                          <?php else: ?>
-                                             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill fw-semibold" style="font-size:11.5px;">
-                                                 <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+                                             <span class="badge-unassigned-pill">
+                                                 <i class="bi bi-exclamation-triangle-fill me-1"></i>
                                                  Not Assigned
                                              </span>
                                          <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="d-inline-block text-truncate" style="max-width: 250px;" title="<?= htmlspecialchars($subject); ?>">
-                                            <?= htmlspecialchars($subject); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge <?= getAssignedTicketPriorityClass($priorityVal); ?>">
+                                        <span class="status-badge priority-<?= $priorityVal; ?>">
                                             <?= htmlspecialchars(ucfirst($priorityVal)); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="status-badge <?= getAssignedTicketStatusClass($statusVal); ?>">
+                                        <span class="status-badge status-<?= str_replace('_', '-', $statusVal); ?>">
                                             <?= htmlspecialchars(ucwords(str_replace('_', ' ', $statusVal))); ?>
                                         </span>
                                     </td>
-                                    <td><?= htmlspecialchars($createdAt); ?></td>
-                                    <td><?= htmlspecialchars($closedAt); ?></td>
+                                    <td>
+                                        <?php if ($createdAt): ?>
+                                            <div class="fw-semibold text-dark" style="font-size:12px;"><?= date('d M Y', $createdAt); ?></div>
+                                            <div class="text-muted" style="font-size:11px;"><?= date('h:i A', $createdAt); ?></div>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="text-end">
                                         <div class="d-inline-flex align-items-center gap-1">
-                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="table-action-btn table-action-view" title="View ticket" aria-label="View ticket">
-                                                <i class="bi bi-eye-fill"></i>
+                                            <a href="<?= BASE_URL ?>/agent/tickets/show/<?= $ticketId; ?>" class="ticket-btn-icon ticket-btn-view" title="View ticket" aria-label="View ticket">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="<?= BASE_URL ?>/tickets/print/<?= $ticketId; ?>" target="_blank" class="ticket-btn-icon ticket-btn-print" title="Print ticket" aria-label="Print ticket">
+                                                <i class="bi bi-printer"></i>
                                             </a>
                                         </div>
                                     </td>
