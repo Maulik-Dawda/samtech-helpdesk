@@ -87,10 +87,8 @@ $iconSrc = file_exists($iconPath)
         }
 
         .logo {
-            height: 48px;
-            width: auto;
-            max-width: 200px;
-            display: block;
+            width: 180px;
+            height: auto;
         }
 
         .report-title {

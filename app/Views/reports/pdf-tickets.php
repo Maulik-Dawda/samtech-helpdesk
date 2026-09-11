@@ -32,10 +32,7 @@
         }
 
         .logo {
-            height: 48px;
-            width: auto;
-            max-width: 200px;
-            display: block;
+            height: 55px;
         }
 
         .title {

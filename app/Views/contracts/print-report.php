@@ -139,9 +139,9 @@ $iconSrc = file_exists($iconPath)
         }
 
         .logo {
-            height: 48px;
+            height: 62px;
             width: auto;
-            max-width: 200px;
+            max-width: 240px;
             display: block;
         }
 
