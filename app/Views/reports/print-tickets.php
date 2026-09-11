@@ -129,7 +129,6 @@ $iconSrc = file_exists($iconPath)
             color: #374151;
             font-size: 10px;
             line-height: 1.6;
-            background: transparent !important;
         }
 
         .criteria-label {
@@ -141,31 +140,29 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            background: transparent !important;
             page-break-before: avoid !important;
         }
 
         table.data-table th {
-            background: rgba(17, 24, 39, 0.05) !important;
-            color: #111827 !important;
+            background: #111827;
+            color: #ffffff;
             text-align: left;
             padding: 7px 6px;
-            border: 1px solid #cbd5e1 !important;
+            border: 1px solid #111827;
             font-size: 9.5px;
             font-weight: 800;
         }
 
         table.data-table td {
             padding: 6px;
-            border: 1px solid #cbd5e1 !important;
+            border: 1px solid #d1d5db;
             vertical-align: top;
             font-size: 9px;
             word-wrap: break-word;
-            background: transparent !important;
         }
 
-        table.data-table tbody tr, table.data-table tbody tr:nth-child(even) {
-            background: transparent !important;
+        table.data-table tbody tr:nth-child(even) {
+            background: #f8fafc;
         }
 
         /* Letterhead Footer */

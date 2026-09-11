@@ -190,7 +190,7 @@ $iconSrc = file_exists($iconPath)
         }
 
         .company-box {
-            background: transparent !important;
+            background: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             padding: 12px 15px;
@@ -228,7 +228,6 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
-            background: transparent !important;
         }
 
         .summary-table th, .summary-table td {
@@ -237,11 +236,10 @@ $iconSrc = file_exists($iconPath)
             text-align: left;
             vertical-align: top;
             font-size: 10.5px;
-            background: transparent !important;
         }
 
         .summary-table th {
-            background: rgba(15, 23, 42, 0.04) !important;
+            background: #f1f5f9;
             font-weight: 700;
             color: #1e293b;
         }
@@ -250,7 +248,6 @@ $iconSrc = file_exists($iconPath)
         .ticket-detail-block {
             margin-bottom: 25px;
             page-break-inside: avoid;
-            background: transparent !important;
         }
 
         .section-title {
@@ -268,12 +265,11 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 12px;
-            background: transparent !important;
         }
 
         table.info-table th {
             width: 20%;
-            background: rgba(15, 23, 42, 0.04) !important;
+            background: #f8fafc;
             text-align: left;
             padding: 6px 10px;
             border: 1px solid #cbd5e1;
@@ -287,7 +283,6 @@ $iconSrc = file_exists($iconPath)
             border: 1px solid #cbd5e1;
             color: #0f172a;
             font-size: 10.5px;
-            background: transparent !important;
         }
 
         .badge-pill {
@@ -304,7 +299,7 @@ $iconSrc = file_exists($iconPath)
 
         .description-box {
             border: 1px solid #cbd5e1;
-            background: transparent !important;
+            background: #f8fafc;
             padding: 10px 12px;
             line-height: 1.5;
             border-radius: 6px;
@@ -321,12 +316,11 @@ $iconSrc = file_exists($iconPath)
             margin-bottom: 10px;
             page-break-inside: avoid;
             overflow: hidden;
-            background: transparent !important;
         }
 
         .reply-header-table {
             width: 100%;
-            background: transparent !important;
+            background: #f1f5f9;
             padding: 6px 10px;
             border-bottom: 1px solid #cbd5e1;
             border-collapse: collapse;
@@ -334,7 +328,6 @@ $iconSrc = file_exists($iconPath)
 
         .reply-header-table td {
             font-size: 10px;
-            background: transparent !important;
         }
 
         .reply-body {
@@ -345,7 +338,6 @@ $iconSrc = file_exists($iconPath)
             white-space: pre-line;
             word-wrap: break-word;
             text-align: left;
-            background: transparent !important;
         }
 
         .timeline-item {

@@ -69,28 +69,26 @@
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            background: transparent;
         }
 
         th {
-            background: rgba(17, 24, 39, 0.05);
-            color: #111827;
+            background: #111827;
+            color: #ffffff;
             padding: 7px 5px;
             font-size: 9.5px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #111827;
             font-weight: bold;
         }
 
         td {
             padding: 6px 5px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #d1d5db;
             font-size: 9px;
             word-wrap: break-word;
-            background: transparent;
         }
 
-        tr, tr:nth-child(even) {
-            background: transparent;
+        tr:nth-child(even) {
+            background: #f8fafc;
         }
 
         /* Letterhead Footer */

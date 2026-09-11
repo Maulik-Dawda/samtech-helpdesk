@@ -129,7 +129,6 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
         .section {
             margin-bottom: 22px;
             page-break-inside: auto;
-            background: transparent !important;
         }
 
         .section-title {
@@ -146,13 +145,12 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
         table.info-table {
             width: 100%;
             border-collapse: collapse;
-            background: transparent !important;
             page-break-before: avoid !important;
         }
 
         table.info-table th {
             width: 22%;
-            background: rgba(15, 23, 42, 0.04) !important;
+            background: #f8fafc;
             text-align: left;
             padding: 8px 12px;
             border: 1px solid #cbd5e1;
@@ -166,7 +164,6 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             border: 1px solid #cbd5e1;
             color: #0f172a;
             font-size: 11px;
-            background: transparent !important;
         }
 
         .badge-pill {
@@ -183,7 +180,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
         .description-box {
             border: 1px solid #cbd5e1;
-            background: transparent !important;
+            background: #f8fafc;
             padding: 14px 16px;
             line-height: 1.6;
             border-radius: 6px;
@@ -199,12 +196,11 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             margin-bottom: 14px;
             page-break-inside: avoid;
             overflow: hidden;
-            background: transparent !important;
         }
 
         .reply-header-table {
             width: 100%;
-            background: transparent !important;
+            background: #f1f5f9;
             padding: 8px 14px;
             border-bottom: 1px solid #cbd5e1;
             border-collapse: collapse;
@@ -212,7 +208,6 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
         .reply-header-table td {
             font-size: 11px;
-            background: transparent !important;
         }
 
         .reply-body {
@@ -223,14 +218,12 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             white-space: pre-line;
             word-wrap: break-word;
             text-align: left;
-            background: transparent !important;
         }
 
         .timeline-item {
             border-left: 3px solid #334155;
             padding-left: 12px;
             margin-bottom: 12px;
-            background: transparent !important;
         }
 
         .attachment-list {
