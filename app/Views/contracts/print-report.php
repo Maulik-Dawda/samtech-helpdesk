@@ -23,7 +23,7 @@ $iconSrc = file_exists($iconPath)
 
         html, body {
             margin: 0;
-            padding: 8mm 8mm 22mm 8mm;
+            padding: 8mm 8mm 28mm 8mm;
             box-sizing: border-box;
             width: 100%;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -50,28 +50,18 @@ $iconSrc = file_exists($iconPath)
             html, body {
                 background: #ffffff !important;
                 margin: 0 !important;
-                padding: 8mm 8mm 22mm 8mm !important;
+                padding: 8mm 8mm 28mm 8mm !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
             .letterhead-footer {
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 6px 8mm 6px 8mm;
+                bottom: 6mm !important;
+                left: 8mm !important;
+                right: 8mm !important;
+                padding: 6px 0 0 0 !important;
+                background: transparent !important;
             }
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            color: #0f172a;
-            background: #ffffff;
-            font-size: 11px;
-            line-height: 1.5;
         }
 
         /* Letterhead Watermark Logo */
@@ -83,7 +73,7 @@ $iconSrc = file_exists($iconPath)
             width: 450px;
             max-width: 80%;
             height: auto;
-            opacity: 0.12;
+            opacity: 0.15;
             z-index: -1;
             pointer-events: none;
         }
@@ -117,25 +107,35 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             border: none;
+            background: transparent !important;
         }
 
         table.report-container > thead > tr > td {
             border: none;
             padding-bottom: 12px;
+            background: transparent !important;
         }
 
         table.report-container > tbody > tr > td {
             border: none;
             padding: 0;
-            padding-bottom: 50px;
+            padding-bottom: 60px;
+            background: transparent !important;
         }
 
         /* Letterhead Header */
         .header-table {
             width: 100%;
             border-bottom: 2px solid #488a25;
-            padding-bottom: 10px;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
             border-collapse: collapse;
+            background: transparent !important;
+        }
+
+        .header-table td {
+            vertical-align: top !important;
+            background: transparent !important;
         }
 
         .logo {
@@ -143,20 +143,22 @@ $iconSrc = file_exists($iconPath)
             width: auto;
             max-width: 240px;
             display: block;
+            margin-top: 0;
+            margin-bottom: 8px;
         }
 
         /* Letterhead Footer */
         .letterhead-footer {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 6mm;
+            left: 8mm;
+            right: 8mm;
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
             color: #334155;
-            background: #ffffff;
+            background: transparent !important;
             padding-top: 6px;
-            padding-bottom: 4px;
+            padding-bottom: 0;
             border-top: 1px solid #cbd5e1;
             z-index: 1000;
         }
@@ -184,10 +186,11 @@ $iconSrc = file_exists($iconPath)
             font-weight: 600;
             color: #475569;
             text-align: right;
+            vertical-align: top;
         }
 
         .company-box {
-            background: #f8fafc;
+            background: transparent !important;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             padding: 12px 15px;
@@ -225,6 +228,7 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
+            background: transparent !important;
         }
 
         .summary-table th, .summary-table td {
@@ -233,10 +237,11 @@ $iconSrc = file_exists($iconPath)
             text-align: left;
             vertical-align: top;
             font-size: 10.5px;
+            background: transparent !important;
         }
 
         .summary-table th {
-            background: #f1f5f9;
+            background: rgba(15, 23, 42, 0.04) !important;
             font-weight: 700;
             color: #1e293b;
         }
@@ -245,6 +250,7 @@ $iconSrc = file_exists($iconPath)
         .ticket-detail-block {
             margin-bottom: 25px;
             page-break-inside: avoid;
+            background: transparent !important;
         }
 
         .section-title {
@@ -262,11 +268,12 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 12px;
+            background: transparent !important;
         }
 
         table.info-table th {
             width: 20%;
-            background: #f8fafc;
+            background: rgba(15, 23, 42, 0.04) !important;
             text-align: left;
             padding: 6px 10px;
             border: 1px solid #cbd5e1;
@@ -280,6 +287,7 @@ $iconSrc = file_exists($iconPath)
             border: 1px solid #cbd5e1;
             color: #0f172a;
             font-size: 10.5px;
+            background: transparent !important;
         }
 
         .badge-pill {
@@ -296,7 +304,7 @@ $iconSrc = file_exists($iconPath)
 
         .description-box {
             border: 1px solid #cbd5e1;
-            background: #f8fafc;
+            background: transparent !important;
             padding: 10px 12px;
             line-height: 1.5;
             border-radius: 6px;
@@ -313,11 +321,12 @@ $iconSrc = file_exists($iconPath)
             margin-bottom: 10px;
             page-break-inside: avoid;
             overflow: hidden;
+            background: transparent !important;
         }
 
         .reply-header-table {
             width: 100%;
-            background: #f1f5f9;
+            background: transparent !important;
             padding: 6px 10px;
             border-bottom: 1px solid #cbd5e1;
             border-collapse: collapse;
@@ -325,6 +334,7 @@ $iconSrc = file_exists($iconPath)
 
         .reply-header-table td {
             font-size: 10px;
+            background: transparent !important;
         }
 
         .reply-body {
@@ -335,6 +345,7 @@ $iconSrc = file_exists($iconPath)
             white-space: pre-line;
             word-wrap: break-word;
             text-align: left;
+            background: transparent !important;
         }
 
         .timeline-item {

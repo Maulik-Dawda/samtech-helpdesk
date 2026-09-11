@@ -31,7 +31,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
         html, body {
             margin: 0;
-            padding: 8mm 8mm 22mm 8mm;
+            padding: 8mm 8mm 28mm 8mm;
             box-sizing: border-box;
             width: 100%;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -74,7 +74,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             width: 450px;
             max-width: 80%;
             height: auto;
-            opacity: 0.12;
+            opacity: 0.15;
             z-index: -1;
             pointer-events: none;
         }
@@ -82,22 +82,31 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
         .header-table {
             width: 100%;
             border-bottom: 2px solid #488a25;
-            padding-bottom: 12px;
+            padding-bottom: 14px;
             margin-bottom: 20px;
             border-collapse: collapse;
+            background: transparent !important;
             page-break-before: avoid !important;
             page-break-inside: avoid !important;
+        }
+
+        .header-table td {
+            vertical-align: top !important;
+            background: transparent !important;
         }
 
         .logo {
             width: 170px;
             height: auto;
+            display: block;
+            margin-top: 0;
+            margin-bottom: 8px;
         }
 
         .title {
             font-size: 22px;
             font-weight: 800;
-            margin-top: 6px;
+            margin-top: 0;
             color: #0f172a;
             letter-spacing: -0.5px;
         }
@@ -114,11 +123,13 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             font-size: 10.5px;
             color: #475569;
             line-height: 1.6;
+            vertical-align: top;
         }
 
         .section {
             margin-bottom: 22px;
             page-break-inside: auto;
+            background: transparent !important;
         }
 
         .section-title {
@@ -135,12 +146,13 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
         table.info-table {
             width: 100%;
             border-collapse: collapse;
+            background: transparent !important;
             page-break-before: avoid !important;
         }
 
         table.info-table th {
             width: 22%;
-            background: #f8fafc;
+            background: rgba(15, 23, 42, 0.04) !important;
             text-align: left;
             padding: 8px 12px;
             border: 1px solid #cbd5e1;
@@ -154,6 +166,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             border: 1px solid #cbd5e1;
             color: #0f172a;
             font-size: 11px;
+            background: transparent !important;
         }
 
         .badge-pill {
@@ -170,7 +183,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
         .description-box {
             border: 1px solid #cbd5e1;
-            background: #f8fafc;
+            background: transparent !important;
             padding: 14px 16px;
             line-height: 1.6;
             border-radius: 6px;
@@ -186,11 +199,12 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             margin-bottom: 14px;
             page-break-inside: avoid;
             overflow: hidden;
+            background: transparent !important;
         }
 
         .reply-header-table {
             width: 100%;
-            background: #f1f5f9;
+            background: transparent !important;
             padding: 8px 14px;
             border-bottom: 1px solid #cbd5e1;
             border-collapse: collapse;
@@ -198,6 +212,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
         .reply-header-table td {
             font-size: 11px;
+            background: transparent !important;
         }
 
         .reply-body {
@@ -208,12 +223,14 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             white-space: pre-line;
             word-wrap: break-word;
             text-align: left;
+            background: transparent !important;
         }
 
         .timeline-item {
             border-left: 3px solid #334155;
             padding-left: 12px;
             margin-bottom: 12px;
+            background: transparent !important;
         }
 
         .attachment-list {
@@ -229,14 +246,14 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
         /* Letterhead Footer */
         .letterhead-footer {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 6mm;
+            left: 8mm;
+            right: 8mm;
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
             color: #334155;
-            background: #ffffff;
-            padding: 6px 8mm 6px 8mm;
+            background: transparent !important;
+            padding: 6px 0 0 0;
             border-top: 1px solid #cbd5e1;
             z-index: 1000;
         }
@@ -275,7 +292,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
             html, body {
                 margin: 0 !important;
-                padding: 8mm 8mm 22mm 8mm !important;
+                padding: 8mm 8mm 28mm 8mm !important;
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
@@ -291,10 +308,11 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
             .letterhead-footer {
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 6px 8mm 6px 8mm;
+                bottom: 6mm !important;
+                left: 8mm !important;
+                right: 8mm !important;
+                padding: 6px 0 0 0 !important;
+                background: transparent !important;
             }
         }
     </style>

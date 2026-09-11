@@ -4,7 +4,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 15mm 12mm 22mm 12mm;
+            margin: 12mm 12mm 24mm 12mm;
         }
 
         body {
@@ -20,69 +20,89 @@
             top: 32%;
             left: 15%;
             width: 420px;
-            opacity: 0.10;
+            opacity: 0.15;
             z-index: -1000;
         }
 
-        .header {
+        .header-table {
             width: 100%;
             border-bottom: 2px solid #488a25;
-            padding-bottom: 10px;
+            padding-bottom: 14px;
             margin-bottom: 16px;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        .header-table td {
+            vertical-align: top;
+            background: transparent;
         }
 
         .logo {
             height: 55px;
+            display: block;
+            margin-top: 0;
+            margin-bottom: 6px;
         }
 
         .title {
             font-size: 18px;
             font-weight: bold;
-            margin-top: 8px;
+            margin-top: 0;
             color: #111827;
         }
 
         .date {
             font-size: 10px;
             color: #555;
-            margin-top: 3px;
+            margin-top: 2px;
+        }
+
+        .meta {
+            text-align: right;
+            font-size: 9.5px;
+            color: #475569;
+            line-height: 1.5;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            background: transparent;
         }
 
         th {
-            background: #111827;
-            color: #ffffff;
+            background: rgba(17, 24, 39, 0.05);
+            color: #111827;
             padding: 7px 5px;
             font-size: 9.5px;
-            border: 1px solid #111827;
+            border: 1px solid #cbd5e1;
+            font-weight: bold;
         }
 
         td {
             padding: 6px 5px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #cbd5e1;
             font-size: 9px;
             word-wrap: break-word;
+            background: transparent;
         }
 
-        tr:nth-child(even) {
-            background: #f8fafc;
+        tr, tr:nth-child(even) {
+            background: transparent;
         }
 
         /* Letterhead Footer */
         .letterhead-footer {
             position: fixed;
-            bottom: -15mm;
+            bottom: -10mm;
             left: 0;
             right: 0;
             text-align: center;
             font-family: DejaVu Sans, Arial, sans-serif;
             color: #334155;
-            background: #ffffff;
+            background: transparent;
             padding-top: 4px;
             border-top: 1px solid #cbd5e1;
         }
@@ -114,16 +134,24 @@
     <img src="<?= $logoBase64; ?>" class="watermark-logo">
 <?php endif; ?>
 
-<div class="header">
-    <?php if (!empty($logoBase64)): ?>
-        <img src="<?= $logoBase64; ?>" class="logo">
-    <?php endif; ?>
-
-    <div class="title">Ticket Report</div>
-    <div class="date">
-        Generated on <?= date('d M Y, h:i A'); ?>
-    </div>
-</div>
+<table class="header-table">
+    <tr>
+        <td style="width: 50%;">
+            <?php if (!empty($logoBase64)): ?>
+                <img src="<?= $logoBase64; ?>" class="logo">
+            <?php endif; ?>
+            <div class="title">Ticket Report</div>
+            <div class="date">
+                Generated on <?= date('d M Y, h:i A'); ?>
+            </div>
+        </td>
+        <td style="width: 50%;" class="meta">
+            <strong>SAMVRUDDHI TECHNOLOGIES LLC</strong><br>
+            Tel: +971-4-3554245 | Email: sales@samtech.ae<br>
+            Web: www.samtech.ae | TRN: 100324643400003
+        </td>
+    </tr>
+</table>
 
 <table>
     <thead>

@@ -24,7 +24,7 @@ $iconSrc = file_exists($iconPath)
 
         html, body {
             margin: 0;
-            padding: 8mm 8mm 22mm 8mm;
+            padding: 8mm 8mm 28mm 8mm;
             box-sizing: border-box;
             width: 100%;
             font-family: Arial, Helvetica, sans-serif;
@@ -36,6 +36,7 @@ $iconSrc = file_exists($iconPath)
         .page {
             width: 100%;
             padding-bottom: 50px;
+            background: transparent !important;
         }
 
         .print-actions {
@@ -70,7 +71,7 @@ $iconSrc = file_exists($iconPath)
             width: 450px;
             max-width: 80%;
             height: auto;
-            opacity: 0.12;
+            opacity: 0.15;
             z-index: -1;
             pointer-events: none;
         }
@@ -79,22 +80,31 @@ $iconSrc = file_exists($iconPath)
         .header-table {
             width: 100%;
             border-bottom: 2px solid #488a25;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
             border-collapse: collapse;
+            background: transparent !important;
             page-break-before: avoid !important;
             page-break-inside: avoid !important;
+        }
+
+        .header-table td {
+            vertical-align: top !important;
+            background: transparent !important;
         }
 
         .logo {
             width: 180px;
             height: auto;
+            display: block;
+            margin-top: 0;
+            margin-bottom: 8px;
         }
 
         .report-title {
             font-size: 18px;
             font-weight: 800;
-            margin-top: 4px;
+            margin-top: 0;
             color: #111827;
         }
 
@@ -109,6 +119,7 @@ $iconSrc = file_exists($iconPath)
             color: #475569;
             font-size: 9.5px;
             line-height: 1.5;
+            vertical-align: top;
         }
 
         .criteria {
@@ -118,6 +129,7 @@ $iconSrc = file_exists($iconPath)
             color: #374151;
             font-size: 10px;
             line-height: 1.6;
+            background: transparent !important;
         }
 
         .criteria-label {
@@ -129,42 +141,44 @@ $iconSrc = file_exists($iconPath)
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            background: transparent !important;
             page-break-before: avoid !important;
         }
 
         table.data-table th {
-            background: #111827;
-            color: #ffffff;
+            background: rgba(17, 24, 39, 0.05) !important;
+            color: #111827 !important;
             text-align: left;
             padding: 7px 6px;
-            border: 1px solid #111827;
+            border: 1px solid #cbd5e1 !important;
             font-size: 9.5px;
             font-weight: 800;
         }
 
         table.data-table td {
             padding: 6px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #cbd5e1 !important;
             vertical-align: top;
             font-size: 9px;
             word-wrap: break-word;
+            background: transparent !important;
         }
 
-        table.data-table tbody tr:nth-child(even) {
-            background: #f8fafc;
+        table.data-table tbody tr, table.data-table tbody tr:nth-child(even) {
+            background: transparent !important;
         }
 
         /* Letterhead Footer */
         .letterhead-footer {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 6mm;
+            left: 8mm;
+            right: 8mm;
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
             color: #334155;
-            background: #ffffff;
-            padding: 6px 8mm 6px 8mm;
+            background: transparent !important;
+            padding: 6px 0 0 0;
             border-top: 1px solid #cbd5e1;
             z-index: 1000;
         }
@@ -215,7 +229,7 @@ $iconSrc = file_exists($iconPath)
 
             html, body {
                 margin: 0 !important;
-                padding: 8mm 8mm 22mm 8mm !important;
+                padding: 8mm 8mm 28mm 8mm !important;
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
@@ -231,10 +245,11 @@ $iconSrc = file_exists($iconPath)
 
             .letterhead-footer {
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 6px 8mm 6px 8mm;
+                bottom: 6mm !important;
+                left: 8mm !important;
+                right: 8mm !important;
+                padding: 6px 0 0 0 !important;
+                background: transparent !important;
             }
         }
     </style>
