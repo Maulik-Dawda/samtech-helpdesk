@@ -14,23 +14,14 @@
             background: #ffffff;
         }
 
-        /* Letterhead Watermark */
-        .watermark-bg {
+        /* Letterhead Watermark Logo */
+        .watermark-logo {
             position: fixed;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-35deg);
+            top: 32%;
+            left: 15%;
+            width: 420px;
+            opacity: 0.10;
             z-index: -1000;
-            text-align: center;
-            width: 100%;
-            opacity: 0.05;
-        }
-
-        .watermark-bg .wm-text {
-            font-size: 55pt;
-            font-weight: bold;
-            line-height: 1;
-            color: #1e293b;
         }
 
         .header {
@@ -42,6 +33,9 @@
 
         .logo {
             height: 48px;
+            width: auto;
+            max-width: 200px;
+            display: block;
         }
 
         .title {
@@ -118,10 +112,10 @@
 
 <body>
 
-<!-- Letterhead Watermark -->
-<div class="watermark-bg">
-    <div class="wm-text">Samtech Solutions</div>
-</div>
+<!-- Letterhead Background Watermark -->
+<?php if (!empty($logoBase64)): ?>
+    <img src="<?= $logoBase64; ?>" class="watermark-logo">
+<?php endif; ?>
 
 <div class="header">
     <?php if (!empty($logoBase64)): ?>

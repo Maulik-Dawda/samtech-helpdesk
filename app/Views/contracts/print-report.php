@@ -74,44 +74,17 @@ $iconSrc = file_exists($iconPath)
             line-height: 1.5;
         }
 
-        /* Letterhead Watermark */
-        .watermark-bg {
+        /* Letterhead Watermark Logo */
+        .watermark-logo {
             position: fixed;
-            top: 48%;
+            top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-35deg);
-            z-index: -1000;
-            pointer-events: none;
-            user-select: none;
-            text-align: center;
-            width: 100%;
-            opacity: 0.05;
-        }
-
-        .watermark-bg .wm-text {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 65pt;
-            font-weight: 900;
-            line-height: 1;
-            letter-spacing: -1px;
-        }
-
-        .watermark-bg .wm-green {
-            color: #488a25;
-        }
-
-        .watermark-bg .wm-dark {
-            color: #1e293b;
-        }
-
-        .watermark-icon-bg {
-            position: fixed;
-            bottom: -60px;
-            left: -40px;
-            width: 280px;
+            transform: translate(-50%, -50%);
+            width: 450px;
+            max-width: 80%;
             height: auto;
-            opacity: 0.04;
-            z-index: -1000;
+            opacity: 0.12;
+            z-index: -1;
             pointer-events: none;
         }
 
@@ -166,8 +139,10 @@ $iconSrc = file_exists($iconPath)
         }
 
         .logo {
-            height: 46px;
+            height: 48px;
             width: auto;
+            max-width: 200px;
+            display: block;
         }
 
         /* Letterhead Footer */
@@ -388,16 +363,8 @@ $iconSrc = file_exists($iconPath)
 </head>
 <body>
 
-<!-- Letterhead Watermark -->
-<div class="watermark-bg">
-    <div class="wm-text">
-        <span class="wm-green">Samtech</span><br>
-        <span class="wm-dark">Solutions</span>
-    </div>
-</div>
-<?php if (!empty($iconSrc)): ?>
-    <img src="<?= $iconSrc; ?>" class="watermark-icon-bg" alt="">
-<?php endif; ?>
+<!-- Letterhead Background Watermark -->
+<img src="<?= $logoSrc; ?>" class="watermark-logo" alt="">
 
     <div class="print-actions">
         <button onclick="window.print();" class="print-btn">
