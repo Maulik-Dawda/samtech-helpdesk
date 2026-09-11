@@ -4,6 +4,11 @@ $logoSrc = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : BASE_URL . '/assets/images/samtech-logo-report.png';
 
+$iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
+$iconSrc = file_exists($iconPath)
+    ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath))
+    : BASE_URL . '/assets/images/samtech-icon.png';
+
 $assignedAgent = !empty($ticket['assigned_agent_name']) 
     ? trim($ticket['assigned_agent_name']) 
     : 'Unassigned';
@@ -21,7 +26,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
     <style>
         @page {
             size: A4 portrait;
-            margin: 12mm 10mm 12mm 10mm;
+            margin: 10mm 10mm 20mm 10mm;
         }
 
         html, body {
@@ -39,10 +44,11 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             position: absolute;
             top: 10px;
             right: 10px;
+            z-index: 9999;
         }
 
         .print-btn {
-            background: #0f172a;
+            background: #488a25;
             color: #ffffff;
             border: none;
             padding: 9px 18px;
@@ -50,17 +56,58 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transition: background 0.2s ease;
         }
 
         .print-btn:hover {
-            background: #1e293b;
+            background: #396e1d;
+        }
+
+        /* Letterhead Watermark */
+        .watermark-bg {
+            position: fixed;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            z-index: -1000;
+            pointer-events: none;
+            user-select: none;
+            text-align: center;
+            width: 100%;
+            opacity: 0.05;
+        }
+
+        .watermark-bg .wm-text {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 65pt;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .watermark-bg .wm-green {
+            color: #488a25;
+        }
+
+        .watermark-bg .wm-dark {
+            color: #1e293b;
+        }
+
+        .watermark-icon-bg {
+            position: fixed;
+            bottom: -60px;
+            left: -40px;
+            width: 280px;
+            height: auto;
+            opacity: 0.04;
+            z-index: -1000;
+            pointer-events: none;
         }
 
         .header-table {
             width: 100%;
-            border-bottom: 2px solid #0f172a;
+            border-bottom: 2px solid #488a25;
             padding-bottom: 12px;
             margin-bottom: 20px;
             border-collapse: collapse;
@@ -205,13 +252,38 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             margin-bottom: 3px;
         }
 
-        .footer {
-            margin-top: 30px;
+        /* Letterhead Footer */
+        .letterhead-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             text-align: center;
-            color: #64748b;
-            font-size: 10px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 12px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #334155;
+            background: #ffffff;
+            padding-top: 6px;
+            padding-bottom: 4px;
+            border-top: 1px solid #cbd5e1;
+            z-index: 1000;
+        }
+
+        .letterhead-footer .lh-company {
+            font-weight: 800;
+            font-size: 9.5pt;
+            color: #0f172a;
+        }
+
+        .letterhead-footer .lh-address {
+            font-size: 7.5pt;
+            color: #475569;
+            margin-top: 2px;
+        }
+
+        .letterhead-footer .lh-contact {
+            font-size: 7.5pt;
+            color: #475569;
+            margin-top: 1px;
         }
 
         @media print {
@@ -238,11 +310,29 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             table.header-table, .section, table.info-table {
                 page-break-before: avoid !important;
             }
+
+            .letterhead-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
         }
     </style>
 </head>
 
 <body>
+
+<!-- Letterhead Watermark -->
+<div class="watermark-bg">
+    <div class="wm-text">
+        <span class="wm-green">Samtech</span><br>
+        <span class="wm-dark">Solutions</span>
+    </div>
+</div>
+<?php if (!empty($iconSrc)): ?>
+    <img src="<?= $iconSrc; ?>" class="watermark-icon-bg" alt="">
+<?php endif; ?>
 
     <?php if (empty($isPdfDownload)): ?>
     <div class="print-actions">
@@ -392,9 +482,12 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
     </div>
     <?php endif; ?>
 
-    <div class="footer">
-        Confidential Support Document &bull; Automatically generated by Samtech Helpdesk System on <?= date('d M Y, h:i A'); ?>
-    </div>
+<!-- Official Company Letterhead Footer -->
+<div class="letterhead-footer">
+    <div class="lh-company">Samvruddhi Technologies LLC</div>
+    <div class="lh-address">1st Floor, Shindagha City Centre (Carrefour) , A001A Blue Titan Office B-14, Dubai United Arab Emirates P.O. Box 377567</div>
+    <div class="lh-contact">+971-4-3554245 &nbsp;|&nbsp; sales@samvruddhi.com &nbsp;|&nbsp; https://samtech.ae/ &nbsp;|&nbsp; TRN 100324643400003</div>
+</div>
 
     <script>
         window.addEventListener("load", function () {

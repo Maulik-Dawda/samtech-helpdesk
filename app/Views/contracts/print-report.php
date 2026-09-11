@@ -3,6 +3,11 @@ $logoPath = ROOT_PATH . '/public/assets/images/samtech-logo-report.png';
 $logoSrc = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : BASE_URL . '/assets/images/samtech-logo-report.png';
+
+$iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
+$iconSrc = file_exists($iconPath)
+    ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath))
+    : BASE_URL . '/assets/images/samtech-icon.png';
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,7 +18,7 @@ $logoSrc = file_exists($logoPath)
     <style>
         @page {
             size: A4 portrait;
-            margin: 10mm 10mm 10mm 10mm;
+            margin: 10mm 10mm 20mm 10mm;
         }
 
         @media print {
@@ -32,6 +37,12 @@ $logoSrc = file_exists($logoPath)
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+            .letterhead-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
         }
 
         html, body {
@@ -45,6 +56,47 @@ $logoSrc = file_exists($logoPath)
             line-height: 1.5;
         }
 
+        /* Letterhead Watermark */
+        .watermark-bg {
+            position: fixed;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            z-index: -1000;
+            pointer-events: none;
+            user-select: none;
+            text-align: center;
+            width: 100%;
+            opacity: 0.05;
+        }
+
+        .watermark-bg .wm-text {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 65pt;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .watermark-bg .wm-green {
+            color: #488a25;
+        }
+
+        .watermark-bg .wm-dark {
+            color: #1e293b;
+        }
+
+        .watermark-icon-bg {
+            position: fixed;
+            bottom: -60px;
+            left: -40px;
+            width: 280px;
+            height: auto;
+            opacity: 0.04;
+            z-index: -1000;
+            pointer-events: none;
+        }
+
         .print-actions {
             position: fixed;
             top: 15px;
@@ -53,7 +105,7 @@ $logoSrc = file_exists($logoPath)
         }
 
         .print-btn {
-            background: #0f172a;
+            background: #488a25;
             color: #ffffff;
             border: none;
             padding: 9px 18px;
@@ -61,12 +113,12 @@ $logoSrc = file_exists($logoPath)
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: background 0.2s ease;
         }
 
         .print-btn:hover {
-            background: #1e293b;
+            background: #396e1d;
         }
 
         /* Container table for page-repeat header */
@@ -84,12 +136,13 @@ $logoSrc = file_exists($logoPath)
         table.report-container > tbody > tr > td {
             border: none;
             padding: 0;
+            padding-bottom: 50px;
         }
 
         /* Letterhead Header */
         .header-table {
             width: 100%;
-            border-bottom: 2px solid #0f172a;
+            border-bottom: 2px solid #488a25;
             padding-bottom: 10px;
             border-collapse: collapse;
         }
@@ -97,6 +150,40 @@ $logoSrc = file_exists($logoPath)
         .logo {
             height: 46px;
             width: auto;
+        }
+
+        /* Letterhead Footer */
+        .letterhead-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #334155;
+            background: #ffffff;
+            padding-top: 6px;
+            padding-bottom: 4px;
+            border-top: 1px solid #cbd5e1;
+            z-index: 1000;
+        }
+
+        .letterhead-footer .lh-company {
+            font-weight: 800;
+            font-size: 9.5pt;
+            color: #0f172a;
+        }
+
+        .letterhead-footer .lh-address {
+            font-size: 7.5pt;
+            color: #475569;
+            margin-top: 2px;
+        }
+
+        .letterhead-footer .lh-contact {
+            font-size: 7.5pt;
+            color: #475569;
+            margin-top: 1px;
         }
 
         .header-date {
@@ -282,6 +369,17 @@ $logoSrc = file_exists($logoPath)
     </style>
 </head>
 <body>
+
+<!-- Letterhead Watermark -->
+<div class="watermark-bg">
+    <div class="wm-text">
+        <span class="wm-green">Samtech</span><br>
+        <span class="wm-dark">Solutions</span>
+    </div>
+</div>
+<?php if (!empty($iconSrc)): ?>
+    <img src="<?= $iconSrc; ?>" class="watermark-icon-bg" alt="">
+<?php endif; ?>
 
     <div class="print-actions">
         <button onclick="window.print();" class="print-btn">
@@ -517,6 +615,13 @@ $logoSrc = file_exists($logoPath)
             </tr>
         </tbody>
     </table>
+
+<!-- Official Company Letterhead Footer -->
+<div class="letterhead-footer">
+    <div class="lh-company">Samvruddhi Technologies LLC</div>
+    <div class="lh-address">1st Floor, Shindagha City Centre (Carrefour) , A001A Blue Titan Office B-14, Dubai United Arab Emirates P.O. Box 377567</div>
+    <div class="lh-contact">+971-4-3554245 &nbsp;|&nbsp; sales@samvruddhi.com &nbsp;|&nbsp; https://samtech.ae/ &nbsp;|&nbsp; TRN 100324643400003</div>
+</div>
 
     <script>
         window.addEventListener("load", function () {
