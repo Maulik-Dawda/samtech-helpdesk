@@ -26,12 +26,13 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
     <style>
         @page {
             size: A4 portrait;
-            margin: 10mm 10mm 20mm 10mm;
+            margin: 0;
         }
 
         html, body {
             margin: 0;
-            padding: 0;
+            padding: 8mm 8mm 22mm 8mm;
+            box-sizing: border-box;
             width: 100%;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             color: #0f172a;
@@ -262,8 +263,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
             font-family: Arial, Helvetica, sans-serif;
             color: #334155;
             background: #ffffff;
-            padding-top: 6px;
-            padding-bottom: 4px;
+            padding: 6px 8mm 6px 8mm;
             border-top: 1px solid #cbd5e1;
             z-index: 1000;
         }
@@ -287,6 +287,11 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
         }
 
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
             .print-btn, .print-actions {
                 display: none !important;
                 visibility: hidden !important;
@@ -297,7 +302,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
 
             html, body {
                 margin: 0 !important;
-                padding: 0 !important;
+                padding: 8mm 8mm 22mm 8mm !important;
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
@@ -316,6 +321,7 @@ $priorityLabel = ucfirst($ticket['priority'] ?? 'Medium');
                 bottom: 0;
                 left: 0;
                 right: 0;
+                padding: 6px 8mm 6px 8mm;
             }
         }
     </style>
