@@ -4,7 +4,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 12mm 12mm 24mm 12mm;
+            margin: 28mm 10mm 22mm 10mm;
         }
 
         body {
@@ -25,10 +25,13 @@
         }
 
         .header-table {
+            position: fixed;
+            top: -20mm;
+            left: 0;
+            right: 0;
             width: 100%;
             border-bottom: 2px solid #488a25;
-            padding-bottom: 14px;
-            margin-bottom: 16px;
+            padding-bottom: 8px;
             border-collapse: collapse;
             background: transparent;
         }
@@ -39,30 +42,30 @@
         }
 
         .logo {
-            height: 55px;
+            height: 50px;
             display: block;
             margin-top: 0;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             margin-top: 0;
             color: #111827;
         }
 
         .date {
-            font-size: 10px;
+            font-size: 9px;
             color: #555;
             margin-top: 2px;
         }
 
         .meta {
             text-align: right;
-            font-size: 9.5px;
+            font-size: 9px;
             color: #475569;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         table {
@@ -94,7 +97,7 @@
         /* Letterhead Footer */
         .letterhead-footer {
             position: fixed;
-            bottom: -10mm;
+            bottom: -16mm;
             left: 0;
             right: 0;
             text-align: center;

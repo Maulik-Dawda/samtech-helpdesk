@@ -18,12 +18,12 @@ $iconSrc = file_exists($iconPath)
     <style>
         @page {
             size: A4 portrait;
-            margin: 0;
+            margin: 6mm 8mm 20mm 8mm;
         }
 
         html, body {
             margin: 0;
-            padding: 8mm 8mm 28mm 8mm;
+            padding: 0;
             box-sizing: border-box;
             width: 100%;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -36,7 +36,7 @@ $iconSrc = file_exists($iconPath)
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 0;
+                margin: 6mm 8mm 20mm 8mm;
             }
 
             .print-actions {
@@ -50,16 +50,16 @@ $iconSrc = file_exists($iconPath)
             html, body {
                 background: #ffffff !important;
                 margin: 0 !important;
-                padding: 8mm 8mm 28mm 8mm !important;
+                padding: 0 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
             .letterhead-footer {
                 position: fixed;
-                bottom: 6mm !important;
+                bottom: 4mm !important;
                 left: 8mm !important;
                 right: 8mm !important;
-                padding: 6px 0 0 0 !important;
+                padding: 4px 0 0 0 !important;
                 background: transparent !important;
             }
         }
@@ -150,14 +150,14 @@ $iconSrc = file_exists($iconPath)
         /* Letterhead Footer */
         .letterhead-footer {
             position: fixed;
-            bottom: 6mm;
+            bottom: 4mm;
             left: 8mm;
             right: 8mm;
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
             color: #334155;
             background: transparent !important;
-            padding-top: 6px;
+            padding-top: 4px;
             padding-bottom: 0;
             border-top: 1px solid #cbd5e1;
             z-index: 1000;
@@ -248,6 +248,11 @@ $iconSrc = file_exists($iconPath)
         .ticket-detail-block {
             margin-bottom: 25px;
             page-break-inside: avoid;
+        }
+
+        .ticket-detail-block-pagebreak {
+            page-break-before: always !important;
+            break-before: page !important;
         }
 
         .section-title {
@@ -458,7 +463,7 @@ $iconSrc = file_exists($iconPath)
 
                     <!-- 3. Detailed Tickets Section (Matching print-ticket-detail.php structure) -->
                     <?php if (!empty($tickets)): ?>
-                        <div class="section-heading" style="page-break-before: always;">2. DETAILED TICKET REPORTS</div>
+                        <div class="section-heading" style="page-break-before: always; break-before: page;">2. DETAILED TICKET REPORTS</div>
 
                         <?php foreach ($tickets as $index => $t): ?>
                             <?php
@@ -470,7 +475,7 @@ $iconSrc = file_exists($iconPath)
                             $replyAttachments = $t['replyAttachments'] ?? [];
                             ?>
 
-                            <div class="ticket-detail-block">
+                            <div class="ticket-detail-block <?= $index > 0 ? 'ticket-detail-block-pagebreak' : ''; ?>">
                                 <div class="section-title">Ticket Information &mdash; #<?= htmlspecialchars($t['ticket_no'] ?? $t['id']); ?></div>
                                 <table class="info-table">
                                     <tr>
@@ -592,16 +597,19 @@ $iconSrc = file_exists($iconPath)
 
                             </div>
 
-                            <?php if ($index < count($tickets) - 1): ?>
-                                <div class="ticket-divider"></div>
-                            <?php endif; ?>
-
                         <?php endforeach; ?>
                     <?php endif; ?>
 
                 </td>
             </tr>
         </tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    <div style="height: 18mm;"></div>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 
 <!-- Official Company Letterhead Footer -->
