@@ -47,34 +47,44 @@ class MailService
 
         /*
         |--------------------------------------------------------------------------
-        | Namecheap Private Email SMTP
-        |--------------------------------------------------------------------------
-        */
-
-        $mail->Host = MAIL_HOST;
-        $mail->Port = (int) MAIL_PORT;
-        $mail->SMTPAuth = true;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Select Mailbox
+        | Select Mailbox & Server Settings
         |--------------------------------------------------------------------------
         */
 
         if ($type === 'ticket') {
-            $mail->Username = TICKET_MAIL_USERNAME;
-            $mail->Password = TICKET_MAIL_PASSWORD;
-
-            $fromEmail = TICKET_FROM_EMAIL;
-            $fromName = TICKET_FROM_NAME;
+            $host = defined('TICKET_MAIL_HOST') ? TICKET_MAIL_HOST : (defined('MAIL_HOST') ? MAIL_HOST : '');
+            $port = defined('TICKET_MAIL_PORT') ? (int) TICKET_MAIL_PORT : (defined('MAIL_PORT') ? (int) MAIL_PORT : 587);
+            $encryption = defined('TICKET_MAIL_ENCRYPTION') ? TICKET_MAIL_ENCRYPTION : (defined('MAIL_ENCRYPTION') ? MAIL_ENCRYPTION : 'tls');
+            $username = defined('TICKET_MAIL_USERNAME') ? TICKET_MAIL_USERNAME : MAIL_USERNAME;
+            $password = defined('TICKET_MAIL_PASSWORD') ? TICKET_MAIL_PASSWORD : MAIL_PASSWORD;
+            $fromEmail = defined('TICKET_FROM_EMAIL') ? TICKET_FROM_EMAIL : MAIL_FROM_EMAIL;
+            $fromName = defined('TICKET_FROM_NAME') ? TICKET_FROM_NAME : MAIL_FROM_NAME;
         } else {
-            $mail->Username = MAIL_USERNAME;
-            $mail->Password = MAIL_PASSWORD;
-
+            $host = MAIL_HOST;
+            $port = (int) MAIL_PORT;
+            $encryption = defined('MAIL_ENCRYPTION') ? MAIL_ENCRYPTION : 'tls';
+            $username = MAIL_USERNAME;
+            $password = MAIL_PASSWORD;
             $fromEmail = MAIL_FROM_EMAIL;
             $fromName = MAIL_FROM_NAME;
         }
+
+        $mail->Host = $host;
+        $mail->Port = $port;
+        $mail->SMTPAuth = true;
+
+        $encLower = strtolower(trim((string) $encryption));
+        if ($encLower === 'tls' || $encLower === 'starttls' || ($encLower === '' && $port === 587)) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        } elseif ($encLower === 'ssl' || $encLower === 'smtps' || ($encLower === '' && $port === 465)) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } else {
+            $mail->SMTPSecure = false;
+            $mail->SMTPAutoTLS = false;
+        }
+
+        $mail->Username = $username;
+        $mail->Password = $password;
 
         /*
         |--------------------------------------------------------------------------

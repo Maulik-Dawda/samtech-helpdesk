@@ -30,7 +30,17 @@ foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line)
 
     list($key, $value) = explode('=', $line, 2);
 
-    $env[trim($key)] = trim($value);
+    $key = trim($key);
+    $value = trim($value);
+
+    if (
+        (str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+        (str_starts_with($value, "'") && str_ends_with($value, "'"))
+    ) {
+        $value = substr($value, 1, -1);
+    }
+
+    $env[$key] = $value;
 }
 
 
@@ -78,21 +88,21 @@ define('SESSION_TIMEOUT', (int)($env['SESSION_TIMEOUT'] ?? 2700));
 | Mail Configuration
 |--------------------------------------------------------------------------
 |
-| Verification Mailbox
+| Verification / Security Mailbox
 |
 */
 
 define('MAIL_HOST', $env['MAIL_HOST'] ?? '');
 
-define('MAIL_PORT', (int)($env['MAIL_PORT'] ?? 465));
+define('MAIL_PORT', (int)($env['MAIL_PORT'] ?? 587));
 
-define('MAIL_ENCRYPTION', $env['MAIL_ENCRYPTION'] ?? 'ssl');
+define('MAIL_ENCRYPTION', strtolower($env['MAIL_ENCRYPTION'] ?? 'tls'));
 
 define('MAIL_USERNAME', $env['MAIL_USERNAME'] ?? '');
 
 define('MAIL_PASSWORD', $env['MAIL_PASSWORD'] ?? '');
 
-define('MAIL_FROM_EMAIL', $env['MAIL_FROM_EMAIL'] ?? '');
+define('MAIL_FROM_EMAIL', !empty($env['MAIL_FROM_EMAIL']) ? $env['MAIL_FROM_EMAIL'] : ($env['MAIL_USERNAME'] ?? ''));
 
 define('MAIL_FROM_NAME', $env['MAIL_FROM_NAME'] ?? 'Samtech Verification');
 
@@ -102,25 +112,19 @@ define('MAIL_FROM_NAME', $env['MAIL_FROM_NAME'] ?? 'Samtech Verification');
 |--------------------------------------------------------------------------
 */
 
-define(
-    'TICKET_MAIL_USERNAME',
-    $env['TICKET_MAIL_USERNAME'] ?? ''
-);
+define('TICKET_MAIL_HOST', $env['TICKET_MAIL_HOST'] ?? MAIL_HOST);
 
-define(
-    'TICKET_MAIL_PASSWORD',
-    $env['TICKET_MAIL_PASSWORD'] ?? ''
-);
+define('TICKET_MAIL_PORT', (int)($env['TICKET_MAIL_PORT'] ?? MAIL_PORT));
 
-define(
-    'TICKET_FROM_EMAIL',
-    $env['TICKET_FROM_EMAIL'] ?? ''
-);
+define('TICKET_MAIL_ENCRYPTION', strtolower($env['TICKET_MAIL_ENCRYPTION'] ?? MAIL_ENCRYPTION));
 
-define(
-    'TICKET_FROM_NAME',
-    $env['TICKET_FROM_NAME'] ?? 'Samtech Helpdesk'
-);
+define('TICKET_MAIL_USERNAME', !empty($env['TICKET_MAIL_USERNAME']) ? $env['TICKET_MAIL_USERNAME'] : MAIL_USERNAME);
+
+define('TICKET_MAIL_PASSWORD', !empty($env['TICKET_MAIL_PASSWORD']) ? $env['TICKET_MAIL_PASSWORD'] : MAIL_PASSWORD);
+
+define('TICKET_FROM_EMAIL', !empty($env['TICKET_FROM_EMAIL']) ? $env['TICKET_FROM_EMAIL'] : MAIL_FROM_EMAIL);
+
+define('TICKET_FROM_NAME', !empty($env['TICKET_FROM_NAME']) ? $env['TICKET_FROM_NAME'] : MAIL_FROM_NAME);
 
 /*
 |--------------------------------------------------------------------------
