@@ -481,7 +481,8 @@ class AuthController extends Controller
         $mailSent = MailService::sendForgotPasswordOtp($user['email'], $otp);
 
         if (!$mailSent) {
-            $_SESSION['error'] = "Unable to send password reset OTP. Please try again later.";
+            $lastErr = MailService::getLastError();
+            $_SESSION['error'] = "Unable to send password reset OTP." . ($lastErr ? " (Error: {$lastErr})" : " Please try again later.");
             header("Location: " . BASE_URL . "/forgot-password");
             exit;
         }
@@ -526,7 +527,8 @@ class AuthController extends Controller
         $mailSent = MailService::sendForgotPasswordOtp($user['email'], $otp);
 
         if (!$mailSent) {
-            $_SESSION['error'] = "Unable to send password reset code. Please try again later.";
+            $lastErr = MailService::getLastError();
+            $_SESSION['error'] = "Unable to send password reset code." . ($lastErr ? " (Error: {$lastErr})" : " Please try again later.");
             header("Location: " . BASE_URL . "/forgot-password-verify");
             exit;
         }

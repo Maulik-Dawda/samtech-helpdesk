@@ -150,6 +150,13 @@ class MailService
     |--------------------------------------------------------------------------
     */
 
+    public static string $lastError = '';
+
+    public static function getLastError(): string
+    {
+        return self::$lastError;
+    }
+
     public static function send(
         string $to,
         string $subject,
@@ -157,9 +164,11 @@ class MailService
         string $type = 'security'
     ): bool {
         $mail = null;
+        self::$lastError = '';
 
         try {
             if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                self::$lastError = "Invalid recipient email address: {$to}";
                 error_log(
                     "MailService: Invalid recipient email: {$to}"
                 );
@@ -182,6 +191,10 @@ class MailService
                     "MailService: Email sent successfully | " .
                         "Recipient: {$to} | Subject: {$subject}"
                 );
+            } else {
+                if ($mail instanceof PHPMailer && !empty($mail->ErrorInfo)) {
+                    self::$lastError = $mail->ErrorInfo;
+                }
             }
 
             return $sent;
@@ -191,6 +204,8 @@ class MailService
             if ($mail instanceof PHPMailer) {
                 $mailerError = $mail->ErrorInfo;
             }
+
+            self::$lastError = !empty($mailerError) ? $mailerError : $e->getMessage();
 
             error_log(
                 "MailService Error | " .
