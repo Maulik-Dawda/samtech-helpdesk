@@ -86,6 +86,14 @@ class MailService
         $mail->Username = $username;
         $mail->Password = $password;
 
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true,
+            ],
+        ];
+
         /*
         |--------------------------------------------------------------------------
         | Message Configuration
