@@ -20,6 +20,9 @@ class IncomingMailService
         $results = [
             'processed' => 0,
             'ignored' => 0,
+            'unread_found' => 0,
+            'connection' => 'not_attempted',
+            'log' => [],
             'errors' => []
         ];
 
@@ -37,7 +40,7 @@ class IncomingMailService
         $password = defined('INCOMING_MAIL_PASSWORD') ? INCOMING_MAIL_PASSWORD : '';
 
         if (empty($host) || empty($username) || empty($password)) {
-            $errorMsg = "Incoming mail credentials are not configured in .env";
+            $errorMsg = "Incoming mail credentials (INCOMING_MAIL_HOST, INCOMING_MAIL_USERNAME, INCOMING_MAIL_PASSWORD) are not configured in .env";
             error_log("IncomingMailService Error: " . $errorMsg);
             $results['errors'][] = $errorMsg;
             return $results;
@@ -47,28 +50,37 @@ class IncomingMailService
         $encFlag = strtolower($encryption) === 'ssl' ? '/imap/ssl/novalidate-cert' : (strtolower($encryption) === 'tls' ? '/imap/tls/novalidate-cert' : '/imap/novalidate-cert');
         $mailbox = "{" . $host . ":" . $port . $encFlag . "}INBOX";
 
+        $results['log'][] = "Connecting to IMAP mailbox: {$mailbox} with user: {$username}";
+
         $inbox = @imap_open($mailbox, $username, $password);
 
         if (!$inbox) {
             $imapError = imap_last_error();
             $errorMsg = "Failed to connect to IMAP server {$mailbox}: " . $imapError;
             error_log("IncomingMailService Error: " . $errorMsg);
+            $results['connection'] = 'failed';
             $results['errors'][] = $errorMsg;
             return $results;
         }
 
+        $results['connection'] = 'connected';
         $emails = imap_search($inbox, 'UNSEEN');
 
         if (!$emails) {
+            $results['log'][] = "No unread (UNSEEN) emails found in INBOX.";
             imap_close($inbox);
             return $results;
         }
+
+        $results['unread_found'] = count($emails);
+        $results['log'][] = "Found " . count($emails) . " unread email(s).";
 
         foreach ($emails as $msgNumber) {
             try {
                 $header = imap_headerinfo($inbox, $msgNumber);
 
                 if (!$header || empty($header->from[0])) {
+                    $results['log'][] = "Msg #{$msgNumber}: Skipped (No header/from address)";
                     continue;
                 }
 
@@ -82,6 +94,7 @@ class IncomingMailService
 
                 if (!$user || (int)($user['is_active'] ?? 0) !== 1) {
                     // Ignore email from unregistered or inactive sender
+                    $results['log'][] = "Msg #{$msgNumber} from {$senderEmail}: Ignored (Sender email not found or inactive in database)";
                     error_log("IncomingMailService: Ignored email from unregistered/inactive sender: {$senderEmail}");
                     $results['ignored']++;
                     // Mark message as seen so it's not repeatedly checked
@@ -103,7 +116,10 @@ class IncomingMailService
 
                 if ($success) {
                     $results['processed']++;
+                    $results['log'][] = "Msg #{$msgNumber} from {$senderEmail}: Successfully processed into ticket/reply!";
                     imap_setflag_full($inbox, (string)$msgNumber, "\\Seen");
+                } else {
+                    $results['log'][] = "Msg #{$msgNumber} from {$senderEmail}: Failed to save ticket in database.";
                 }
             } catch (Throwable $e) {
                 error_log("IncomingMailService Error processing message #{$msgNumber}: " . $e->getMessage());
