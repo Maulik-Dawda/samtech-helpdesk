@@ -143,6 +143,22 @@ define(
 
 /*
 |--------------------------------------------------------------------------
+| Incoming Mailbox Configuration (IMAP)
+|--------------------------------------------------------------------------
+*/
+
+define('INCOMING_MAIL_HOST', $env['INCOMING_MAIL_HOST'] ?? MAIL_HOST);
+
+define('INCOMING_MAIL_PORT', (int)($env['INCOMING_MAIL_PORT'] ?? 993));
+
+define('INCOMING_MAIL_ENCRYPTION', strtolower($env['INCOMING_MAIL_ENCRYPTION'] ?? 'ssl'));
+
+define('INCOMING_MAIL_USERNAME', !empty($env['INCOMING_MAIL_USERNAME']) ? $env['INCOMING_MAIL_USERNAME'] : MAIL_USERNAME);
+
+define('INCOMING_MAIL_PASSWORD', !empty($env['INCOMING_MAIL_PASSWORD']) ? $env['INCOMING_MAIL_PASSWORD'] : MAIL_PASSWORD);
+
+/*
+|--------------------------------------------------------------------------
 | Security
 |--------------------------------------------------------------------------
 */

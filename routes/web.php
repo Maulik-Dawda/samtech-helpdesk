@@ -155,3 +155,5 @@ $router->post('/contracts/store', 'ContractController@store');
 $router->get('/contracts/organization/{id}', 'ContractController@organization');
 $router->get('/contracts/print-report/{id}', 'ContractController@printReport');
 
+$router->get('/cron/fetch-emails', 'CronController@fetchEmails');
+
