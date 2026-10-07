@@ -93,17 +93,17 @@ class AttachmentController extends Controller
 
     private function downloadFile($attachment)
     {
-        $fullPath = realpath(__DIR__ . "/../../" . $attachment['file_path']);
+        $filePath = $attachment['file_path'];
+
+        if (str_starts_with($filePath, 'uploads/')) {
+            $filePath = 'storage/' . $filePath;
+        }
+
+        $fullPath = realpath(__DIR__ . "/../../" . $filePath);
 
         $storagePath = realpath(__DIR__ . "/../../storage/uploads");
 
-        if (!$fullPath || !$storagePath || strpos($fullPath, $storagePath) !== 0) {
-            http_response_code(404);
-            echo "File not found.";
-            exit;
-        }
-
-        if (!file_exists($fullPath)) {
+        if (!$fullPath || !$storagePath || strpos($fullPath, $storagePath) !== 0 || !file_exists($fullPath)) {
             http_response_code(404);
             echo "File not found.";
             exit;

@@ -108,7 +108,7 @@ class IncomingMailService
 
                 // Extract Body & Attachments
                 $parsedData = self::parseImapMessage($inbox, $msgNumber);
-                $body = !empty($parsedData['html']) ? $parsedData['html'] : (!empty($parsedData['plain']) ? nl2br(htmlspecialchars($parsedData['plain'])) : 'No content');
+                $body = self::cleanEmailBody($parsedData);
                 $attachments = $parsedData['attachments'] ?? [];
 
                 // Process parsed email data for this verified user
@@ -158,7 +158,7 @@ class IncomingMailService
             }
 
             $subject = !empty($parsed['subject']) ? self::decodeMimeHeader($parsed['subject']) : 'No Subject';
-            $body = !empty($parsed['html']) ? $parsed['html'] : (!empty($parsed['plain']) ? nl2br(htmlspecialchars($parsed['plain'])) : 'No content');
+            $body = self::cleanEmailBody($parsed);
             $attachments = $parsed['attachments'] ?? [];
 
             return self::handleParsedEmail($user, $subject, $body, $attachments);
@@ -472,12 +472,40 @@ class IncomingMailService
             return [
                 'original_name' => $originalName,
                 'stored_name' => $storedName,
-                'file_path' => "uploads/" . $subfolder . "/" . $storedName,
+                'file_path' => "storage/uploads/" . $subfolder . "/" . $storedName,
                 'file_type' => $mimeType,
                 'file_size' => strlen($att['data'])
             ];
         }
 
         return null;
+    }
+
+    /**
+     * Clean email body content to extract plain text without raw HTML tags.
+     */
+    private static function cleanEmailBody(array $parsedData): string
+    {
+        $body = '';
+
+        if (!empty($parsedData['plain'])) {
+            $body = trim($parsedData['plain']);
+        } elseif (!empty($parsedData['html'])) {
+            $html = preg_replace('/<br\s*\/?>/i', "\n", $parsedData['html']);
+            $html = preg_replace('/<\/p>/i', "\n\n", $html);
+            $html = preg_replace('/<\/div>/i', "\n", $html);
+
+            $cleanText = strip_tags($html);
+            $body = trim(html_entity_decode($cleanText, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+
+        if (empty($body)) {
+            $body = 'No content';
+        }
+
+        // Clean up excessive blank lines
+        $body = preg_replace("/[\r\n]{3,}/", "\n\n", $body);
+
+        return $body;
     }
 }
