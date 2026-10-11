@@ -11,10 +11,13 @@ $logoSrc = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : BASE_URL . '/assets/images/samtech-logo-report.png';
 
-$iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
+$iconPath = ROOT_PATH . '/public/assets/images/samtech-watermark.png';
+if (!file_exists($iconPath)) {
+    $iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
+}
 $iconSrc = file_exists($iconPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath))
-    : BASE_URL . '/assets/images/samtech-icon.png';
+    : BASE_URL . '/assets/images/samtech-watermark.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,6 +94,12 @@ $iconSrc = file_exists($iconPath)
                 bottom: 0 !important;
                 background: transparent !important;
             }
+
+            .watermark-logo {
+                opacity: 1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
 
         /* Screen Presentation Sheet */
@@ -122,9 +131,12 @@ $iconSrc = file_exists($iconPath)
             width: 380px;
             max-width: 75%;
             height: auto;
-            opacity: 0.10;
+            opacity: 1 !important;
             z-index: 0;
             pointer-events: none;
+            background: transparent !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .sheet-content {

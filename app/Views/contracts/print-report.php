@@ -4,10 +4,13 @@ $logoSrc = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : BASE_URL . '/assets/images/samtech-logo-report.png';
 
-$iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
+$iconPath = ROOT_PATH . '/public/assets/images/samtech-watermark.png';
+if (!file_exists($iconPath)) {
+    $iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
+}
 $iconSrc = file_exists($iconPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath))
-    : BASE_URL . '/assets/images/samtech-icon.png';
+    : BASE_URL . '/assets/images/samtech-watermark.png';
 ?>
 <!DOCTYPE html>
 <html>
@@ -62,6 +65,11 @@ $iconSrc = file_exists($iconPath)
                 padding: 4px 0 0 0 !important;
                 background: transparent !important;
             }
+            .watermark-logo {
+                opacity: 1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
 
         /* Letterhead Watermark Logo */
@@ -73,9 +81,12 @@ $iconSrc = file_exists($iconPath)
             width: 450px;
             max-width: 80%;
             height: auto;
-            opacity: 0.15;
+            opacity: 1 !important;
             z-index: -1;
             pointer-events: none;
+            background: transparent !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .print-actions {
