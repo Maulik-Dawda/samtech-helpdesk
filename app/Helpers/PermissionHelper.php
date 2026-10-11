@@ -117,4 +117,9 @@ class PermissionHelper
     {
         return self::isAdmin();
     }
+
+    public static function canManageQuotations()
+    {
+        return self::has('manage_quotations');
+    }
 }

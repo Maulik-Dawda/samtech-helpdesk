@@ -157,3 +157,13 @@ $router->get('/contracts/print-report/{id}', 'ContractController@printReport');
 
 $router->get('/cron/fetch-emails', 'CronController@fetchEmails');
 
+// Quotations
+$router->get('/quotations', 'QuotationController@index');
+$router->get('/quotations/create', 'QuotationController@create');
+$router->post('/quotations/store', 'QuotationController@store');
+$router->get('/quotations/show/{id}', 'QuotationController@show');
+$router->get('/quotations/edit/{id}', 'QuotationController@edit');
+$router->post('/quotations/update/{id}', 'QuotationController@update');
+$router->post('/quotations/delete/{id}', 'QuotationController@delete');
+$router->get('/quotations/print/{id}', 'QuotationController@printPdf');
+

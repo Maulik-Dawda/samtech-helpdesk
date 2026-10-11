@@ -4,8 +4,29 @@ require_once ROOT_PATH . "/app/Core/Model.php";
 
 class Permission extends Model
 {
+    public function ensureDefaultPermissions()
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT id FROM permissions WHERE permission_key = 'manage_quotations' LIMIT 1
+            ");
+            $stmt->execute();
+            if (!$stmt->fetch()) {
+                $insertStmt = $this->db->prepare("
+                    INSERT INTO permissions (module_name, permission_name, permission_key)
+                    VALUES ('Quotations', 'Manage Quotations', 'manage_quotations')
+                ");
+                $insertStmt->execute();
+            }
+        } catch (Throwable $e) {
+            error_log("Failed to ensure default permissions: " . $e->getMessage());
+        }
+    }
+
     public function getAll()
     {
+        $this->ensureDefaultPermissions();
+
         $stmt = $this->db->prepare("
             SELECT *
             FROM permissions
@@ -35,6 +56,8 @@ class Permission extends Model
 
     public function userHasPermission($userId, $permissionKey)
     {
+        $this->ensureDefaultPermissions();
+
         $stmt = $this->db->prepare("
             SELECT permissions.id
             FROM user_permissions

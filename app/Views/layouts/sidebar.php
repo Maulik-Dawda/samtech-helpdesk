@@ -272,6 +272,34 @@ if ($isAdmin) {
 
         <?php endif; ?>
 
+        <?php if (PermissionHelper::canManageQuotations()): ?>
+
+            <div class="sidebar-section">
+
+                <div class="sidebar-title">
+                    Quotations
+                </div>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/quotations', true); ?>"
+                    href="<?= BASE_URL ?>/quotations"
+                >
+                    <i class="bi bi-file-earmark-spreadsheet-fill sidebar-link-icon"></i>
+                    <span class="sidebar-link-text">Quotations</span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/quotations/create', true); ?>"
+                    href="<?= BASE_URL ?>/quotations/create"
+                >
+                    <i class="bi bi-file-earmark-plus-fill sidebar-link-icon"></i>
+                    <span class="sidebar-link-text">Create Quotation</span>
+                </a>
+
+            </div>
+
+        <?php endif; ?>
+
         <?php if ($isAdmin || $isAdminAgent): ?>
 
             <div class="sidebar-section">
