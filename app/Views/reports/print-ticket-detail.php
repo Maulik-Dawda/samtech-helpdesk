@@ -4,13 +4,10 @@ $logoSrc = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : BASE_URL . '/assets/images/samtech-logo-report.png';
 
-$iconPath = ROOT_PATH . '/public/assets/images/samtech-watermark.png';
-if (!file_exists($iconPath)) {
-    $iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
-}
+$iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
 $iconSrc = file_exists($iconPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath))
-    : BASE_URL . '/assets/images/samtech-watermark.png';
+    : BASE_URL . '/assets/images/samtech-icon.png';
 
 $assignedAgent = !empty($ticket['assigned_agent_name']) 
     ? trim($ticket['assigned_agent_name']) 

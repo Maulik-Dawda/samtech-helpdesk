@@ -10,14 +10,6 @@ $logoPath = ROOT_PATH . '/public/assets/images/samtech-logo-report.png';
 $logoSrc = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : BASE_URL . '/assets/images/samtech-logo-report.png';
-
-$iconPath = ROOT_PATH . '/public/assets/images/samtech-watermark.png';
-if (!file_exists($iconPath)) {
-    $iconPath = ROOT_PATH . '/public/assets/images/samtech-icon.png';
-}
-$iconSrc = file_exists($iconPath)
-    ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath))
-    : BASE_URL . '/assets/images/samtech-watermark.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,12 +86,6 @@ $iconSrc = file_exists($iconPath)
                 bottom: 0 !important;
                 background: transparent !important;
             }
-
-            .watermark-logo {
-                opacity: 1 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
         }
 
         /* Screen Presentation Sheet */
@@ -120,23 +106,6 @@ $iconSrc = file_exists($iconPath)
             box-sizing: border-box;
             page-break-after: always;
             break-after: page;
-        }
-
-        /* Letterhead Watermark Logo */
-        .watermark-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 380px;
-            max-width: 75%;
-            height: auto;
-            opacity: 1 !important;
-            z-index: 0;
-            pointer-events: none;
-            background: transparent !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
         }
 
         .sheet-content {
@@ -423,7 +392,6 @@ $iconSrc = file_exists($iconPath)
     <!-- PAGE 1: COVER PAGE                         -->
     <!-- ========================================== -->
     <div class="page-sheet">
-        <img class="watermark-logo" src="<?= $iconSrc; ?>" alt="Watermark">
         <div class="sheet-content">
             <table class="header-table">
                 <tr>
@@ -476,7 +444,6 @@ $iconSrc = file_exists($iconPath)
     <!-- PAGE 2: COVER LETTER                       -->
     <!-- ========================================== -->
     <div class="page-sheet">
-        <img class="watermark-logo" src="<?= $iconSrc; ?>" alt="Watermark">
         <div class="sheet-content">
             <table class="header-table">
                 <tr>
@@ -510,7 +477,6 @@ $iconSrc = file_exists($iconPath)
     <!-- PAGE 3: ABOUT THIS PROPOSAL                -->
     <!-- ========================================== -->
     <div class="page-sheet auto-paginate" data-page-title="About this Proposal">
-        <img class="watermark-logo" src="<?= $iconSrc; ?>" alt="Watermark">
         <div class="sheet-content">
             <table class="header-table">
                 <tr>
@@ -583,7 +549,6 @@ $iconSrc = file_exists($iconPath)
     <?php if (!empty($custom)): ?>
         <?php foreach ($custom as $cPage): ?>
             <div class="page-sheet auto-paginate" data-page-title="<?= htmlspecialchars($cPage['title'] ?? 'Proposal Scope'); ?>">
-                <img class="watermark-logo" src="<?= $iconSrc; ?>" alt="Watermark">
                 <div class="sheet-content">
                     <table class="header-table">
                         <tr>
@@ -676,7 +641,6 @@ $iconSrc = file_exists($iconPath)
     <!-- SECOND-TO-LAST PAGE: FINANCIALS            -->
     <!-- ========================================== -->
     <div class="page-sheet auto-paginate" data-page-title="Financials">
-        <img class="watermark-logo" src="<?= $iconSrc; ?>" alt="Watermark">
         <div class="sheet-content">
             <table class="header-table">
                 <tr>
@@ -769,7 +733,6 @@ $iconSrc = file_exists($iconPath)
     <!-- LAST PAGE: REPORT HIGHLIGHTS & AGREEMENT   -->
     <!-- ========================================== -->
     <div class="page-sheet auto-paginate" data-page-title="Agreement & Sign-off">
-        <img class="watermark-logo" src="<?= $iconSrc; ?>" alt="Watermark">
         <div class="sheet-content">
             <table class="header-table">
                 <tr>
@@ -857,13 +820,10 @@ $iconSrc = file_exists($iconPath)
             newSheet.setAttribute('data-page-title', pageTitle);
         }
 
-        const watermarkImg = previousSheet.querySelector('.watermark-logo');
         const logoImg = previousSheet.querySelector('.logo');
-        const watermarkSrc = watermarkImg ? watermarkImg.src : '';
         const logoSrc = logoImg ? logoImg.src : '';
 
         newSheet.innerHTML = `
-            <img class="watermark-logo" src="${watermarkSrc}" alt="Watermark">
             <div class="sheet-content">
                 <table class="header-table">
                     <tr>
