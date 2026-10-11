@@ -130,6 +130,58 @@ class AgentTicketController extends Controller
         ]);
     }
 
+    public function unassigned()
+    {
+        AuthMiddleware::timeout();
+        AuthMiddleware::check(['admin', 'agent']);
+
+        $search = trim($_GET['search'] ?? $_GET['q'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+        $priority = trim($_GET['priority'] ?? '');
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $ticketModel = new Ticket();
+
+        $totalRecords = $ticketModel->countUnassignedTickets($search, $status, $priority);
+        $totalPages = max(1, ceil($totalRecords / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $tickets = $ticketModel->getUnassignedTicketsPaginated(
+            $perPage,
+            $offset,
+            $search,
+            $status,
+            $priority
+        );
+
+        $unassignedCount = $ticketModel->getUnassignedTicketCount();
+
+        $userModel = new User();
+        $assignableAgents = $userModel->getAllAssignableAgents();
+        $statusCounts = $ticketModel->getUnassignedStatusCounts();
+
+        $this->view('agent/tickets/unassigned', [
+            'tickets' => $tickets,
+            'page' => $page,
+            'perPage' => $perPage,
+            'totalRecords' => $totalRecords,
+            'totalPages' => $totalPages,
+            'search' => $search,
+            'status' => $status,
+            'priority' => $priority,
+            'unassignedCount' => $unassignedCount,
+            'assignableAgents' => $assignableAgents,
+            'statusCounts' => $statusCounts
+        ]);
+    }
+
     public function agentAssignedTickets($agentId)
     {
         AuthMiddleware::timeout();

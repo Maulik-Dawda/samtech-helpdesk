@@ -1,7 +1,7 @@
 <?php
 $unassignedCount = (int)($unassignedCount ?? 0);
 if (!empty($unassignedCount) && $unassignedCount > 0):
-    $viewUrl = BASE_URL . '/agent/tickets/all-assigned';
+    $viewUrl = BASE_URL . '/agent/tickets/unassigned';
 ?>
     <div class="alert border border-warning-subtle shadow-sm rounded-4 p-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #fffbeb; border-color: #fef08a !important;">
         <div class="d-flex align-items-center gap-3">
@@ -19,7 +19,7 @@ if (!empty($unassignedCount) && $unassignedCount > 0):
         </div>
         <div>
             <a href="<?= $viewUrl; ?>" class="btn btn-warning fw-bold text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2" style="background: #f59e0b; border-color: #f59e0b; color: #0f172a !important;">
-                <i class="bi bi-people-fill"></i> View All Assigned
+                <i class="bi bi-person-x-fill"></i> View Unassigned Tickets
             </a>
         </div>
     </div>

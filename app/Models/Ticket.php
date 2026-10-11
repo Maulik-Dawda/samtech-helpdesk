@@ -950,4 +950,119 @@ class Ticket extends Model
         $res = $stmt->fetch();
         return (int)($res['total'] ?? 0);
     }
+
+    public function countUnassignedTickets($search = '', $status = '', $priority = '')
+    {
+        $sql = "
+            SELECT COUNT(*) AS total
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            WHERE (tickets.assigned_agent_id IS NULL OR tickets.assigned_agent_id = 0)
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ";
+        $params = [];
+
+        if (!empty($status)) {
+            $sql .= " AND tickets.status = ?";
+            $params[] = $status;
+        }
+
+        if (!empty($priority)) {
+            $sql .= " AND tickets.priority = ?";
+            $params[] = $priority;
+        }
+
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ?
+                OR tickets.subject LIKE ?
+                OR tickets.description LIKE ?
+                OR users.full_name LIKE ?
+                OR organizations.name LIKE ?
+            )";
+            array_push($params, $term, $term, $term, $term, $term);
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $res = $stmt->fetch();
+        return (int)($res['total'] ?? 0);
+    }
+
+    public function getUnassignedTicketsPaginated($limit, $offset, $search = '', $status = '', $priority = '')
+    {
+        $sql = "
+            SELECT 
+                tickets.*,
+                COALESCE(users.full_name, organizations.name) AS customer_name,
+                COALESCE(users.email, organizations.email, '') AS customer_email,
+                organizations.name AS organization_name,
+                organization_branches.name AS branch_name
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            LEFT JOIN organizations ON organizations.id = tickets.organization_id
+            LEFT JOIN organization_branches ON organization_branches.id = tickets.branch_id
+            WHERE (tickets.assigned_agent_id IS NULL OR tickets.assigned_agent_id = 0)
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ";
+        $params = [];
+
+        if (!empty($status)) {
+            $sql .= " AND tickets.status = ?";
+            $params[] = $status;
+        }
+
+        if (!empty($priority)) {
+            $sql .= " AND tickets.priority = ?";
+            $params[] = $priority;
+        }
+
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $sql .= " AND (
+                tickets.ticket_no LIKE ?
+                OR tickets.subject LIKE ?
+                OR tickets.description LIKE ?
+                OR users.full_name LIKE ?
+                OR organizations.name LIKE ?
+                OR organization_branches.name LIKE ?
+            )";
+            array_push($params, $term, $term, $term, $term, $term, $term);
+        }
+
+        $sql .= " ORDER BY tickets.created_at DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
+
+    public function getUnassignedStatusCounts()
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                COUNT(*) AS total,
+                SUM(CASE WHEN tickets.status = 'open' THEN 1 ELSE 0 END) AS total_open,
+                SUM(CASE WHEN tickets.status IN ('in_progress', 'in progress') THEN 1 ELSE 0 END) AS total_in_progress,
+                SUM(CASE WHEN tickets.status = 'pending' THEN 1 ELSE 0 END) AS total_pending,
+                SUM(CASE WHEN tickets.status = 'resolved' THEN 1 ELSE 0 END) AS total_resolved,
+                SUM(CASE WHEN tickets.status = 'closed' THEN 1 ELSE 0 END) AS total_closed
+            FROM tickets
+            LEFT JOIN users ON users.id = tickets.user_id
+            WHERE (tickets.assigned_agent_id IS NULL OR tickets.assigned_agent_id = 0)
+            AND (users.email IS NULL OR users.email != 'maulik@septixtechnologies.com')
+        ");
+        $stmt->execute();
+        return $stmt->fetch() ?: [
+            'total' => 0,
+            'total_open' => 0,
+            'total_in_progress' => 0,
+            'total_pending' => 0,
+            'total_resolved' => 0,
+            'total_closed' => 0
+        ];
+    }
 }

@@ -306,9 +306,9 @@ function getAgentTicketPriorityClass(string $priority): string
 
             </div>
 
-            <a href="<?= BASE_URL ?>/agent/tickets/all-assigned" class="btn btn-sm btn-warning text-dark font-weight-bold text-nowrap px-3 rounded-pill">
+            <a href="<?= BASE_URL ?>/agent/tickets/unassigned" class="btn btn-sm btn-warning text-dark font-weight-bold text-nowrap px-3 rounded-pill">
 
-                <i class="bi bi-people-fill me-1"></i> View All Assigned
+                <i class="bi bi-person-x-fill me-1"></i> View Unassigned Tickets
 
             </a>
 

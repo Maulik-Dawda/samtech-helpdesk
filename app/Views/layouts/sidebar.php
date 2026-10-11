@@ -88,6 +88,7 @@ if (!function_exists('sidebarActive')) {
             str_starts_with($currentPath, '/agent/tickets/create') ||
             str_starts_with($currentPath, '/agent/tickets/assigned-to-you') ||
             str_starts_with($currentPath, '/agent/tickets/all-assigned') ||
+            str_starts_with($currentPath, '/agent/tickets/unassigned') ||
             str_starts_with($currentPath, '/agent/tickets/assigned-agent')
         )) {
             return '';
@@ -246,6 +247,14 @@ if ($isAdmin) {
                 >
                     <i class="bi bi-people-fill sidebar-link-icon"></i>
                     <span class="sidebar-link-text">All Assigned Tickets</span>
+                </a>
+
+                <a
+                    class="sidebar-link <?= sidebarActive('/agent/tickets/unassigned', true); ?>"
+                    href="<?= BASE_URL ?>/agent/tickets/unassigned"
+                >
+                    <i class="bi bi-person-x-fill sidebar-link-icon"></i>
+                    <span class="sidebar-link-text">Unassigned Tickets</span>
                 </a>
 
             <?php endif; ?>

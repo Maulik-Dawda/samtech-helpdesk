@@ -64,14 +64,16 @@ foreach ($agentsWithCounts as $agentItem) {
                 <div class="metric-card-meta">Across all agents</div>
             </div>
 
-            <div class="metric-card metric-card-warning">
-                <div class="metric-card-header">
-                    <div class="metric-card-icon"><i class="bi bi-exclamation-circle-fill"></i></div>
+            <a href="<?= BASE_URL ?>/agent/tickets/unassigned" class="text-decoration-none" style="color: inherit;">
+                <div class="metric-card metric-card-warning" style="cursor: pointer;">
+                    <div class="metric-card-header">
+                        <div class="metric-card-icon"><i class="bi bi-exclamation-circle-fill"></i></div>
+                    </div>
+                    <div class="metric-card-label">Unassigned Tickets</div>
+                    <div class="metric-card-value"><?= $unassignedCount; ?></div>
+                    <div class="metric-card-meta">Click to view list &rarr;</div>
                 </div>
-                <div class="metric-card-label">Unassigned Tickets</div>
-                <div class="metric-card-value"><?= $unassignedCount; ?></div>
-                <div class="metric-card-meta">Pending assignment</div>
-            </div>
+            </a>
 
             <div class="metric-card">
                 <div class="metric-card-header">
@@ -117,6 +119,9 @@ foreach ($agentsWithCounts as $agentItem) {
                     </p>
                 </div>
             </div>
+            <a href="<?= BASE_URL ?>/agent/tickets/unassigned" class="btn btn-sm btn-warning text-dark font-weight-bold text-nowrap px-3 rounded-pill">
+                <i class="bi bi-person-x-fill me-1"></i> View Unassigned Tickets
+            </a>
         </div>
     <?php endif; ?>
 
