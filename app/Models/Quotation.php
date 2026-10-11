@@ -20,7 +20,7 @@ class Quotation extends Model
                 product_name VARCHAR(255) NOT NULL,
                 quotation_date DATE NOT NULL,
                 validity_date DATE DEFAULT NULL,
-                status ENUM('draft', 'sent', 'accepted', 'rejected') DEFAULT 'draft',
+                status ENUM('draft', 'sent', 'accepted', 'rejected', 'expired') DEFAULT 'draft',
                 grand_total DECIMAL(12,2) DEFAULT 0.00,
                 proposal_data LONGTEXT NOT NULL,
                 created_by INT DEFAULT NULL,
