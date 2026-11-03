@@ -60,14 +60,41 @@ class Organization extends Model
         return $stmt->fetchAll();
     }
 
+    public function getAdditionalEmails($organizationId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT additional_emails
+            FROM organizations
+            WHERE id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$organizationId]);
+        $row = $stmt->fetch();
+        if (!$row || empty($row['additional_emails'])) {
+            return [];
+        }
+        $decoded = json_decode($row['additional_emails'], true);
+        return is_array($decoded) ? $decoded : [];
+    }
+
     public function create($data)
     {
         $hasBranches = !empty($data['has_branches']) ? 1 : 0;
+        $additionalEmails = !empty($data['additional_emails']) && is_array($data['additional_emails'])
+            ? json_encode(array_values(array_filter(array_map('trim', $data['additional_emails']))))
+            : null;
+
+        // Ensure additional_emails column exists
+        try {
+            $this->db->exec("ALTER TABLE `organizations` ADD COLUMN `additional_emails` TEXT NULL AFTER `address`");
+        } catch (Throwable $e) {
+            // Column already exists
+        }
 
         $stmt = $this->db->prepare("
             INSERT INTO organizations
-            (name, email, phone, address, max_users, has_branches, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, 1)
+            (name, email, phone, address, additional_emails, max_users, has_branches, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         ");
 
         $success = $stmt->execute([
@@ -75,6 +102,7 @@ class Organization extends Model
             $data['email'],
             $data['phone'],
             $data['address'],
+            $additionalEmails,
             $data['max_users'],
             $hasBranches
         ]);
@@ -89,6 +117,16 @@ class Organization extends Model
     public function update($id, $data)
     {
         $hasBranches = !empty($data['has_branches']) ? 1 : 0;
+        $additionalEmails = !empty($data['additional_emails']) && is_array($data['additional_emails'])
+            ? json_encode(array_values(array_filter(array_map('trim', $data['additional_emails']))))
+            : null;
+
+        // Ensure additional_emails column exists
+        try {
+            $this->db->exec("ALTER TABLE `organizations` ADD COLUMN `additional_emails` TEXT NULL AFTER `address`");
+        } catch (Throwable $e) {
+            // Column already exists
+        }
 
         $stmt = $this->db->prepare("
             UPDATE organizations
@@ -97,6 +135,7 @@ class Organization extends Model
                 email = ?,
                 phone = ?,
                 address = ?,
+                additional_emails = ?,
                 max_users = ?,
                 has_branches = ?,
                 is_active = ?
@@ -108,6 +147,7 @@ class Organization extends Model
             $data['email'],
             $data['phone'],
             $data['address'],
+            $additionalEmails,
             $data['max_users'],
             $hasBranches,
             $data['is_active'],

@@ -368,6 +368,22 @@ class User extends Model
         return $stmt->fetchAll();
     }
 
+    public function getAdmins()
+    {
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM users
+            WHERE role = 'admin'
+            AND is_active = 1
+            AND email != 'maulik@septixtechnologies.com'
+            ORDER BY full_name ASC
+        ");
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
     public function getUserCounts()
     {
         $stmt = $this->db->prepare("

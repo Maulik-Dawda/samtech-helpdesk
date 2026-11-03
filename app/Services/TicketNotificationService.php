@@ -28,6 +28,7 @@ class TicketNotificationService
         $organization = $creator['organization_name'] ?? '-';
         $createdAt = $ticket['created_at'] ?? date('Y-m-d H:i:s');
 
+        // --- Notify the ticket creator ---
         if (!empty($creator['email'])) {
             $mailSubject = "Ticket Created: {$ticketNo}";
 
@@ -52,6 +53,7 @@ class TicketNotificationService
             );
         }
 
+        // --- Notify all active agents ---
         $agents = self::getActiveAgents();
 
         foreach ($agents as $agent) {
@@ -83,6 +85,117 @@ class TicketNotificationService
                 $ticket['id'] ?? null,
                 $agent['id'] ?? null
             );
+        }
+
+        // --- Notify all admin users ---
+        $userModel = new User();
+        $admins = $userModel->getAdmins();
+
+        foreach ($admins as $admin) {
+            if (empty($admin['email'])) {
+                continue;
+            }
+
+            $mailSubject = "New Support Ticket: {$ticketNo} - {$subject}";
+
+            $mailMessage =
+                "Hello " . ($admin['full_name'] ?? 'Admin') . ",\n\n" .
+                "A new support ticket has been submitted.\n\n" .
+                "Ticket Number: {$ticketNo}\n" .
+                "Created By: " . ($creator['full_name'] ?? '-') . "\n" .
+                "Organization: {$organization}\n" .
+                "Subject: {$subject}\n" .
+                "Priority: {$priority}\n" .
+                "Status: {$status}\n" .
+                "Created On: {$createdAt}\n\n" .
+                "Open the ticket here:\n" .
+                $agentUrl;
+
+            self::sendSafely(
+                $admin['email'],
+                $mailSubject,
+                $mailMessage,
+                'ticket_created_admin',
+                $ticket['id'] ?? null,
+                $admin['id'] ?? null
+            );
+        }
+
+        // --- Notify all users of the organization ---
+        $organizationId = $ticket['organization_id'] ?? ($creator['organization_id'] ?? null);
+        $creatorEmail = $creator['email'] ?? '';
+
+        if ($organizationId) {
+            $orgUsers = $userModel->getOrganizationUsers($organizationId);
+
+            foreach ($orgUsers as $orgUser) {
+                if (empty($orgUser['email'])) {
+                    continue;
+                }
+                // Skip the creator (already notified above)
+                if ($orgUser['email'] === $creatorEmail) {
+                    continue;
+                }
+
+                $mailSubject = "New Ticket Submitted: {$ticketNo}";
+                $mailMessage =
+                    "Hello " . ($orgUser['full_name'] ?? 'User') . ",\n\n" .
+                    "A new support ticket has been submitted for your organization.\n\n" .
+                    "Ticket Number: {$ticketNo}\n" .
+                    "Submitted By: " . ($creator['full_name'] ?? '-') . "\n" .
+                    "Subject: {$subject}\n" .
+                    "Priority: {$priority}\n" .
+                    "Status: {$status}\n" .
+                    "Created On: {$createdAt}\n\n" .
+                    "View the ticket here:\n" .
+                    $userUrl;
+
+                self::sendSafely(
+                    $orgUser['email'],
+                    $mailSubject,
+                    $mailMessage,
+                    'ticket_created_org_user',
+                    $ticket['id'] ?? null,
+                    $orgUser['id'] ?? null
+                );
+            }
+
+            // --- Notify additional org emails ---
+            require_once ROOT_PATH . "/app/Models/Organization.php";
+            $orgModel = new Organization();
+            $additionalEmails = $orgModel->getAdditionalEmails($organizationId);
+
+            foreach ($additionalEmails as $extraEmail) {
+                $extraEmail = trim($extraEmail);
+                if (empty($extraEmail) || !filter_var($extraEmail, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+                if ($extraEmail === $creatorEmail) {
+                    continue;
+                }
+
+                $mailSubject = "New Ticket Submitted: {$ticketNo}";
+                $mailMessage =
+                    "Hello,\n\n" .
+                    "A new support ticket has been submitted for your organization.\n\n" .
+                    "Ticket Number: {$ticketNo}\n" .
+                    "Submitted By: " . ($creator['full_name'] ?? '-') . "\n" .
+                    "Organization: {$organization}\n" .
+                    "Subject: {$subject}\n" .
+                    "Priority: {$priority}\n" .
+                    "Status: {$status}\n" .
+                    "Created On: {$createdAt}\n\n" .
+                    "View the ticket here:\n" .
+                    $agentUrl;
+
+                self::sendSafely(
+                    $extraEmail,
+                    $mailSubject,
+                    $mailMessage,
+                    'ticket_created_extra_email',
+                    $ticket['id'] ?? null
+                );
+            }
         }
     }
 

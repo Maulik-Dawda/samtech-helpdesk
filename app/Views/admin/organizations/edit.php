@@ -241,6 +241,49 @@ $hasBranches = !empty($organization['has_branches']) || !empty($branches);
                     </div>
                 </div>
 
+                <!-- Additional Notification Email IDs -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light p-3 rounded-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div>
+                                <label class="form-label fw-bold text-dark mb-0">
+                                    <i class="bi bi-envelope-plus me-1 text-primary"></i> Additional Notification Email IDs
+                                </label>
+                                <div class="form-text text-muted small mt-0">
+                                    All ticket-related emails will also be sent to these addresses. Useful for managers, monitors, or external stakeholders.
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="addEmailRow()">
+                                <i class="bi bi-plus-circle me-1"></i> Add Email
+                            </button>
+                        </div>
+
+                        <div id="additionalEmailsList" class="d-flex flex-column gap-2">
+                            <?php
+                            $additionalEmails = is_array($additionalEmails ?? null) ? $additionalEmails : [];
+                            if (!empty($additionalEmails)):
+                                foreach ($additionalEmails as $aEmail):
+                            ?>
+                                <div class="input-group input-group-sm email-row">
+                                    <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" name="additional_emails[]" class="form-control" placeholder="notify@example.com" value="<?= htmlspecialchars($aEmail); ?>">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeEmailRow(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            <?php endforeach; else: ?>
+                                <div class="input-group input-group-sm email-row">
+                                    <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" name="additional_emails[]" class="form-control" placeholder="notify@example.com">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeEmailRow(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Actions -->
                 <div class="col-12">
                     <hr>
@@ -302,6 +345,34 @@ function removeBranchRow(btn) {
     const row = btn.closest('.branch-row');
     if (row) {
         if (container.querySelectorAll('.branch-row').length > 1) {
+            row.remove();
+        } else {
+            row.querySelector('input').value = '';
+        }
+    }
+}
+
+function addEmailRow(initialValue = '') {
+    const container = document.getElementById('additionalEmailsList');
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'input-group input-group-sm email-row';
+    div.innerHTML = `
+        <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+        <input type="email" name="additional_emails[]" class="form-control" placeholder="notify@example.com" value="${initialValue}">
+        <button type="button" class="btn btn-outline-danger" onclick="removeEmailRow(this)">
+            <i class="bi bi-trash"></i>
+        </button>
+    `;
+    container.appendChild(div);
+}
+
+function removeEmailRow(btn) {
+    const container = document.getElementById('additionalEmailsList');
+    const row = btn.closest('.email-row');
+    if (row) {
+        if (container.querySelectorAll('.email-row').length > 1) {
             row.remove();
         } else {
             row.querySelector('input').value = '';

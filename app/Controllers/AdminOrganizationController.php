@@ -89,7 +89,8 @@ class AdminOrganizationController extends Controller
             'phone' => $phone,
             'address' => $address,
             'max_users' => $maxUsers,
-            'has_branches' => $hasBranches
+            'has_branches' => $hasBranches,
+            'additional_emails' => is_array($_POST['additional_emails'] ?? null) ? $_POST['additional_emails'] : []
         ]);
 
         if (!$orgId) {
@@ -125,9 +126,12 @@ class AdminOrganizationController extends Controller
         $branchModel = new OrganizationBranch();
         $branches = $branchModel->getByOrganizationId($id);
 
+        $additionalEmails = $organizationModel->getAdditionalEmails($id);
+
         $this->view('admin/organizations/edit', [
             'organization' => $organization,
-            'branches' => $branches
+            'branches' => $branches,
+            'additionalEmails' => $additionalEmails
         ]);
     }
 
@@ -185,7 +189,8 @@ class AdminOrganizationController extends Controller
             'address' => $address,
             'max_users' => $maxUsers,
             'has_branches' => $hasBranches,
-            'is_active' => $isActive
+            'is_active' => $isActive,
+            'additional_emails' => is_array($_POST['additional_emails'] ?? null) ? $_POST['additional_emails'] : []
         ]);
 
         if (!$updated) {
