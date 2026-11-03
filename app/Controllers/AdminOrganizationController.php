@@ -231,6 +231,7 @@ class AdminOrganizationController extends Controller
 
         $users = $userModel->getOrganizationUsers($id);
         $branches = $branchModel->getByOrganizationId($id);
+        $additionalEmails = $organizationModel->getAdditionalEmails($id);
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($page < 1) {
@@ -252,6 +253,7 @@ class AdminOrganizationController extends Controller
             'users' => $users,
             'tickets' => $tickets,
             'branches' => $branches,
+            'additionalEmails' => $additionalEmails,
             'totalTickets' => $totalTickets,
             'page' => $page,
             'totalPages' => $totalPages,

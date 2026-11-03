@@ -258,6 +258,34 @@ $capacityPercentage = $maxUsers > 0 ? min(100, round(($userCount / $maxUsers) * 
                             </div>
                         <?php endif; ?>
 
+                        <?php
+                        $additionalEmailsList = is_array($additionalEmails ?? null) ? $additionalEmails : [];
+                        ?>
+                        <?php if (!empty($additionalEmailsList)): ?>
+                            <div class="profile-summary-item">
+                                <div class="profile-summary-icon">
+                                    <i class="bi bi-envelope-plus"></i>
+                                </div>
+                                <div class="w-100">
+                                    <span class="profile-summary-label">Additional Notification Emails</span>
+                                    <div class="d-flex flex-wrap gap-1 mt-1">
+                                        <?php foreach ($additionalEmailsList as $extraEmail): ?>
+                                            <?php if (!empty(trim($extraEmail))): ?>
+                                                <span class="badge bg-white text-dark border px-2 py-1 shadow-sm">
+                                                    <i class="bi bi-envelope me-1 text-primary"></i>
+                                                    <?= htmlspecialchars(trim($extraEmail)); ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <div class="form-text text-muted mt-1" style="font-size: 0.75rem;">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        All ticket emails are also delivered to these addresses.
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="profile-summary-item">
                             <div class="profile-summary-icon">
                                 <i class="bi bi-people"></i>
