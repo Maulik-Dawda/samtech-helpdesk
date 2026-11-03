@@ -399,14 +399,29 @@ class AgentTicketController extends Controller
             $_SESSION['auth_user_id']
         );
 
-        TicketNotificationService::agentReplied(
-            $ticket,
-            $agent,
-            $message
-        );
-
         $_SESSION['success'] = "Reply sent successfully.";
         header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+
+        // Send notification in background after response is flushed
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        } else {
+            ignore_user_abort(true);
+            ob_start();
+            echo str_repeat(' ', 4096);
+            $size = ob_get_length();
+            header("Content-Length: " . $size);
+            header("Connection: close");
+            ob_end_flush();
+            flush();
+        }
+
+        try {
+            TicketNotificationService::agentReplied($ticket, $agent, $message);
+        } catch (Throwable $e) {
+            error_log("Agent reply notification error: " . $e->getMessage());
+        }
+
         exit;
     }
 
@@ -581,16 +596,35 @@ class AgentTicketController extends Controller
                 $_SESSION['auth_user_id']
             );
 
-            TicketNotificationService::statusUpdated(
-                $ticket,
-                $ticket['status'],
-                $status,
-                $updatedBy,
-                $resolutionMessage
-            );
-
             $_SESSION['success'] = "Ticket status updated successfully.";
             header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
+
+            // Send notification in background after response is flushed
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            } else {
+                ignore_user_abort(true);
+                ob_start();
+                echo str_repeat(' ', 4096);
+                $size = ob_get_length();
+                header("Content-Length: " . $size);
+                header("Connection: close");
+                ob_end_flush();
+                flush();
+            }
+
+            try {
+                TicketNotificationService::statusUpdated(
+                    $ticket,
+                    $ticket['status'],
+                    $status,
+                    $updatedBy,
+                    $resolutionMessage
+                );
+            } catch (Throwable $e) {
+                error_log("Status update notification error: " . $e->getMessage());
+            }
+
             exit;
         } catch (Throwable $e) {
             error_log("Ticket Status Update Error: " . $e->getMessage());
@@ -706,6 +740,23 @@ class AgentTicketController extends Controller
             $userModel = new User();
             $agent = $userModel->findById($_SESSION['auth_user_id']);
             $createdTicket = $ticketModel->findByTicketNo($ticketNo);
+            $_SESSION['success'] = 'Ticket created successfully.';
+            header("Location: " . BASE_URL . "/agent/tickets");
+
+            // Send notification in background after response is flushed
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            } else {
+                ignore_user_abort(true);
+                ob_start();
+                echo str_repeat(' ', 4096);
+                $size = ob_get_length();
+                header("Content-Length: " . $size);
+                header("Connection: close");
+                ob_end_flush();
+                flush();
+            }
+
             if ($createdTicket && $agent) {
                 try {
                     TicketNotificationService::ticketCreated($createdTicket, $agent);
@@ -714,8 +765,6 @@ class AgentTicketController extends Controller
                 }
             }
 
-            $_SESSION['success'] = 'Ticket created successfully.';
-            header("Location: " . BASE_URL . "/agent/tickets");
             exit;
         } catch (Throwable $e) {
             error_log("Error in AgentTicketController::store: " . $e->getMessage() . "\n" . $e->getTraceAsString());

@@ -103,6 +103,7 @@ class MailService
         $mail->CharSet = PHPMailer::CHARSET_UTF8;
         $mail->Encoding = PHPMailer::ENCODING_BASE64;
         $mail->isHTML(true);
+        $mail->SMTPKeepAlive = true; // Reuse SMTP connection across multiple sends
 
         $mail->setFrom(
             $fromEmail,

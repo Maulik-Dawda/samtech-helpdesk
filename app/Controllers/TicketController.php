@@ -144,17 +144,33 @@ class TicketController extends Controller
             header("Location: " . BASE_URL . "/tickets/show/" . $ticket['id']);
             exit;
         }
+        $_SESSION['success'] = "Ticket created successfully.";
+
+        // Redirect the user immediately — don't make them wait for emails
+        $redirectUrl = BASE_URL . "/tickets";
+        header("Location: " . $redirectUrl);
+
+        // Flush response to browser NOW, then send emails in background
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        } else {
+            ignore_user_abort(true);
+            ob_start();
+            echo str_repeat(' ', 4096); // fill buffer to trigger flush
+            $size = ob_get_length();
+            header("Content-Length: " . $size);
+            header("Connection: close");
+            ob_end_flush();
+            flush();
+        }
+
+        // Background: send notifications after response is delivered
         try {
-            TicketNotificationService::ticketCreated(
-                $ticket,
-                $user
-            );
+            TicketNotificationService::ticketCreated($ticket, $user);
         } catch (Throwable $e) {
             error_log("Ticket notification error: " . $e->getMessage());
         }
 
-        $_SESSION['success'] = "Ticket created successfully.";
-        header("Location: " . BASE_URL . "/tickets");
         exit;
     }
 
@@ -357,14 +373,31 @@ class TicketController extends Controller
             exit;
         }
 
-        TicketNotificationService::userReplied(
-            $ticket,
-            $user,
-            $message
-        );
-
         $_SESSION['success'] = "Reply added successfully.";
+
+        // Redirect user immediately
         header("Location: " . BASE_URL . "/tickets/show/" . $id);
+
+        // Send notification in background after response is flushed
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        } else {
+            ignore_user_abort(true);
+            ob_start();
+            echo str_repeat(' ', 4096);
+            $size = ob_get_length();
+            header("Content-Length: " . $size);
+            header("Connection: close");
+            ob_end_flush();
+            flush();
+        }
+
+        try {
+            TicketNotificationService::userReplied($ticket, $user, $message);
+        } catch (Throwable $e) {
+            error_log("Reply notification error: " . $e->getMessage());
+        }
+
         exit;
     }
 
