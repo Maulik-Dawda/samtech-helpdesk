@@ -9,6 +9,7 @@ require_once ROOT_PATH . "/app/Models/OrganizationBranch.php";
 require_once ROOT_PATH . "/app/Models/Attachment.php";
 require_once ROOT_PATH . "/app/Services/UploadService.php";
 require_once ROOT_PATH . "/app/Services/TicketNotificationService.php";
+require_once ROOT_PATH . "/app/Helpers/ResponseHelper.php";
 
 class TicketController extends Controller
 {
@@ -146,23 +147,10 @@ class TicketController extends Controller
         }
         $_SESSION['success'] = "Ticket created successfully.";
 
-        // Redirect the user immediately — don't make them wait for emails
+        // Redirect the user immediately — release session and disconnect browser
         $redirectUrl = BASE_URL . "/tickets";
         header("Location: " . $redirectUrl);
-
-        // Flush response to browser NOW, then send emails in background
-        if (function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
-        } else {
-            ignore_user_abort(true);
-            ob_start();
-            echo str_repeat(' ', 4096); // fill buffer to trigger flush
-            $size = ob_get_length();
-            header("Content-Length: " . $size);
-            header("Connection: close");
-            ob_end_flush();
-            flush();
-        }
+        ResponseHelper::finishRequestAndContinue();
 
         // Background: send notifications after response is delivered
         try {
@@ -375,22 +363,9 @@ class TicketController extends Controller
 
         $_SESSION['success'] = "Reply added successfully.";
 
-        // Redirect user immediately
+        // Redirect user immediately and release session
         header("Location: " . BASE_URL . "/tickets/show/" . $id);
-
-        // Send notification in background after response is flushed
-        if (function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
-        } else {
-            ignore_user_abort(true);
-            ob_start();
-            echo str_repeat(' ', 4096);
-            $size = ob_get_length();
-            header("Content-Length: " . $size);
-            header("Connection: close");
-            ob_end_flush();
-            flush();
-        }
+        ResponseHelper::finishRequestAndContinue();
 
         try {
             TicketNotificationService::userReplied($ticket, $user, $message);

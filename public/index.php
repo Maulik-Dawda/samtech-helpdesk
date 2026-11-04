@@ -22,6 +22,7 @@ require_once "../app/Core/Router.php";
 require_once "../app/Middleware/AuthMiddleware.php";
 require_once "../app/Helpers/Csrf.php";
 require_once ROOT_PATH . '/app/Helpers/DateTimeHelper.php';
+require_once ROOT_PATH . '/app/Helpers/ResponseHelper.php';
 
 try {
     $router = new Router();

@@ -28,8 +28,13 @@ class TicketNotificationService
         $organization = $creator['organization_name'] ?? '-';
         $createdAt = $ticket['created_at'] ?? date('Y-m-d H:i:s');
 
+        $sentEmails = [];
+
         // --- Notify the ticket creator ---
         if (!empty($creator['email'])) {
+            $creatorEmail = trim($creator['email']);
+            $sentEmails[strtolower($creatorEmail)] = true;
+
             $mailSubject = "Ticket Created: {$ticketNo}";
 
             $mailMessage =
@@ -45,7 +50,7 @@ class TicketNotificationService
                 $userUrl;
 
             self::sendSafely(
-                $creator['email'],
+                $creatorEmail,
                 $mailSubject,
                 $mailMessage,
                 'ticket_created_creator',
@@ -60,6 +65,11 @@ class TicketNotificationService
             if (empty($agent['email'])) {
                 continue;
             }
+            $agentEmail = strtolower(trim($agent['email']));
+            if (isset($sentEmails[$agentEmail])) {
+                continue;
+            }
+            $sentEmails[$agentEmail] = true;
 
             $mailSubject =
                 "New Support Ticket: {$ticketNo} - {$subject}";
@@ -95,6 +105,11 @@ class TicketNotificationService
             if (empty($admin['email'])) {
                 continue;
             }
+            $adminEmail = strtolower(trim($admin['email']));
+            if (isset($sentEmails[$adminEmail])) {
+                continue;
+            }
+            $sentEmails[$adminEmail] = true;
 
             $mailSubject = "New Support Ticket: {$ticketNo} - {$subject}";
 
@@ -123,7 +138,6 @@ class TicketNotificationService
 
         // --- Notify all users of the organization ---
         $organizationId = $ticket['organization_id'] ?? ($creator['organization_id'] ?? null);
-        $creatorEmail = $creator['email'] ?? '';
 
         if ($organizationId) {
             $orgUsers = $userModel->getOrganizationUsers($organizationId);
@@ -132,10 +146,11 @@ class TicketNotificationService
                 if (empty($orgUser['email'])) {
                     continue;
                 }
-                // Skip the creator (already notified above)
-                if ($orgUser['email'] === $creatorEmail) {
+                $userEmail = strtolower(trim($orgUser['email']));
+                if (isset($sentEmails[$userEmail])) {
                     continue;
                 }
+                $sentEmails[$userEmail] = true;
 
                 $mailSubject = "New Ticket Submitted: {$ticketNo}";
                 $mailMessage =
@@ -170,9 +185,11 @@ class TicketNotificationService
                 if (empty($extraEmail) || !filter_var($extraEmail, FILTER_VALIDATE_EMAIL)) {
                     continue;
                 }
-                if ($extraEmail === $creatorEmail) {
+                $extraEmailNorm = strtolower($extraEmail);
+                if (isset($sentEmails[$extraEmailNorm])) {
                     continue;
                 }
+                $sentEmails[$extraEmailNorm] = true;
 
                 $mailSubject = "New Ticket Submitted: {$ticketNo}";
                 $mailMessage =
@@ -186,7 +203,7 @@ class TicketNotificationService
                     "Status: {$status}\n" .
                     "Created On: {$createdAt}\n\n" .
                     "View the ticket here:\n" .
-                    $agentUrl;
+                    $userUrl;
 
                 self::sendSafely(
                     $extraEmail,
@@ -197,6 +214,8 @@ class TicketNotificationService
                 );
             }
         }
+
+        MailService::closeTicketMailer();
     }
 
     /*
@@ -255,6 +274,8 @@ class TicketNotificationService
                 $agent['id'] ?? null
             );
         }
+
+        MailService::closeTicketMailer();
     }
 
     /*
@@ -265,6 +286,7 @@ class TicketNotificationService
     | Sends:
     | - Notification to ticket creator
     | - Notification to all active agents
+    | - Notification to additional organization emails
     |
     */
 
@@ -289,12 +311,14 @@ class TicketNotificationService
         $branch = $ticket['branch_name'] ?? '';
 
         $organization = '-';
+        $organizationId = $ticket['organization_id'] ?? ($ticketCreator['organization_id'] ?? null);
+
         if (!empty($ticketCreator['organization_name'])) {
             $organization = $ticketCreator['organization_name'];
-        } elseif (!empty($ticket['organization_id'])) {
+        } elseif (!empty($organizationId)) {
             require_once ROOT_PATH . "/app/Models/Organization.php";
             $orgModel = new Organization();
-            $org = $orgModel->findById($ticket['organization_id']);
+            $org = $orgModel->findById($organizationId);
             if ($org) {
                 $organization = $org['name'];
             }
@@ -309,7 +333,12 @@ class TicketNotificationService
             'branch' => $branch
         ];
 
+        $sentEmails = [];
+
         if ($ticketCreator && !empty($ticketCreator['email'])) {
+            $creatorEmail = strtolower(trim($ticketCreator['email']));
+            $sentEmails[$creatorEmail] = true;
+
             $mailSubject = "New Agent Reply: {$ticketNo} - {$subject}";
             $recipientName = $ticketCreator['full_name'] ?? 'User';
             $introText = "A support agent has replied to your ticket.";
@@ -333,6 +362,11 @@ class TicketNotificationService
             if (empty($recipientAgent['email'])) {
                 continue;
             }
+            $agentEmail = strtolower(trim($recipientAgent['email']));
+            if (isset($sentEmails[$agentEmail])) {
+                continue;
+            }
+            $sentEmails[$agentEmail] = true;
 
             $mailSubject = "Agent Reply Added: {$ticketNo} - {$subject}";
             $recipientName = $recipientAgent['full_name'] ?? 'Agent';
@@ -351,6 +385,43 @@ class TicketNotificationService
                 $recipientAgent['id'] ?? null
             );
         }
+
+        // Notify additional organization emails
+        if ($organizationId) {
+            require_once ROOT_PATH . "/app/Models/Organization.php";
+            $orgModel = new Organization();
+            $additionalEmails = $orgModel->getAdditionalEmails($organizationId);
+
+            foreach ($additionalEmails as $extraEmail) {
+                $extraEmail = trim($extraEmail);
+                if (empty($extraEmail) || !filter_var($extraEmail, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+                $extraEmailNorm = strtolower($extraEmail);
+                if (isset($sentEmails[$extraEmailNorm])) {
+                    continue;
+                }
+                $sentEmails[$extraEmailNorm] = true;
+
+                $mailSubject = "Agent Reply Added: {$ticketNo} - {$subject}";
+                $recipientName = 'Organization Member';
+                $introText = "A support agent has replied to a ticket for your organization.";
+
+                self::sendSafelyReply(
+                    $extraEmail,
+                    $mailSubject,
+                    $recipientName,
+                    $introText,
+                    $message,
+                    $ticketDetails,
+                    $userUrl,
+                    'agent_reply_extra_email',
+                    $ticket['id'] ?? null
+                );
+            }
+        }
+
+        MailService::closeTicketMailer();
     }
 
     /*
@@ -361,6 +432,9 @@ class TicketNotificationService
     | Sends status change to:
     | - Ticket creator
     | - All active agents
+    | - All admin users
+    | - All users in ticket's organization
+    | - All additional organization emails
     |
     */
 
@@ -400,10 +474,14 @@ class TicketNotificationService
                 "\n";
         }
 
-        if ($ticketCreator && !empty($ticketCreator['email'])) {
-            $mailSubject =
-                "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
+        $sentEmails = [];
 
+        // 1. Notify ticket creator
+        if ($ticketCreator && !empty($ticketCreator['email'])) {
+            $creatorEmail = trim($ticketCreator['email']);
+            $sentEmails[strtolower($creatorEmail)] = true;
+
+            $mailSubject = "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
             $mailMessage =
                 "Hello " . ($ticketCreator['full_name'] ?? 'User') . ",\n\n" .
                 "The status of your support ticket has been updated.\n\n" .
@@ -418,7 +496,7 @@ class TicketNotificationService
                 $userUrl;
 
             self::sendSafely(
-                $ticketCreator['email'],
+                $creatorEmail,
                 $mailSubject,
                 $mailMessage,
                 'status_update_creator',
@@ -426,16 +504,20 @@ class TicketNotificationService
             );
         }
 
+        // 2. Notify all active agents
         $agents = self::getActiveAgents();
 
         foreach ($agents as $agent) {
             if (empty($agent['email'])) {
                 continue;
             }
+            $agentEmail = strtolower(trim($agent['email']));
+            if (isset($sentEmails[$agentEmail])) {
+                continue;
+            }
+            $sentEmails[$agentEmail] = true;
 
-            $mailSubject =
-                "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
-
+            $mailSubject = "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
             $mailMessage =
                 "Hello " . ($agent['full_name'] ?? 'Agent') . ",\n\n" .
                 "A support ticket status has been updated.\n\n" .
@@ -458,6 +540,122 @@ class TicketNotificationService
                 $agent['id'] ?? null
             );
         }
+
+        // 3. Notify all admin users
+        $admins = $userModel->getAdmins();
+        foreach ($admins as $admin) {
+            if (empty($admin['email'])) {
+                continue;
+            }
+            $adminEmail = strtolower(trim($admin['email']));
+            if (isset($sentEmails[$adminEmail])) {
+                continue;
+            }
+            $sentEmails[$adminEmail] = true;
+
+            $mailSubject = "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
+            $mailMessage =
+                "Hello " . ($admin['full_name'] ?? 'Admin') . ",\n\n" .
+                "A support ticket status has been updated.\n\n" .
+                "Ticket Number: {$ticketNo}\n" .
+                "Subject: {$subject}\n" .
+                "Previous Status: {$oldStatusLabel}\n" .
+                "New Status: {$newStatusLabel}\n" .
+                "Updated By: {$updatedByName}\n" .
+                "Updated On: {$updatedAt}\n" .
+                $resolutionSection .
+                "\nOpen the ticket here:\n" .
+                $agentUrl;
+
+            self::sendSafely(
+                $admin['email'],
+                $mailSubject,
+                $mailMessage,
+                'status_update_admin',
+                $ticket['id'] ?? null,
+                $admin['id'] ?? null
+            );
+        }
+
+        // 4. Notify organization users & additional organization emails
+        $organizationId = $ticket['organization_id'] ?? ($ticketCreator['organization_id'] ?? null);
+        if ($organizationId) {
+            $orgUsers = $userModel->getOrganizationUsers($organizationId);
+            foreach ($orgUsers as $orgUser) {
+                if (empty($orgUser['email'])) {
+                    continue;
+                }
+                $userEmail = strtolower(trim($orgUser['email']));
+                if (isset($sentEmails[$userEmail])) {
+                    continue;
+                }
+                $sentEmails[$userEmail] = true;
+
+                $mailSubject = "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
+                $mailMessage =
+                    "Hello " . ($orgUser['full_name'] ?? 'User') . ",\n\n" .
+                    "The status of a support ticket for your organization has been updated.\n\n" .
+                    "Ticket Number: {$ticketNo}\n" .
+                    "Subject: {$subject}\n" .
+                    "Previous Status: {$oldStatusLabel}\n" .
+                    "New Status: {$newStatusLabel}\n" .
+                    "Updated By: {$updatedByName}\n" .
+                    "Updated On: {$updatedAt}\n" .
+                    $resolutionSection .
+                    "\nView the ticket here:\n" .
+                    $userUrl;
+
+                self::sendSafely(
+                    $orgUser['email'],
+                    $mailSubject,
+                    $mailMessage,
+                    'status_update_org_user',
+                    $ticket['id'] ?? null,
+                    $orgUser['id'] ?? null
+                );
+            }
+
+            // --- Notify additional organization emails ---
+            require_once ROOT_PATH . "/app/Models/Organization.php";
+            $orgModel = new Organization();
+            $additionalEmails = $orgModel->getAdditionalEmails($organizationId);
+
+            foreach ($additionalEmails as $extraEmail) {
+                $extraEmail = trim($extraEmail);
+                if (empty($extraEmail) || !filter_var($extraEmail, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+                $extraEmailNorm = strtolower($extraEmail);
+                if (isset($sentEmails[$extraEmailNorm])) {
+                    continue;
+                }
+                $sentEmails[$extraEmailNorm] = true;
+
+                $mailSubject = "Ticket Status Updated: {$ticketNo} - {$newStatusLabel}";
+                $mailMessage =
+                    "Hello,\n\n" .
+                    "The status of a support ticket for your organization has been updated.\n\n" .
+                    "Ticket Number: {$ticketNo}\n" .
+                    "Subject: {$subject}\n" .
+                    "Previous Status: {$oldStatusLabel}\n" .
+                    "New Status: {$newStatusLabel}\n" .
+                    "Updated By: {$updatedByName}\n" .
+                    "Updated On: {$updatedAt}\n" .
+                    $resolutionSection .
+                    "\nView the ticket here:\n" .
+                    $userUrl;
+
+                self::sendSafely(
+                    $extraEmail,
+                    $mailSubject,
+                    $mailMessage,
+                    'status_update_extra_email',
+                    $ticket['id'] ?? null
+                );
+            }
+        }
+
+        MailService::closeTicketMailer();
     }
 
     /*

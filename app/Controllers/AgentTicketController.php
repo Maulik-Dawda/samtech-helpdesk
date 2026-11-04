@@ -11,6 +11,7 @@ require_once ROOT_PATH . "/app/Models/User.php";
 require_once ROOT_PATH . "/app/Models/Organization.php";
 require_once ROOT_PATH . "/app/Models/OrganizationBranch.php";
 require_once ROOT_PATH . "/app/Helpers/PermissionHelper.php";
+require_once ROOT_PATH . "/app/Helpers/ResponseHelper.php";
 
 class AgentTicketController extends Controller
 {
@@ -401,20 +402,7 @@ class AgentTicketController extends Controller
 
         $_SESSION['success'] = "Reply sent successfully.";
         header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-
-        // Send notification in background after response is flushed
-        if (function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
-        } else {
-            ignore_user_abort(true);
-            ob_start();
-            echo str_repeat(' ', 4096);
-            $size = ob_get_length();
-            header("Content-Length: " . $size);
-            header("Connection: close");
-            ob_end_flush();
-            flush();
-        }
+        ResponseHelper::finishRequestAndContinue();
 
         try {
             TicketNotificationService::agentReplied($ticket, $agent, $message);
@@ -598,20 +586,7 @@ class AgentTicketController extends Controller
 
             $_SESSION['success'] = "Ticket status updated successfully.";
             header("Location: " . BASE_URL . "/agent/tickets/show/" . $id);
-
-            // Send notification in background after response is flushed
-            if (function_exists('fastcgi_finish_request')) {
-                fastcgi_finish_request();
-            } else {
-                ignore_user_abort(true);
-                ob_start();
-                echo str_repeat(' ', 4096);
-                $size = ob_get_length();
-                header("Content-Length: " . $size);
-                header("Connection: close");
-                ob_end_flush();
-                flush();
-            }
+            ResponseHelper::finishRequestAndContinue();
 
             try {
                 TicketNotificationService::statusUpdated(
@@ -742,20 +717,7 @@ class AgentTicketController extends Controller
             $createdTicket = $ticketModel->findByTicketNo($ticketNo);
             $_SESSION['success'] = 'Ticket created successfully.';
             header("Location: " . BASE_URL . "/agent/tickets");
-
-            // Send notification in background after response is flushed
-            if (function_exists('fastcgi_finish_request')) {
-                fastcgi_finish_request();
-            } else {
-                ignore_user_abort(true);
-                ob_start();
-                echo str_repeat(' ', 4096);
-                $size = ob_get_length();
-                header("Content-Length: " . $size);
-                header("Connection: close");
-                ob_end_flush();
-                flush();
-            }
+            ResponseHelper::finishRequestAndContinue();
 
             if ($createdTicket && $agent) {
                 try {

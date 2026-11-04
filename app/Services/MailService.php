@@ -160,6 +160,73 @@ class MailService
     */
 
     public static string $lastError = '';
+    private static ?PHPMailer $ticketMailer = null;
+
+    private static function getTicketMailer(): PHPMailer
+    {
+        if (self::$ticketMailer === null) {
+            self::$ticketMailer = self::baseMailer('ticket');
+            self::$ticketMailer->SMTPKeepAlive = true;
+            self::$ticketMailer->Timeout = 10;
+        }
+        return self::$ticketMailer;
+    }
+
+    public static function closeTicketMailer(): void
+    {
+        if (self::$ticketMailer !== null) {
+            try {
+                self::$ticketMailer->smtpClose();
+            } catch (Throwable $e) {
+                // ignore
+            }
+            self::$ticketMailer = null;
+        }
+    }
+
+    private static function sendWithTicketMailer(
+        string $to,
+        string $subject,
+        string $body
+    ): bool {
+        self::$lastError = '';
+
+        try {
+            $mail = self::getTicketMailer();
+            $mail->clearAllRecipients();
+            $mail->clearAttachments();
+            $mail->clearCustomHeaders();
+
+            $unsubscribeEmail = defined('TICKET_FROM_EMAIL') ? TICKET_FROM_EMAIL : 'support@samtech.co.ae';
+            $baseUrl = defined('BASE_URL') ? BASE_URL : 'https://helpdesk.samtech.co.ae';
+            $unsubscribeUrl = rtrim($baseUrl, '/') . '/unsubscribe';
+            $mail->addCustomHeader('List-Unsubscribe', "<mailto:{$unsubscribeEmail}?subject=unsubscribe>, <{$unsubscribeUrl}>");
+            $mail->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+
+            $mail->addAddress($to);
+            $mail->Subject = $subject;
+            $mail->Body = $body;
+            $mail->AltBody = self::htmlToPlainText($body);
+
+            $sent = $mail->send();
+            if ($sent) {
+                error_log("MailService: Email sent successfully | Recipient: {$to} | Subject: {$subject}");
+                return true;
+            }
+
+            self::closeTicketMailer();
+            return self::send($to, $subject, $body, 'ticket');
+        } catch (Throwable $e) {
+            self::closeTicketMailer();
+            error_log("MailService keep-alive error: " . $e->getMessage() . ", retrying with fresh connection...");
+            try {
+                return self::send($to, $subject, $body, 'ticket');
+            } catch (Throwable $e2) {
+                error_log("MailService retry error: " . $e2->getMessage());
+                return false;
+            }
+        }
+    }
 
     public static function getLastError(): string
     {
@@ -356,16 +423,20 @@ class MailService
         string $subject,
         string $message
     ): bool {
+        if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            self::$lastError = "Invalid recipient email address: {$to}";
+            return false;
+        }
+
         $body = self::ticketTemplate(
             $subject,
             $message
         );
 
-        return self::send(
+        return self::sendWithTicketMailer(
             $to,
             $subject,
-            $body,
-            'ticket'
+            $body
         );
     }
 
@@ -378,6 +449,11 @@ class MailService
         array $ticketDetails,
         string $actionUrl
     ): bool {
+        if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            self::$lastError = "Invalid recipient email address: {$to}";
+            return false;
+        }
+
         $body = self::ticketReplyTemplate(
             $subject,
             $recipientName,
@@ -387,11 +463,10 @@ class MailService
             $actionUrl
         );
 
-        return self::send(
+        return self::sendWithTicketMailer(
             $to,
             $subject,
-            $body,
-            'ticket'
+            $body
         );
     }
 
